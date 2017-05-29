@@ -240,3 +240,15 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+obj
+bin
+_ReSharper.*
+*.csproj.user
+*.resharper.user
+*.resharper
+*.suo
+*.cache
+*.Publish.xml
+~$* 
+App_Data

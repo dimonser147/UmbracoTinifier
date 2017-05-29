@@ -1,0 +1,35 @@
+﻿<div ng-controller="Tinifier.EditTImage.Controller">
+    <div class="umb-panel-header">
+        <div class="umb-panel-header-content-wrapper">
+            <div class="umb-panel-header-content">
+                <div class="umb-panel-header-left-side">
+                    <div class="umb-panel-header-title-wrapper">
+                        <div class="umb-panel-header-name">{{timage.Name}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="umb-editor-container umb-panel-body umb-scrollable row-fluid" ng-show="timage">
+        <div class="umb-pane">
+            <div class="form-horizontal">
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Id</label>
+                            <div class="umb-property-editor">{{timage.Id}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Name</label>
+                            <div class="umb-property-editor">{{timage.Name}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
