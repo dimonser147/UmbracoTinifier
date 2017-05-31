@@ -10,7 +10,7 @@ using Umbraco.Web;
 
 namespace Tinifier.Core.Application
 {
-    public class Startup : ApplicationEventHandler
+    public class UmbracoStartup : ApplicationEventHandler
     {
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
@@ -58,6 +58,7 @@ namespace Tinifier.Core.Application
                     {
                         Name = messageKey,
                         Alias = messageKey.ToLower(),
+                        
                     }, group);
                 }
                 cts.Save(imageType);
