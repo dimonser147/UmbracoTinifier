@@ -1,0 +1,29 @@
+﻿<div ng-controller="Tinifier.EditTSetting.Controller">   
+    <div class="umb-editor-container umb-panel-body umb-scrollable row-fluid" ng-show="tsetting">
+        <div class="umb-pane">
+            <div class="form-horizontal">
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Api Key</label>
+                            <!--<div class="umb-property-editor">{{tsetting.ApiKey}}</div>-->
+                            <input class="umb-property-editor" type="text">
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Optimize on upload</label>
+                            <!--<div class="umb-property-editor">{{tsetting.EnableOptimizationOnUpload}}</div>-->
+                            <select name="EnableOptimizationOnUpload">
+                                <option value="true">True</option>
+                                <option value="false">False</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

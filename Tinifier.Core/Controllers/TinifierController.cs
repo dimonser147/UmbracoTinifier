@@ -22,5 +22,16 @@ namespace Tinifier.Core.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, timage);
 
         }
+
+        [HttpGet]
+        public HttpResponseMessage GetTSetting()
+        {
+            TSetting tsetting = new TSetting
+            {
+                ApiKey = "OrPba3PL6Q5tIAjoTxQZx1jnyf-qAXMw",
+                EnableOptimizationOnUpload = true
+            };
+            return Request.CreateResponse(HttpStatusCode.OK, tsetting);
+        }
     }
 }
