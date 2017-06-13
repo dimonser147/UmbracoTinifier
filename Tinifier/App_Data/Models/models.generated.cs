@@ -19,7 +19,7 @@ using Umbraco.ModelsBuilder;
 using Umbraco.ModelsBuilder.Umbraco;
 
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "c04f34eeb86e4b16")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "ab7b9cb405b26db5")]
 [assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
 
 namespace Umbraco.Web.PublishedContentModels
@@ -197,6 +197,15 @@ namespace Umbraco.Web.PublishedContentModels
 		public Newtonsoft.Json.Linq.JToken Content
 		{
 			get { return this.GetPropertyValue<Newtonsoft.Json.Linq.JToken>("content"); }
+		}
+
+		///<summary>
+		/// String: sdfsdf
+		///</summary>
+		[ImplementPropertyType("string")]
+		public string String
+		{
+			get { return this.GetPropertyValue<string>("string"); }
 		}
 
 		///<summary>
