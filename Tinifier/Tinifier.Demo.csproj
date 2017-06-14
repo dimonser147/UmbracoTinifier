@@ -333,7 +333,8 @@
     <Content Include="config\Lang\zh-CN.user.xml" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="Media\1057\example-orig.png" />
+    <Content Include="Media\1057\grass-png-4770.png" />
+    <Content Include="Media\1058\firefox_png16.png" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

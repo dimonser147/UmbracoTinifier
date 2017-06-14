@@ -8171,6 +8171,13 @@ function mediaEditController($scope, $routeParams, appState, mediaResource, enti
         }
         
     };
+
+    var timageId = $routeParams.id;
+    $scope.test = function () {
+        $http.put('/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=' + timageId).success(function (response) {
+            $scope.timage = response;
+        });
+    };
 }
 
 angular.module("umbraco")
@@ -17960,7 +17967,8 @@ angular.module("umbraco")
         });
 
     }
-);
+);
+
 //this controller simply tells the dialogs service to open a mediaPicker window
 //with a specified callback, this callback will receive an object with a selection on it
 angular.module('umbraco').controller("Umbraco.PropertyEditors.EmbeddedContentController",

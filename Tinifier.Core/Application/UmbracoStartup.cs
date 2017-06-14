@@ -2,6 +2,8 @@
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
+using Umbraco.Web.Models.Trees;
+using Umbraco.Web.Trees;
 
 namespace Tinifier.Core.Application
 {
@@ -19,6 +21,10 @@ namespace Tinifier.Core.Application
                 context.Services.UserService.AddSectionToAllUsers(PackageConstants.SectionAlias);
             }
 
+            // add properties
+            IDataTypeService dataTypeService = ApplicationContext.Current.Services.DataTypeService;
+            IDataTypeDefinition[] dataTypeDefinitions = dataTypeService.GetAllDataTypeDefinitions().ToArray();
+
             // extend an existing media type
             var cts = ApplicationContext.Current.Services.ContentTypeService;
             IMediaType imageType = cts.GetMediaType("Image");
@@ -30,9 +36,6 @@ namespace Tinifier.Core.Application
                 {
                     imageType.AddPropertyGroup(group);
                 }
-                // add properties
-                IDataTypeService dataTypeService = ApplicationContext.Current.Services.DataTypeService;
-                IDataTypeDefinition[] dataTypeDefinitions = dataTypeService.GetAllDataTypeDefinitions().ToArray();
                 // is optimized
                 IDataTypeDefinition booleanProperty = dataTypeDefinitions.FirstOrDefault(p => p.Name.ToLower() == "true/false");
                 string isOptimizedKey = "Tinifier_IsOptimized";
@@ -57,8 +60,23 @@ namespace Tinifier.Core.Application
                     }, group);
                 }
                 cts.Save(imageType);
+
+                //extend dropdownMenu with Tinify button
+                TreeControllerBase.MenuRendering += TreeControllerBase_MenuRendering;
             }
         }
 
+        void TreeControllerBase_MenuRendering(TreeControllerBase sender, MenuRenderingEventArgs e)
+        {
+            if (sender.TreeAlias == "content")
+            {
+                var menu = new MenuItem("Tinifier_Button", "Tinifier");
+                menu.Icon = "umb-content";
+                menu.AdditionalData.Add("actionUrl", "https://mail.google.com");
+                menu.NavigateToRoute("https://mail.google.com");  
+                e.Menu.Items.Add(menu);
+            }
+        }
     }
 }
+

@@ -65,13 +65,23 @@ namespace Tinifier.Core.Controllers
         public async Task<HttpResponseMessage> TinyTImage(int timageId)
         {
             TinyResponse tinyResponse;
-            var image = _repo.GetItemById(timageId);            
-            var bytes = File.ReadAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"));
+            var image = _repo.GetItemById(timageId);
+
+            if (image == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound);
+            }
+
+            var imageBytes = File.ReadAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"));
             
             try
             {
-                var response = await _requestService.CreateRequestByteArray(bytes);
+                var response = await _requestService.CreateRequestByteArray(imageBytes);
                 tinyResponse = _serializer.Deserialize<TinyResponse>(response);
+
+                var webClient = new WebClient();
+                var tinyImageBytes = webClient.DownloadData(tinyResponse.Output.Url);
+                _repo.UpdateItem(timageId, tinyImageBytes);
             }
             catch(Exception ex)
             {

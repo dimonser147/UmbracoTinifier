@@ -7,5 +7,7 @@ namespace Tinifier.Core.Repository
         IEnumerable<T> GetAllItems();
 
         T GetItemById(int Id);
+
+        void UpdateItem(int Id, byte[] bytesArray);
     }
 }

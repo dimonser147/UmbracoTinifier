@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Tinifier.Core.Models;
 using Tinifier.Core.Repository;
 using umbraco;
+using Umbraco.Core;
+using Umbraco.Core.Models;
 using Umbraco.Web;
 
 namespace Tinifier.Core
@@ -42,6 +46,23 @@ namespace Tinifier.Core
             };
 
             return tImage;
+        }
+
+        public void UpdateItem(int Id, byte[] bytesArray)
+        {
+            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
+            var image = umbracoHelper.Media(Id);
+
+            var mediaService = ApplicationContext.Current.Services.MediaService;
+            IMedia mediaItem = mediaService.GetById(Id);
+
+            using (Stream stream = new MemoryStream(bytesArray))
+            {
+                mediaService.SetMediaFileContent(image.Url, stream);
+            }
+           
+            mediaItem.UpdateDate = DateTime.UtcNow;
+            mediaService.Save(mediaItem);
         }
     }
 }
