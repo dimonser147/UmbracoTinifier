@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Tinifier.Core.Models;
 
 namespace Tinifier.Core.Repository
 {
@@ -8,6 +9,6 @@ namespace Tinifier.Core.Repository
 
         T GetItemById(int Id);
 
-        void UpdateItem(int Id, byte[] bytesArray);
+        void UpdateItem(TImage image, byte[] bytesArray);
     }
 }

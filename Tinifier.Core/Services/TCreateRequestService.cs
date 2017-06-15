@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Tinifier.Core.Interfaces;
 using Tinifier.Core.Models.API;
 using System.Web.Script.Serialization;
+using System.Net;
 
 namespace Tinifier.Core.Services
 {
@@ -47,17 +48,29 @@ namespace Tinifier.Core.Services
             return responseResult;
         }
 
+        public byte[] GetTinyImage(string url)
+        {
+            byte[] tinyImageBytes;
+
+            using (var webClient = new WebClient())
+            {
+                tinyImageBytes = webClient.DownloadData(url);
+            }
+
+            return tinyImageBytes;
+        }
+
         private async Task<string> CreateRequest<T>(T inputData)
         {
             HttpResponseMessage response;
 
-            using (HttpClient client = new HttpClient())
+            using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _authKey);
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                 client.BaseAddress = new Uri(_tinifyAddress);
 
-                response = client.PostAsync("/shrink", inputData as HttpContent).Result;
+                response = await client.PostAsync("/shrink", inputData as HttpContent);
             }
 
             var responseResult = await response.Content.ReadAsStringAsync();

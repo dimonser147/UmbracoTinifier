@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Web;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
@@ -68,12 +69,13 @@ namespace Tinifier.Core.Application
 
         void TreeControllerBase_MenuRendering(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
-            if (sender.TreeAlias == "content")
+            var timageId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
+
+            if (sender.TreeAlias == "media")
             {
-                var menu = new MenuItem("Tinifier_Button", "Tinifier");
-                menu.Icon = "umb-content";
-                menu.AdditionalData.Add("actionUrl", "https://mail.google.com");
-                menu.NavigateToRoute("https://mail.google.com");  
+                var menu = new MenuItem("Tinify_Button", "Tinify");
+                menu.Icon = "wine-glass";
+                menu.AdditionalData.Add("actionUrl", "/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=" + timageId);
                 e.Menu.Items.Add(menu);
             }
         }

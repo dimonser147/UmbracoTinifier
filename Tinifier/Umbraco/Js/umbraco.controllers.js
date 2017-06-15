@@ -8172,12 +8172,6 @@ function mediaEditController($scope, $routeParams, appState, mediaResource, enti
         
     };
 
-    var timageId = $routeParams.id;
-    $scope.test = function () {
-        $http.put('/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=' + timageId).success(function (response) {
-            $scope.timage = response;
-        });
-    };
 }
 
 angular.module("umbraco")

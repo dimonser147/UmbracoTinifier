@@ -14,7 +14,6 @@ namespace Tinifier.Core
     {
         public IEnumerable<TImage> GetAllItems()
         {
-            //need to refactor. Remove umbraco dependency
             List<TImage> images = new List<TImage>();
             var imagesMedia = uQuery.GetMediaByType("Image");
 
@@ -48,20 +47,17 @@ namespace Tinifier.Core
             return tImage;
         }
 
-        public void UpdateItem(int Id, byte[] bytesArray)
+        public void UpdateItem(TImage image, byte[] bytesArray)
         {
-            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
-            var image = umbracoHelper.Media(Id);
-
             var mediaService = ApplicationContext.Current.Services.MediaService;
-            IMedia mediaItem = mediaService.GetById(Id);
+            IMedia mediaItem = mediaService.GetById(image.Id);
 
             using (Stream stream = new MemoryStream(bytesArray))
             {
                 mediaService.SetMediaFileContent(image.Url, stream);
             }
            
-            mediaItem.UpdateDate = DateTime.UtcNow;
+            mediaItem.UpdateDate = DateTime.Now;
             mediaService.Save(mediaItem);
         }
     }

@@ -9,5 +9,8 @@ namespace Tinifier.Core.Interfaces
 
         //CreateRequest to TinyPng Service with input imageUrl
         Task<string> CreateRequestJsonObject(string imageUrl);
+
+        //Download image from url
+        byte[] GetTinyImage(string url);
     }
 }

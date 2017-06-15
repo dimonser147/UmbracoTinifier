@@ -61,7 +61,7 @@ namespace Tinifier.Core.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, tsetting);
         }
 
-        [HttpPut]
+        [HttpGet]
         public async Task<HttpResponseMessage> TinyTImage(int timageId)
         {
             TinyResponse tinyResponse;
@@ -78,10 +78,8 @@ namespace Tinifier.Core.Controllers
             {
                 var response = await _requestService.CreateRequestByteArray(imageBytes);
                 tinyResponse = _serializer.Deserialize<TinyResponse>(response);
-
-                var webClient = new WebClient();
-                var tinyImageBytes = webClient.DownloadData(tinyResponse.Output.Url);
-                _repo.UpdateItem(timageId, tinyImageBytes);
+                var tinyImageBytes = _requestService.GetTinyImage(tinyResponse.Output.Url);
+                _repo.UpdateItem(image, tinyImageBytes);
             }
             catch(Exception ex)
             {
