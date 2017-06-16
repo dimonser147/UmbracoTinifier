@@ -5,7 +5,10 @@
 
     // Get the animal from the API
     $scope.timage = null;
-    $http.get('/umbraco/backoffice/api/Tinifier/GetTImage?timageId=' + timageId).success(function (response) {
-        $scope.timage = response;
-    });
+
+    $scope.getImage = function () {
+        $http.get('/umbraco/backoffice/api/Tinifier/GetTImage?timageId=' + timageId).success(function (response) {
+            $scope.timage = response;
+        });
+    };    
 });

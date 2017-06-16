@@ -75,6 +75,14 @@ namespace Tinifier.Core.Services
             _imageRepository.UpdateItem(mediaService, mediaItem);
         }
 
+        public void CheckExtension(string source)
+        {
+            if(!(source.Contains(".png") || source.Contains(".jpg")))
+            {
+                throw new Infrastructure.Exceptions.NotSupportedException("This extension not supported. Only png and jpg");
+            }
+        }
+
         private string GetUrl(string path)
         {
             var serializer = new JavaScriptSerializer();

@@ -28,6 +28,11 @@ namespace Tinifier.Core.Filters
                 context.Response = context.Request.CreateErrorResponse(HttpStatusCode.BadGateway, ex.Message);
             }
 
+            if(context.Exception is Infrastructure.Exceptions.NotSupportedException)
+            {
+                context.Response = context.Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
             LogHelper.Error(GetType(), ex.StackTrace, ex);
             base.OnException(context);
         }

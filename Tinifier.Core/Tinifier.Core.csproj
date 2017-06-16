@@ -271,8 +271,10 @@
     <Compile Include="Application\UmbracoStartup.cs" />
     <Compile Include="Filters\ExceptionFilter.cs" />
     <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
+    <Compile Include="Infrastructure\Exceptions\NotSupportedException.cs" />
     <Compile Include="Interfaces\IHistoryService.cs" />
     <Compile Include="Interfaces\IImageService.cs" />
+    <Compile Include="Interfaces\ISettingsService.cs" />
     <Compile Include="Interfaces\ITinyImageService.cs" />
     <Compile Include="Interfaces\ITinyPNGConnector.cs" />
     <Compile Include="Models\API\Source.cs" />
@@ -291,8 +293,10 @@
     <Compile Include="Models\Db\TImage.cs" />
     <Compile Include="Infrastructure\PackageConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\TSettingsRepository.cs" />
     <Compile Include="Services\HistoryService.cs" />
     <Compile Include="Services\ImageService.cs" />
+    <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\TinyPNGConnectorService.cs" />
     <Compile Include="Services\TinyImageService.cs" />
   </ItemGroup>

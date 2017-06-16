@@ -13,5 +13,8 @@ namespace Tinifier.Core.Interfaces
 
         // Update Image by tiny image
         void UpdateImage(TImage image, byte[] bytesArray);
+
+        // Check Image Extension
+        void CheckExtension(string source);
     }
 }

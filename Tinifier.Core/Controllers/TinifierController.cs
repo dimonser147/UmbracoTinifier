@@ -18,12 +18,14 @@ namespace Tinifier.Core.Controllers
         private IImageService _imageService;
         private ITinyPNGConnector _tinyPngConnectorService;
         private IHistoryService _historyService;
+        private ISettingsService _settingsService;
 
         public TinifierController()
         {
             _imageService = new ImageService();
             _historyService = new HistoryService();
             _tinyPngConnectorService = new TinyPNGConnectorService();
+            _settingsService = new SettingsService();
         }
 
         [HttpGet]
@@ -37,19 +39,27 @@ namespace Tinifier.Core.Controllers
         [HttpGet]
         public HttpResponseMessage GetTSetting()
         {
-            TSetting tsetting = new TSetting
-            {
-                ApiKey = "OrPba3PL6Q5tIAjoTxQZx1jnyf-qAXMw",
-                EnableOptimizationOnUpload = true
-            };
-
+            var tsetting = _settingsService.GetSettings(); 
             return Request.CreateResponse(HttpStatusCode.OK, tsetting);
+        }
+
+        [HttpPost]
+        public HttpResponseMessage CreateSettings(TSetting setting)
+        {
+            if(ModelState.IsValid)
+            {
+                _settingsService.CreateSettings(setting);
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
         }
 
         [HttpGet]
         public async Task<HttpResponseMessage> TinyTImage(int timageId)
         {
             var image = _imageService.GetImageById(timageId);
+            _imageService.CheckExtension(image.Name);
             var imageHistory = _historyService.GetHistoryForImage(image.Id);
 
             if(imageHistory != null)
