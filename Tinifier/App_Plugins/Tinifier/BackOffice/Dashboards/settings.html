@@ -6,8 +6,7 @@
                     <div class="control-group umb-control-group">
                         <div class="umb-el-wrap">
                             <label class="control-label">Api Key</label>
-                            <!--<div class="umb-property-editor">{{tsetting.ApiKey}}</div>-->
-                            <input class="umb-property-editor" type="text">
+                            <input class="umb-property-editor" type="text" ng-model="tsetting.ApiKey">
                         </div>
                     </div>
                 </div>
@@ -15,7 +14,6 @@
                     <div class="control-group umb-control-group">
                         <div class="umb-el-wrap">
                             <label class="control-label">Optimize on upload</label>
-                            <!--<div class="umb-property-editor">{{tsetting.EnableOptimizationOnUpload}}</div>-->
                             <select name="EnableOptimizationOnUpload">
                                 <option value="true">True</option>
                                 <option value="false">False</option>

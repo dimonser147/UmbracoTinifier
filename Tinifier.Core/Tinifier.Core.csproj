@@ -269,22 +269,32 @@
   <ItemGroup>
     <Compile Include="Application\DbStartup.cs" />
     <Compile Include="Application\UmbracoStartup.cs" />
-    <Compile Include="Interfaces\ITCreateRequest.cs" />
+    <Compile Include="Filters\ExceptionFilter.cs" />
+    <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
+    <Compile Include="Interfaces\IHistoryService.cs" />
+    <Compile Include="Interfaces\IImageService.cs" />
+    <Compile Include="Interfaces\ITinyImageService.cs" />
+    <Compile Include="Interfaces\ITinyPNGConnector.cs" />
     <Compile Include="Models\API\Source.cs" />
     <Compile Include="Models\API\TinyInput.cs" />
     <Compile Include="Models\API\TinyJsonObject.cs" />
     <Compile Include="Models\API\TinyOutput.cs" />
     <Compile Include="Models\API\TinyResponse.cs" />
-    <Compile Include="Models\Db\THistoryItem.cs" />
+    <Compile Include="Models\Db\TinyPNGResponseHistory.cs" />
     <Compile Include="Models\Db\TSetting.cs" />
+    <Compile Include="Models\Service\UrlModel.cs" />
     <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\THistoryRepository.cs" />
     <Compile Include="Repository\TImageRepository.cs" />
     <Compile Include="Controllers\TinifierController.cs" />
     <Compile Include="Controllers\TinifierTreeController.cs" />
     <Compile Include="Models\Db\TImage.cs" />
-    <Compile Include="PackageConstants.cs" />
+    <Compile Include="Infrastructure\PackageConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\TCreateRequestService.cs" />
+    <Compile Include="Services\HistoryService.cs" />
+    <Compile Include="Services\ImageService.cs" />
+    <Compile Include="Services\TinyPNGConnectorService.cs" />
+    <Compile Include="Services\TinyImageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Actions\" />

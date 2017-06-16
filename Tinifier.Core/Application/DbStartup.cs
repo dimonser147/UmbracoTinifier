@@ -20,8 +20,10 @@ namespace Tinifier.Core.Application
 
             if (!dbHelper.TableExist(PackageConstants.DbHistoryTable))
             {
-                dbHelper.CreateTable<THistoryItem>(false);
+                dbHelper.CreateTable<TinyPNGResponseHistory>(false);
             }
+
+            base.ApplicationStarted(umbracoApplication, applicationContext);
         }
     }
 }

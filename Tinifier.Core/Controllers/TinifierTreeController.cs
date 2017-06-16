@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Formatting;
 using Tinifier.Core.Models;
+using Tinifier.Core.Services;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.Trees;
@@ -10,11 +11,11 @@ namespace Tinifier.Core.Controllers
     [PluginController(PackageConstants.SectionName)]
     public class TinifierTreeController : TreeController
     {
-        private TImageRepository _repo;
+        private ImageService _imageService;
 
         public TinifierTreeController()
         {
-            _repo = new TImageRepository();
+            _imageService = new ImageService();
         }
 
         protected override MenuItemCollection GetMenuForNode(string id, FormDataCollection queryStrings)
@@ -28,7 +29,7 @@ namespace Tinifier.Core.Controllers
 
             if (id == "-1")
             {
-                foreach (TImage timage in _repo.GetAllItems())
+                foreach (TImage timage in _imageService.GetAllImages())
                 {
                     nodes.Add(CreateTreeNode(timage.Id + "", id, queryStrings, timage.Name, "icon-umb-media"));
                 }

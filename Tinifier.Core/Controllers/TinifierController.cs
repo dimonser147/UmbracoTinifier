@@ -1,51 +1,36 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Script.Serialization;
+using Tinifier.Core.Filters;
 using Tinifier.Core.Interfaces;
 using Tinifier.Core.Models;
-using Tinifier.Core.Models.API;
 using Tinifier.Core.Services;
 using Umbraco.Web.WebApi;
 
 namespace Tinifier.Core.Controllers
 {
+    [ExceptionFilter]
     public class TinifierController : UmbracoAuthorizedApiController
     {
-        private TImageRepository _repo;
-        private JavaScriptSerializer _serializer;
-        private ITCreateRequest _requestService;
+        private IImageService _imageService;
+        private ITinyPNGConnector _tinyPngConnectorService;
+        private IHistoryService _historyService;
 
         public TinifierController()
         {
-            _serializer = new JavaScriptSerializer();
-            _repo = new TImageRepository();
-            _requestService = new TCreateRequestService();
+            _imageService = new ImageService();
+            _historyService = new HistoryService();
+            _tinyPngConnectorService = new TinyPNGConnectorService();
         }
 
         [HttpGet]
         public HttpResponseMessage GetTImage(int timageId)
         {
-            TImage timage;
-
-            try
-            {
-                timage = _repo.GetItemById(timageId);
-            }
-            catch(Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.StackTrace);
-            }
-           
-            if (timage == null)
-            {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-                
+            var timage = _imageService.GetImageById(timageId);
+            
             return Request.CreateResponse(HttpStatusCode.OK, timage);
         }
 
@@ -64,29 +49,31 @@ namespace Tinifier.Core.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> TinyTImage(int timageId)
         {
-            TinyResponse tinyResponse;
-            var image = _repo.GetItemById(timageId);
+            var image = _imageService.GetImageById(timageId);
+            var imageHistory = _historyService.GetHistoryForImage(image.Id);
 
-            if (image == null)
+            if(imageHistory != null)
             {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
+                if(imageHistory.IsOptimized)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Picture was optimized before");
+                }                
             }
 
-            var imageBytes = File.ReadAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"));
-            
-            try
+            var imageBytes = File.ReadAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"));            
+            var tinyResponse = await _tinyPngConnectorService.TinifyByteArray(imageBytes);
+
+            if(tinyResponse.Output.Url == null)
             {
-                var response = await _requestService.CreateRequestByteArray(imageBytes);
-                tinyResponse = _serializer.Deserialize<TinyResponse>(response);
-                var tinyImageBytes = _requestService.GetTinyImage(tinyResponse.Output.Url);
-                _repo.UpdateItem(image, tinyImageBytes);
-            }
-            catch(Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.StackTrace);
+                _historyService.CreateResponseHistoryItem(timageId, tinyResponse);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, tinyResponse.Output.Error);
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, tinyResponse);
+            var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
+            _imageService.UpdateImage(image, tinyImageBytes);
+            _historyService.CreateResponseHistoryItem(timageId, tinyResponse);
+
+            return Request.CreateResponse(HttpStatusCode.OK, "Picture optimized succesfully");
         }
     }
 }

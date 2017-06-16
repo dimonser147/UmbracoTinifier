@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Tinifier.Core.Models;
 
 namespace Tinifier.Core.Repository
 {
@@ -8,7 +7,5 @@ namespace Tinifier.Core.Repository
         IEnumerable<T> GetAllItems();
 
         T GetItemById(int Id);
-
-        void UpdateItem(TImage image, byte[] bytesArray);
     }
 }
