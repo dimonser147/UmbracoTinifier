@@ -31,12 +31,12 @@ namespace Tinifier.Core.Services
                 newItem.Error = string.Empty;
             }
 
-            _historyRepository.CreateItem(newItem);
+            _historyRepository.Create(newItem);
         }
 
         public TinyPNGResponseHistory GetHistoryForImage(int timageId)
         {
-            var history = _historyRepository.GetItemById(timageId);
+            var history = _historyRepository.GetByKey(timageId);
 
             return history;
         }

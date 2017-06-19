@@ -9,6 +9,6 @@
         public const string DbSettingsTable = "TinifierUserSettings";
         public const string DbHistoryTable = "TinifierResponseHistory";
 
-        public const string TinyTImageRoute = "/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=";
+        public const string TinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/tinifyDialog.html";
     }
 }

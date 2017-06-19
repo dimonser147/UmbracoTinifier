@@ -18,19 +18,9 @@ namespace Tinifier.Core.Filters
                 context.Response = context.Request.CreateErrorResponse(HttpStatusCode.NotFound, ex.Message);
             }
 
-            if (context.Exception is HttpRequestException)
-            {
-                context.Response = context.Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-
-            if (context.Exception is WebException)
-            {
-                context.Response = context.Request.CreateErrorResponse(HttpStatusCode.BadGateway, ex.Message);
-            }
-
             if(context.Exception is Infrastructure.Exceptions.NotSupportedException)
             {
-                context.Response = context.Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex.Message);
+                context.Response = context.Request.CreateErrorResponse(HttpStatusCode.UnsupportedMediaType, ex.Message);
             }
 
             LogHelper.Error(GetType(), ex.StackTrace, ex);

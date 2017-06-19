@@ -1,5 +1,7 @@
 ﻿﻿{
 "javascript": [
-"~/App_Plugins/Tinifier/Controllers/EditTimage.controller.js"
+"~/App_Plugins/Tinifier/Controllers/EditTimage.controller.js",
+"~/App_Plugins/Tinifier/Controllers/EditTSetting.controller.js",
+"~/App_Plugins/Tinifier/Controllers/TinyTImage.controller.js",
 ]
 }

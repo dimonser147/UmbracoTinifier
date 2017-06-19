@@ -6,23 +6,27 @@ using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Interfaces;
 using Tinifier.Core.Models;
 using Tinifier.Core.Models.Service;
+using Tinifier.Core.Repository;
 using Umbraco.Core;
+using Umbraco.Core.Models;
 
 namespace Tinifier.Core.Services
 {
     public class ImageService : IImageService
     {
         private TImageRepository _imageRepository;
+        private THistoryRepository _historyRepository;
 
         public ImageService()
         {
             _imageRepository = new TImageRepository();
+            _historyRepository = new THistoryRepository();
         }
 
         public IEnumerable<TImage> GetAllImages()
         {
             var images = new List<TImage>();
-            var imagesMedia = _imageRepository.GetAllItems();
+            var imagesMedia = _imageRepository.GetAll();
 
             foreach (var item in imagesMedia)
             {
@@ -43,7 +47,7 @@ namespace Tinifier.Core.Services
 
         public TImage GetImageById(int Id)
         {
-            var image = _imageRepository.GetItemById(Id);
+            var image = _imageRepository.GetByKey(Id);
             var path = image.GetValue("umbracoFile").ToString();
 
             if (image == null)
@@ -64,7 +68,7 @@ namespace Tinifier.Core.Services
         public void UpdateImage(TImage image, byte[] bytesArray)
         {
             var mediaService = ApplicationContext.Current.Services.MediaService;
-            var mediaItem = mediaService.GetById(image.Id);
+            var mediaItem = mediaService.GetById(image.Id) as Media;
 
             using (var stream = new MemoryStream(bytesArray))
             {
@@ -73,6 +77,28 @@ namespace Tinifier.Core.Services
 
             mediaItem.UpdateDate = DateTime.Now;
             _imageRepository.UpdateItem(mediaService, mediaItem);
+        }
+
+        public IEnumerable<TImage> GetAllOptimizedImages()
+        {
+            var images = new List<TImage>();
+            var imagesMedia = _imageRepository.GetOptimizedItems();
+
+            foreach (var item in imagesMedia)
+            {
+                var path = item.GetValue("umbracoFile").ToString();
+
+                var image = new TImage
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Url = GetUrl(path)
+                };
+
+                images.Add(image);
+            }
+
+            return images;
         }
 
         public void CheckExtension(string source)

@@ -97,12 +97,8 @@ namespace Tinifier.Core.Application
             if (string.Equals(sender.TreeAlias, "media", StringComparison.OrdinalIgnoreCase))
             {
                 var menu = new MenuItem("Tinify_Button", "Tinify");
+                menu.LaunchDialogView(PackageConstants.TinyTImageRoute, "Tinifier");
                 menu.Icon = "umb-developer";
-                
-               // menu.NavigateToRoute("/media/media/edit/" + timageId);
-                menu.AdditionalData.Add("actionUrl", PackageConstants.TinyTImageRoute + timageId);
-
-               // menu.AdditionalData.Add("actionView", "Views/media/edit.html");
                 e.Menu.Items.Add(menu);
             }
         }

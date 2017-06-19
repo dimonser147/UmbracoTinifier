@@ -29,7 +29,7 @@ namespace Tinifier.Core.Controllers
 
             if (id == "-1")
             {
-                foreach (TImage timage in _imageService.GetAllImages())
+                foreach (TImage timage in _imageService.GetAllOptimizedImages())
                 {
                     nodes.Add(CreateTreeNode(timage.Id + "", id, queryStrings, timage.Name, "icon-umb-media"));
                 }

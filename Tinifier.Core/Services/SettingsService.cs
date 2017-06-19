@@ -15,7 +15,7 @@ namespace Tinifier.Core.Services
 
         public void CreateSettings(TSetting setting)
         {
-            _settingsRepository.CreateSettings(setting);
+            _settingsRepository.Create(setting);
         }
 
         public TSetting GetSettings()

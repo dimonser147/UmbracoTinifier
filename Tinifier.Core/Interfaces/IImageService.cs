@@ -16,5 +16,8 @@ namespace Tinifier.Core.Interfaces
 
         // Check Image Extension
         void CheckExtension(string source);
+
+        // Get all optimized images
+        IEnumerable<TImage> GetAllOptimizedImages();
     }
 }
