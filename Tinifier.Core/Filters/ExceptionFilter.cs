@@ -15,16 +15,15 @@ namespace Tinifier.Core.Filters
 
             if (context.Exception is EntityNotFoundException)
             {
-                context.Response = context.Request.CreateErrorResponse(HttpStatusCode.NotFound, ex.Message);
+                context.Response = context.Request.CreateResponse(HttpStatusCode.NotFound, ex.Message);
             }
 
             if(context.Exception is Infrastructure.Exceptions.NotSupportedException)
             {
-                context.Response = context.Request.CreateErrorResponse(HttpStatusCode.UnsupportedMediaType, ex.Message);
+                context.Response = context.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType, ex.Message);
             }
 
             LogHelper.Error(GetType(), ex.StackTrace, ex);
-            base.OnException(context);
         }
     }
 }

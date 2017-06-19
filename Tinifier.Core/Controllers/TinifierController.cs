@@ -40,6 +40,12 @@ namespace Tinifier.Core.Controllers
         public HttpResponseMessage GetTSetting()
         {
             var tsetting = _settingsService.GetSettings(); 
+
+            if(tsetting == null)
+            {
+                tsetting = new TSetting();
+            }
+
             return Request.CreateResponse(HttpStatusCode.OK, tsetting);
         }
 
@@ -60,6 +66,7 @@ namespace Tinifier.Core.Controllers
         {
             var image = _imageService.GetImageById(timageId);
             _imageService.CheckExtension(image.Name);
+            _settingsService.CheckIfSettingExists();
             var imageHistory = _historyService.GetHistoryForImage(image.Id);
 
             if(imageHistory != null)

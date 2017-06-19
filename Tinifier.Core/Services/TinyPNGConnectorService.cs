@@ -11,15 +11,13 @@ namespace Tinifier.Core.Services
 {
     public class TinyPNGConnectorService : ITinyPNGConnector
     {
-        private string _apiKey;
-        private string _authKey;
         private string _tinifyAddress;
         private JavaScriptSerializer _serializer;
+        private ISettingsService _settingsService;
 
         public TinyPNGConnectorService()
         {
-            _apiKey = "FA8HJIylmFJp7SkONjsHrchDlq7NmTKx";
-            _authKey = Convert.ToBase64String(Encoding.UTF8.GetBytes("api:" + _apiKey));
+            _settingsService = new SettingsService();
             _tinifyAddress = "https://api.tinify.com";
             _serializer = new JavaScriptSerializer();
         }
@@ -88,10 +86,12 @@ namespace Tinifier.Core.Services
         private async Task<string> CreateRequest<T>(T inputData)
         {
             HttpResponseMessage response;
+            var apiKey = _settingsService.GetSettings().ApiKey;
+            var authKey = Convert.ToBase64String(Encoding.UTF8.GetBytes("api:" + apiKey));
 
             using (var client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _authKey);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authKey);
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                 client.BaseAddress = new Uri(_tinifyAddress);
 

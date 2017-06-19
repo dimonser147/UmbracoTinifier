@@ -13,20 +13,20 @@ namespace Tinifier.Core.Application
     {
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
-            // create a new section
+            // Create a new section
             CreateTinifySection(context);
 
-            // add properties
+            // Add properties
             IDataTypeService dataTypeService = ApplicationContext.Current.Services.DataTypeService;
             IDataTypeDefinition[] dataTypeDefinitions = dataTypeService.GetAllDataTypeDefinitions().ToArray();
 
-            // extend an existing media type
+            // Extend an existing media type
             var cts = ApplicationContext.Current.Services.ContentTypeService;
             IMediaType imageType = cts.GetMediaType("Image");
 
             if (imageType != null)
             {
-                // add group
+                // Add group
                 const string group = "Tinifier";
 
                 if (!imageType.PropertyGroups.Contains(group))
@@ -36,18 +36,20 @@ namespace Tinifier.Core.Application
 
                 // Is optimized checkbox
                 CreateIsOptimizedCheckbox(dataTypeDefinitions, imageType, group);
+                CreateTinifierOriginSizeLabel(dataTypeDefinitions, imageType, group);
+                CreateTinifierOptimizedSize(dataTypeDefinitions, imageType, group);
+                CreateTinifierOccuredAt(dataTypeDefinitions, imageType, group);
                 CreateTinifierMessageBox(dataTypeDefinitions, imageType, group);
-
                 cts.Save(imageType);
             }
 
-            // extend dropdownMenu with Tinify button
+            // Extend dropdownMenu with Tinify button
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
         }
 
         private void CreateTinifySection(ApplicationContext context)
         {
-            // create a new section
+            // Create a new section
             Section section = context.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
             if (section == null)
             {
@@ -60,9 +62,9 @@ namespace Tinifier.Core.Application
 
         private void CreateIsOptimizedCheckbox(IDataTypeDefinition[] dataTypeDefinitions, IMediaType imageType, string group)
         {
-            // is optimized
+            // Is optimized
             IDataTypeDefinition booleanProperty = dataTypeDefinitions.FirstOrDefault(p => string.Equals(p.Name, "true/false", StringComparison.OrdinalIgnoreCase));
-            string isOptimizedKey = "Tinifier_IsOptimized";
+            string isOptimizedKey = "IsOptimized";
             if (!imageType.PropertyTypeExists(isOptimizedKey.ToLower()) && booleanProperty != null)
             {
                 imageType.AddPropertyType(new PropertyType(booleanProperty)
@@ -73,11 +75,26 @@ namespace Tinifier.Core.Application
             }
         }
 
-        private void CreateTinifierMessageBox(IDataTypeDefinition[] dataTypeDefinitions, IMediaType imageType, string group)
+        private void CreateTinifierOriginSizeLabel(IDataTypeDefinition[] dataTypeDefinitions, IMediaType imageType, string group)
         {
-            // tiny png respoon
-            IDataTypeDefinition textProperty = dataTypeDefinitions.FirstOrDefault(p => string.Equals(p.Name, "textstring", StringComparison.OrdinalIgnoreCase));
-            string messageKey = "Tinifier_Message";
+            // Origin Size
+            IDataTypeDefinition labelProperty = dataTypeDefinitions.FirstOrDefault(p => string.Equals(p.Name, "label", StringComparison.OrdinalIgnoreCase));
+            string messageKey = "Origin Size";
+            if (!imageType.PropertyTypeExists(messageKey.ToLower()) && labelProperty != null)
+            {
+                imageType.AddPropertyType(new PropertyType(labelProperty)
+                {
+                    Name = messageKey,
+                    Alias = messageKey.ToLower(),
+                }, group);
+            }
+        }
+
+        private void CreateTinifierOptimizedSize(IDataTypeDefinition[] dataTypeDefinitions, IMediaType imageType, string group)
+        {
+            // Optimized Size
+            IDataTypeDefinition textProperty = dataTypeDefinitions.FirstOrDefault(p => string.Equals(p.Name, "label", StringComparison.OrdinalIgnoreCase));
+            string messageKey = "Optimized Size";
             if (!imageType.PropertyTypeExists(messageKey.ToLower()) && textProperty != null)
             {
                 imageType.AddPropertyType(new PropertyType(textProperty)
@@ -89,16 +106,47 @@ namespace Tinifier.Core.Application
             }
         }
 
+        private void CreateTinifierOccuredAt(IDataTypeDefinition[] dataTypeDefinitions, IMediaType imageType, string group)
+        {
+            // When optimized
+            IDataTypeDefinition textProperty = dataTypeDefinitions.FirstOrDefault(p => string.Equals(p.Name, "label", StringComparison.OrdinalIgnoreCase));
+            string messageKey = "Occured At";
+            if (!imageType.PropertyTypeExists(messageKey.ToLower()) && textProperty != null)
+            {
+                imageType.AddPropertyType(new PropertyType(textProperty)
+                {
+                    Name = messageKey,
+                    Alias = messageKey.ToLower(),
+
+                }, group);
+            }
+        }
+
+        private void CreateTinifierMessageBox(IDataTypeDefinition[] dataTypeDefinitions, IMediaType imageType, string group)
+        {
+            // Tiny png respoon
+            IDataTypeDefinition textProperty = dataTypeDefinitions.FirstOrDefault(p => string.Equals(p.Name, "label", StringComparison.OrdinalIgnoreCase));
+            string messageKey = "Error Message";
+            if (!imageType.PropertyTypeExists(messageKey.ToLower()) && textProperty != null)
+            {
+                imageType.AddPropertyType(new PropertyType(textProperty)
+                {
+                    Name = messageKey,
+                    Alias = messageKey.ToLower(),
+                }, group);
+            }
+        }
+
         private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
-            // get imageId and create menuItem
+            // Get imageId and create menuItem
             var timageId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
 
             if (string.Equals(sender.TreeAlias, "media", StringComparison.OrdinalIgnoreCase))
             {
                 var menu = new MenuItem("Tinify_Button", "Tinify");
                 menu.LaunchDialogView(PackageConstants.TinyTImageRoute, "Tinifier");
-                menu.Icon = "umb-developer";
+                menu.Icon = PackageConstants.MenuIcon;
                 e.Menu.Items.Add(menu);
             }
         }

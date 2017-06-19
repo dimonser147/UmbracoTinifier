@@ -1,12 +1,13 @@
-﻿<div ng-controller="Tinifier.EditTSetting.Controller">   
+﻿<div ng-controller="Tinifier.EditTSetting.Controller">
     <div class="umb-editor-container umb-panel-body umb-scrollable row-fluid">
-        <div class="umb-pane">
-            <form ng-submit="submitForm()">
+        <form ng-submit="submitForm()">
+            <div class="form-horizontal">
                 <div class="umb-property">
                     <div class="control-group umb-control-group">
                         <div class="umb-el-wrap">
                             <label class="control-label">Api Key</label>
-                            <input class="umb-property-editor" type="text" ng-model="tsetting.ApiKey">
+                            <input class="umb-property-editor" type="text" ng-model="timage.ApiKey" required>
+                            <span ng-show="!timage.ApiKey.length">Value can`t be empty!</span>
                         </div>
                     </div>
                 </div>
@@ -14,15 +15,12 @@
                     <div class="control-group umb-control-group">
                         <div class="umb-el-wrap">
                             <label class="control-label">Optimize on upload</label>
-                            <select name="EnableOptimizationOnUpload" ng-model="tsetting.EnableOptimizationOnUpload">
-                                <option value="true" selected>True</option>
-                                <option value="false">False</option>
-                            </select>
+                            <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload"></select>
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-primary">Save</button>
-            </form>
-        </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
     </div>
 </div>

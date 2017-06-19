@@ -9,5 +9,8 @@ namespace Tinifier.Core.Interfaces
 
         // Get settings for displaying
         TSetting GetSettings();
+
+        // Check if user has settings and ApiKey
+        void CheckIfSettingExists();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Tinifier.Core.Interfaces;
+﻿using Tinifier.Core.Infrastructure.Exceptions;
+using Tinifier.Core.Interfaces;
 using Tinifier.Core.Models;
 using Tinifier.Core.Repository;
 
@@ -23,6 +24,16 @@ namespace Tinifier.Core.Services
             var setting = _settingsRepository.GetSettings();
 
             return setting;
+        }
+
+        public void CheckIfSettingExists()
+        {
+            var setting = _settingsRepository.GetSettings();
+
+            if(setting == null)
+            {
+                throw new EntityNotFoundException($"Firstly, please, add ApiKey in settings!");
+            }
         }
     }
 }

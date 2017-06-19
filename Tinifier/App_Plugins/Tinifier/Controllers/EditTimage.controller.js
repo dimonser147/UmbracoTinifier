@@ -3,9 +3,10 @@
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
 
-    // Get the animal from the API
+    // Get the timage from the API
     $scope.timage = null;
 
+    // Get Image information
     $http.get('/umbraco/backoffice/api/Tinifier/GetTImage?timageId=' + timageId).success(function (response) {
             $scope.timage = response;
         });    
