@@ -18,7 +18,7 @@ namespace Tinifier.Core.Services
         public TinyPNGConnectorService()
         {
             _settingsService = new SettingsService();
-            _tinifyAddress = "https://api.tinify.com";
+            _tinifyAddress = PackageConstants.TinyPngUrl;
             _serializer = new JavaScriptSerializer();
         }
 

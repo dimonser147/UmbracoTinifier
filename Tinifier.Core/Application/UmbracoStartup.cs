@@ -45,7 +45,7 @@ namespace Tinifier.Core.Application
 
                 var menuItemSettingsButton = new MenuItem("Tinifier_Settings", "Settings");
                 menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, "Tinifier Settings");
-                menuItemSettingsButton.Icon = "umb-content";
+                menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
             }
         }

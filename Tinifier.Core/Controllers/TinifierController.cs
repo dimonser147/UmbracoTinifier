@@ -63,13 +63,6 @@ namespace Tinifier.Core.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetProperties(int timageId)
-        {
-            var history = _historyService.GetHistoryForImage(timageId);
-            return Request.CreateResponse(HttpStatusCode.BadRequest, history);
-        }
-
-        [HttpGet]
         public async Task<HttpResponseMessage> TinyTImage(int timageId)
         {
             var image = _imageService.GetImageById(timageId);

@@ -6,6 +6,8 @@
         public const string SectionName = "Tinifier";
         public const string SectionIcon = "icon-wand";
         public const string MenuIcon = "umb-developer";
+        public const string MenuSettingsIcon = "umb-content";
+        public const string TinyPngUrl = "https://api.tinify.com";
 
         public const string DbSettingsTable = "TinifierUserSettings";
         public const string DbHistoryTable = "TinifierResponseHistory";

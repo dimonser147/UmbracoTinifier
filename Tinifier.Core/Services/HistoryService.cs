@@ -17,13 +17,15 @@ namespace Tinifier.Core.Services
 
         public void CreateResponseHistoryItem(int timageId, TinyResponse responseItem)
         {
-            TinyPNGResponseHistory newItem = new TinyPNGResponseHistory();
-            newItem.OccuredAt = DateTime.UtcNow;
-            newItem.IsOptimized = responseItem.Output.IsOptimized;
-            newItem.ImageId = timageId;
-            newItem.Error = responseItem.Output.Error;
-            newItem.Ratio = responseItem.Output.Ratio;
-            newItem.OptimizedSize = responseItem.Output.Size;
+            TinyPNGResponseHistory newItem = new TinyPNGResponseHistory
+            {
+                OccuredAt = DateTime.UtcNow,
+                IsOptimized = responseItem.Output.IsOptimized,
+                ImageId = timageId,
+                Error = responseItem.Output.Error,
+                Ratio = responseItem.Output.Ratio,
+                OptimizedSize = responseItem.Output.Size
+            };
 
             if (responseItem.Input != null)
             {
