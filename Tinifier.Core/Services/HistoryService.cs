@@ -18,7 +18,7 @@ namespace Tinifier.Core.Services
         public void CreateResponseHistoryItem(int timageId, TinyResponse responseItem)
         {
             TinyPNGResponseHistory newItem = new TinyPNGResponseHistory();
-            newItem.OccuredAt = DateTime.Now;
+            newItem.OccuredAt = DateTime.UtcNow;
             newItem.IsOptimized = responseItem.Output.IsOptimized;
             newItem.ImageId = timageId;
             newItem.Error = responseItem.Output.Error;

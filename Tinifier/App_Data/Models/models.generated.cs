@@ -19,7 +19,7 @@ using Umbraco.ModelsBuilder;
 using Umbraco.ModelsBuilder.Umbraco;
 
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "a5f44c834832562c")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "baa428a2d666ba3d")]
 [assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
 
 namespace Umbraco.Web.PublishedContentModels
@@ -311,69 +311,6 @@ namespace Umbraco.Web.PublishedContentModels
 		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<Image, TValue>> selector)
 		{
 			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
-		}
-
-		///<summary>
-		/// Error Message
-		///</summary>
-		[ImplementPropertyType("errorMessage")]
-		public string ErrorMessage
-		{
-			get { return this.GetPropertyValue<string>("errorMessage"); }
-		}
-
-		///<summary>
-		/// IsOptimized
-		///</summary>
-		[ImplementPropertyType("isoptimized")]
-		public bool Isoptimized
-		{
-			get { return this.GetPropertyValue<bool>("isoptimized"); }
-		}
-
-		///<summary>
-		/// Occured At
-		///</summary>
-		[ImplementPropertyType("occuredAt")]
-		public string OccuredAt
-		{
-			get { return this.GetPropertyValue<string>("occuredAt"); }
-		}
-
-		///<summary>
-		/// Optimized Size
-		///</summary>
-		[ImplementPropertyType("optimizedSize")]
-		public string OptimizedSize
-		{
-			get { return this.GetPropertyValue<string>("optimizedSize"); }
-		}
-
-		///<summary>
-		/// Origin Size
-		///</summary>
-		[ImplementPropertyType("originSize")]
-		public string OriginSize
-		{
-			get { return this.GetPropertyValue<string>("originSize"); }
-		}
-
-		///<summary>
-		/// Tinifier_IsOptimized
-		///</summary>
-		[ImplementPropertyType("tinifier_isoptimized")]
-		public bool Tinifier_isoptimized
-		{
-			get { return this.GetPropertyValue<bool>("tinifier_isoptimized"); }
-		}
-
-		///<summary>
-		/// Tinifier_Message
-		///</summary>
-		[ImplementPropertyType("tinifier_message")]
-		public string Tinifier_message
-		{
-			get { return this.GetPropertyValue<string>("tinifier_message"); }
 		}
 
 		///<summary>

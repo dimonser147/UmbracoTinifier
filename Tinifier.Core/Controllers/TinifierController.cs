@@ -32,8 +32,9 @@ namespace Tinifier.Core.Controllers
         public HttpResponseMessage GetTImage(int timageId)
         {
             var timage = _imageService.GetImageById(timageId);
-            
-            return Request.CreateResponse(HttpStatusCode.OK, timage);
+            var history = _historyService.GetHistoryForImage(timageId);
+
+            return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
         }
 
         [HttpGet]
@@ -59,6 +60,13 @@ namespace Tinifier.Core.Controllers
             }
 
             return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetProperties(int timageId)
+        {
+            var history = _historyService.GetHistoryForImage(timageId);
+            return Request.CreateResponse(HttpStatusCode.BadRequest, history);
         }
 
         [HttpGet]

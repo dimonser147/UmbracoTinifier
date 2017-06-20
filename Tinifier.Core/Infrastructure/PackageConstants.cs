@@ -11,5 +11,6 @@
         public const string DbHistoryTable = "TinifierResponseHistory";
 
         public const string TinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/tinifyDialog.html";
+        public const string TinySettingsRoute = "/App_Plugins/Tinifier/BackOffice/timages/edit.html";
     }
 }

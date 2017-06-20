@@ -5,7 +5,7 @@
 
     // Get the animal from the API
     $scope.timage = null;
-
+    
     // Tinify Image and show notification
     $scope.tinify = function () {
         $http.get('/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=' + timageId).success(function (response) {

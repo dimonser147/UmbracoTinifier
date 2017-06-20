@@ -5,9 +5,11 @@
 
     // Get the timage from the API
     $scope.timage = null;
+    $scope.thistory = null;
 
     // Get Image information
-    $http.get('/umbraco/backoffice/api/Tinifier/GetTImage?timageId=' + timageId).success(function (response) {
-            $scope.timage = response;
+    $http.get('/umbraco/backoffice/api/Tinifier/GetTImage?timageId=' + timageId).then(function (response) {
+        $scope.timage = response.data.timage;
+        $scope.thistory = response.data.history;
         });    
 });

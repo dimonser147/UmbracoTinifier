@@ -333,6 +333,7 @@
     <Content Include="config\Lang\ru-RU.user.xml" />
     <Content Include="config\Lang\sv-SE.user.xml" />
     <Content Include="config\Lang\zh-CN.user.xml" />
+    <Content Include="css\style.css" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Media\1057\grass-png-4770.png" />
