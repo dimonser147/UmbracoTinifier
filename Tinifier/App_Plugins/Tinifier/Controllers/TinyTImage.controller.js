@@ -8,6 +8,7 @@
     
     // Tinify Image and show notification
     $scope.tinify = function () {
+        notificationsService.info("Loading.....");
         $http.get('/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=' + timageId).success(function (response) {
             notificationsService.success("Success", response);
             $timeout(function () { $window.location.reload(); }, 3000);
