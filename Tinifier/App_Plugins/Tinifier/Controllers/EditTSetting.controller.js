@@ -1,4 +1,4 @@
-﻿angular.module('umbraco').controller('Tinifier.EditTSetting.Controller', function ($scope, $http, $routeParams, $window) {
+﻿angular.module('umbraco').controller('Tinifier.EditTSetting.Controller', function ($scope, $http, $routeParams, notificationsService) {
 
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
@@ -21,8 +21,9 @@
     $scope.submitForm = function () {
         timage = $scope.timage;
         $http.post('/umbraco/backoffice/api/Tinifier/CreateSettings', JSON.stringify(timage)).success(function (response) {
-            $window.location.reload();
-            $scope.timage = response;
+            notificationsService.success("Success", response);
+        }).error(function (response) {
+            notificationsService.error("Error", response);
         });
     };
 });

@@ -1,5 +1,8 @@
-﻿using Tinifier.Core.Infrastructure;
+﻿using System.Linq;
+using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Repository.Realization;
+using Tinifier.Core.Services.Realization;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -13,6 +16,8 @@ namespace Tinifier.Core.Application
             var logger = LoggerResolver.Current.Logger;
             var dbContext = applicationContext.DatabaseContext;
             var dbHelper = new DatabaseSchemaHelper(dbContext.Database, logger, dbContext.SqlSyntax);
+            var imagesService = new ImageService();
+            var statisticRepository = new TStatisticRepository();
 
             if (!dbHelper.TableExist(PackageConstants.DbSettingsTable))
             {
@@ -27,6 +32,17 @@ namespace Tinifier.Core.Application
             if (!dbHelper.TableExist(PackageConstants.DbStatisticTable))
             {
                 dbHelper.CreateTable<TImageStatistic>(false);
+            }
+
+            if(dbHelper.TableExist(PackageConstants.DbStatisticTable))
+            {
+                if(statisticRepository.Count() == 0)
+                {
+                    var statistic = new TImageStatistic();
+                    statistic.TotalNumberOfImages = imagesService.GetAllImages().ToList().Count;
+                    statistic.NumberOfOptimizedImages = imagesService.GetAllOptimizedImages().ToList().Count;
+                    statisticRepository.Create(statistic);
+                }                
             }
 
             base.ApplicationStarted(umbracoApplication, applicationContext);

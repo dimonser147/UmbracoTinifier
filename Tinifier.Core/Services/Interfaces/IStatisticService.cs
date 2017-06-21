@@ -8,9 +8,12 @@ namespace Tinifier.Core.Services.Interfaces
         void CreateStatistic(TImageStatistic statistic);
 
         // Update statistic
-        void UpdateStatistic(TImageStatistic statistic);
+        void UpdateStatistic();
 
         // Get statistic and display with chart
         TImageStatistic GetStatistic();
+
+        // Increase number of images
+        void UpdateNumberOfImages();
     }
 }

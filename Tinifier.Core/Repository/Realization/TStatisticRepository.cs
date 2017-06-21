@@ -30,7 +30,25 @@ namespace Tinifier.Core.Repository.Realization
 
         public void Update(TImageStatistic entity)
         {
-            _database.Update(entity);
+            var query = new Sql($"UPDATE TinifierImagesStatistic SET NumberOfOptimizedImages = {entity.NumberOfOptimizedImages}");
+
+            _database.Execute(query);
+        }
+
+        public int Count()
+        {
+            var query = new Sql("SELECT * FROM TinifierImagesStatistic");
+
+            var numberOfElements = _database.Fetch<TImageStatistic>(query);
+
+            return numberOfElements.Count;
+        }
+
+        public void UpdateCount(TImageStatistic entity)
+        {
+            var query = new Sql($"UPDATE TinifierImagesStatistic SET TotalNumberOfImages = {entity.TotalNumberOfImages}");
+
+            _database.Execute(query);
         }
     }
 }

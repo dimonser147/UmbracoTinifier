@@ -32,7 +32,7 @@ namespace Tinifier.Core.Services.Realization
 
             if (setting == null)
             {
-                throw new EntityNotFoundException($"Firstly, please, add ApiKey in settings!");
+                throw new EntityNotFoundException($"You don`t have ApiKey in settings! Please, go to tinifier section and add ApiKey there!");
             }
         }
     }

@@ -15,7 +15,7 @@ namespace Tinifier.Core.Filters
 
             if (context.Exception is EntityNotFoundException)
             {
-                context.Response = context.Request.CreateResponse(HttpStatusCode.NotFound, ex.Message);
+                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
             if(context.Exception is Infrastructure.Exceptions.NotSupportedException)

@@ -19,6 +19,7 @@ namespace Tinifier.Core.Controllers
         private ITinyPNGConnector _tinyPngConnectorService;
         private IHistoryService _historyService;
         private ISettingsService _settingsService;
+        private IStatisticService _statisticService;
 
         public TinifierController()
         {
@@ -26,6 +27,7 @@ namespace Tinifier.Core.Controllers
             _historyService = new HistoryService();
             _tinyPngConnectorService = new TinyPNGConnectorService();
             _settingsService = new SettingsService();
+            _statisticService = new StatisticService();
         }
 
         [HttpGet]
@@ -56,10 +58,18 @@ namespace Tinifier.Core.Controllers
             if(ModelState.IsValid)
             {
                 _settingsService.CreateSettings(setting);
-                return Request.CreateResponse(HttpStatusCode.Created);
+                return Request.CreateResponse(HttpStatusCode.Created, "ApiKey successfully added!");
             }
 
-            return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
+            return Request.CreateResponse(HttpStatusCode.BadRequest, "ApiKey not added! Please, fill ApiKey field with correct value");
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetStatistic()
+        {
+            var statistic = _statisticService.GetStatistic();
+
+            return Request.CreateResponse(HttpStatusCode.OK, statistic);
         }
 
         [HttpGet]
@@ -90,6 +100,7 @@ namespace Tinifier.Core.Controllers
             var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
             _imageService.UpdateImage(image, tinyImageBytes);
             _historyService.CreateResponseHistoryItem(timageId, tinyResponse);
+            _statisticService.UpdateStatistic();
 
             return Request.CreateResponse(HttpStatusCode.OK, "Picture optimized succesfully");
         }

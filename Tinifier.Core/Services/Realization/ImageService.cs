@@ -105,7 +105,7 @@ namespace Tinifier.Core.Services.Realization
         {
             if(!(source.Contains(".png") || source.Contains(".jpg")))
             {
-                throw new Infrastructure.Exceptions.NotSupportedException("This extension not supported. Only png and jpg");
+                throw new Infrastructure.Exceptions.NotSupportedException("This extension not supported. You can tinify only PNG and JPG files");
             }
         }
 
