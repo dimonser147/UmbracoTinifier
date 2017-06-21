@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web;
+using Tinifier.Core.Infrastructure;
 using Umbraco.Core;
-using Umbraco.Core.Models;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
 
@@ -21,7 +21,8 @@ namespace Tinifier.Core.Application
         private void CreateTinifySection(ApplicationContext context)
         {
             // Create a new section
-            Section section = context.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
+            var section = context.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
+
             if (section == null)
             {
                 context.Services.SectionService.MakeNew(PackageConstants.SectionName,

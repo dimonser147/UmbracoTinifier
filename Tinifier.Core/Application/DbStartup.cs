@@ -1,4 +1,5 @@
-﻿using Tinifier.Core.Models;
+﻿using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Models.Db;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -21,6 +22,11 @@ namespace Tinifier.Core.Application
             if (!dbHelper.TableExist(PackageConstants.DbHistoryTable))
             {
                 dbHelper.CreateTable<TinyPNGResponseHistory>(false);
+            }
+
+            if (!dbHelper.TableExist(PackageConstants.DbStatisticTable))
+            {
+                dbHelper.CreateTable<TImageStatistic>(false);
             }
 
             base.ApplicationStarted(umbracoApplication, applicationContext);

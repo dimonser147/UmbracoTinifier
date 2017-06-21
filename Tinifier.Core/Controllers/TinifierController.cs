@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Tinifier.Core.Filters;
-using Tinifier.Core.Interfaces;
-using Tinifier.Core.Models;
-using Tinifier.Core.Services;
+using Tinifier.Core.Models.Db;
+using Tinifier.Core.Services.Interfaces;
+using Tinifier.Core.Services.Realization;
 using Umbraco.Web.WebApi;
 
 namespace Tinifier.Core.Controllers

@@ -3,11 +3,12 @@ using System.Text;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Tinifier.Core.Interfaces;
 using Tinifier.Core.Models.API;
 using System.Web.Script.Serialization;
+using Tinifier.Core.Services.Interfaces;
+using Tinifier.Core.Infrastructure;
 
-namespace Tinifier.Core.Services
+namespace Tinifier.Core.Services.Realization
 {
     public class TinyPNGConnectorService : ITinyPNGConnector
     {

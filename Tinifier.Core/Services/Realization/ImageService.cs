@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Infrastructure.Exceptions;
-using Tinifier.Core.Interfaces;
-using Tinifier.Core.Models;
+using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Service;
-using Tinifier.Core.Repository;
+using Tinifier.Core.Repository.Realization;
+using Tinifier.Core.Services.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 
-namespace Tinifier.Core.Services
+namespace Tinifier.Core.Services.Realization
 {
     public class ImageService : IImageService
     {

@@ -1,4 +1,4 @@
-﻿namespace Tinifier.Core.Interfaces
+﻿namespace Tinifier.Core.Services.Interfaces
 {
     public interface ITinyImageService
     {

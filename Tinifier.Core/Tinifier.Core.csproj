@@ -273,16 +273,18 @@
     <Compile Include="Filters\ExceptionFilter.cs" />
     <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSupportedException.cs" />
-    <Compile Include="Interfaces\IHistoryService.cs" />
-    <Compile Include="Interfaces\IImageService.cs" />
-    <Compile Include="Interfaces\ISettingsService.cs" />
-    <Compile Include="Interfaces\ITinyImageService.cs" />
-    <Compile Include="Interfaces\ITinyPNGConnector.cs" />
+    <Compile Include="Services\Interfaces\IHistoryService.cs" />
+    <Compile Include="Services\Interfaces\IImageService.cs" />
+    <Compile Include="Services\Interfaces\ISettingsService.cs" />
+    <Compile Include="Services\Interfaces\IStatisticService.cs" />
+    <Compile Include="Services\Interfaces\ITinyImageService.cs" />
+    <Compile Include="Services\Interfaces\ITinyPNGConnector.cs" />
     <Compile Include="Models\API\Source.cs" />
     <Compile Include="Models\API\TinyInput.cs" />
     <Compile Include="Models\API\TinyJsonObject.cs" />
     <Compile Include="Models\API\TinyOutput.cs" />
     <Compile Include="Models\API\TinyResponse.cs" />
+    <Compile Include="Models\Db\TImageStatistic.cs" />
     <Compile Include="Models\Db\TinyPNGResponseHistory.cs" />
     <Compile Include="Models\Db\TSetting.cs" />
     <Compile Include="Models\Service\UrlModel.cs" />
@@ -292,6 +294,7 @@
     <Compile Include="Repository\Interfaces\IImageRepository.cs" />
     <Compile Include="Repository\Interfaces\IRepository.cs" />
     <Compile Include="Repository\Interfaces\ISettingsRepository.cs" />
+    <Compile Include="Repository\Interfaces\IStatisticRepository.cs" />
     <Compile Include="Repository\Realization\THistoryRepository.cs" />
     <Compile Include="Repository\Realization\TImageRepository.cs" />
     <Compile Include="Controllers\TinifierController.cs" />
@@ -300,11 +303,13 @@
     <Compile Include="Infrastructure\PackageConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Realization\TSettingsRepository.cs" />
-    <Compile Include="Services\HistoryService.cs" />
-    <Compile Include="Services\ImageService.cs" />
-    <Compile Include="Services\SettingsService.cs" />
-    <Compile Include="Services\TinyPNGConnectorService.cs" />
-    <Compile Include="Services\TinyImageService.cs" />
+    <Compile Include="Repository\Realization\TStatisticRepository.cs" />
+    <Compile Include="Services\Realization\HistoryService.cs" />
+    <Compile Include="Services\Realization\ImageService.cs" />
+    <Compile Include="Services\Realization\SettingsService.cs" />
+    <Compile Include="Services\Realization\StatisticService.cs" />
+    <Compile Include="Services\Realization\TinyPNGConnectorService.cs" />
+    <Compile Include="Services\Realization\TinyImageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Actions\" />

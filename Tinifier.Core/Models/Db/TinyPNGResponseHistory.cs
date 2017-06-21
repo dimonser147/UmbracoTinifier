@@ -1,8 +1,9 @@
 ﻿using System;
+using Tinifier.Core.Infrastructure;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
-namespace Tinifier.Core.Models
+namespace Tinifier.Core.Models.Db
 {
     [TableName(PackageConstants.DbHistoryTable)]
     [PrimaryKey("Id", autoIncrement = true)]

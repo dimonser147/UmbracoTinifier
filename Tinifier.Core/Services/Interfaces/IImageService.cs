@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Tinifier.Core.Models;
+using Tinifier.Core.Models.Db;
 
-namespace Tinifier.Core.Interfaces
+namespace Tinifier.Core.Services.Interfaces
 {
     public interface IImageService
     {

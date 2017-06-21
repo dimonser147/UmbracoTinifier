@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Formatting;
-using Tinifier.Core.Models;
-using Tinifier.Core.Services;
+using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Models.Db;
+using Tinifier.Core.Services.Realization;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.Trees;

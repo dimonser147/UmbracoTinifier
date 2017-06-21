@@ -1,9 +1,9 @@
-﻿using Tinifier.Core.Models;
+﻿using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Persistence;
 
-namespace Tinifier.Core.Repository
+namespace Tinifier.Core.Repository.Realization
 {
     public class TSettingsRepository : IEntityCreator<TSetting>, ISettingsRepository<TSetting>
     {
@@ -16,7 +16,7 @@ namespace Tinifier.Core.Repository
 
         public TSetting GetSettings()
         {
-            var query = new Sql($"SELECT * FROM TinifierUserSettings ORDER BY Id DESC");
+            var query = new Sql("SELECT * FROM TinifierUserSettings ORDER BY Id DESC");
 
             var setting = _database.FirstOrDefault<TSetting>(query);
 

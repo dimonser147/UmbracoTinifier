@@ -1,10 +1,10 @@
 ﻿using System;
-using Tinifier.Core.Interfaces;
-using Tinifier.Core.Models;
 using Tinifier.Core.Models.API;
-using Tinifier.Core.Repository;
+using Tinifier.Core.Models.Db;
+using Tinifier.Core.Repository.Realization;
+using Tinifier.Core.Services.Interfaces;
 
-namespace Tinifier.Core.Services
+namespace Tinifier.Core.Services.Realization
 {
     public class HistoryService : IHistoryService
     {

@@ -1,4 +1,4 @@
-﻿namespace Tinifier.Core.Models
+﻿namespace Tinifier.Core.Models.Db
 {
     public class TImage
     {

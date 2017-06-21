@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Tinifier.Core.Models;
+using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Persistence;
 
-namespace Tinifier.Core.Repository
+namespace Tinifier.Core.Repository.Realization
 {
     public class THistoryRepository : IEntityReader<TinyPNGResponseHistory>, IEntityCreator<TinyPNGResponseHistory>
     {

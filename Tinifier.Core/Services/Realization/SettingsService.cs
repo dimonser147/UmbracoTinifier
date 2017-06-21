@@ -1,9 +1,9 @@
 ﻿using Tinifier.Core.Infrastructure.Exceptions;
-using Tinifier.Core.Interfaces;
-using Tinifier.Core.Models;
-using Tinifier.Core.Repository;
+using Tinifier.Core.Models.Db;
+using Tinifier.Core.Repository.Realization;
+using Tinifier.Core.Services.Interfaces;
 
-namespace Tinifier.Core.Services
+namespace Tinifier.Core.Services.Realization
 {
     public class SettingsService : ISettingsService
     {
@@ -30,7 +30,7 @@ namespace Tinifier.Core.Services
         {
             var setting = _settingsRepository.GetSettings();
 
-            if(setting == null)
+            if (setting == null)
             {
                 throw new EntityNotFoundException($"Firstly, please, add ApiKey in settings!");
             }

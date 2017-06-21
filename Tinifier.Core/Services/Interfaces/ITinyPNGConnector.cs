@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Tinifier.Core.Models.API;
 
-namespace Tinifier.Core.Interfaces
+namespace Tinifier.Core.Services.Interfaces
 {
     public interface ITinyPNGConnector
     {
