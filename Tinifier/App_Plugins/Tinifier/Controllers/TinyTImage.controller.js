@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").controller("Tinifier.TinyTImage.Controller", function ($scope, $routeParams, $http, notificationsService) {
+﻿angular.module("umbraco").controller("Tinifier.TinyTImage.Controller", function ($scope, $routeParams, $http, notificationsService, dialogService) {
 
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
@@ -23,6 +23,11 @@
 
         $http.get('/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=' + timageId).success(function (response) {
             notificationsService.success("Success", response);
+
+            dialogService.open({
+                template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
+            });
+
         }).error(function (response) {
             notificationsService.error("Error", response);
         });
