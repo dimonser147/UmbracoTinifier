@@ -3,26 +3,23 @@
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
 
-    // ImageFolderId
-    var imagesFolderId = 1090;
-
     // RecycleBinFolderId
     var recycleBinFolderId = -21;
 
-    // Get the animal from the API
+    // Get from the API
     $scope.timage = null;
     
     // Tinify Image and show notification
     $scope.tinify = function () {
 
         // Check if user choose Image or recycle bin folder
-        if (timageId == undefined || timageId == imagesFolderId || timageId == recycleBinFolderId)
+        if (timageId == recycleBinFolderId)
         {
             notificationsService.error("Error", "You cant`t tinify Folder!");
             return;
         }
 
-        notificationsService.info("Loading.....");
+        notificationsService.info("Tinifing.....");
 
         $http.get('/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=' + timageId).success(function (response) {
             notificationsService.success("Success", response);

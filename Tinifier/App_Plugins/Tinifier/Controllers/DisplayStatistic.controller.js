@@ -30,7 +30,8 @@
             title: 'Images Statistic',
             pieHole: 0.4,
             width: 900,
-            height: 700
+            height: 700,
+            backgroundColor: '#f5f5f5'
         };
 
         return options;

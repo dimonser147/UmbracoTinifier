@@ -18,8 +18,8 @@
 
         public const string ApiKeyMessage = "ApiKey successfully added!";
         public const string ApiKeyError = "ApiKey not added! Please, fill ApiKey field with correct value";
-        public const string AlreadyOptimized = "Picture was optimized before";
-        public const string SuccessOptimized = "Picture optimized succesfully";
+        public const string AlreadyOptimized = "Image is already optimized";
+        public const string SuccessOptimized = "Picture succesfully optimized. Please, click 'Stats' to get more details";
         public const string NotSupported = "This extension not supported. You can tinify only PNG and JPG files";
         public const string ApiKeyNotFound = "You don`t have ApiKey in settings! Please, go to tinifier section and add ApiKey there!";
     }

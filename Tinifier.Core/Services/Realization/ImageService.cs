@@ -49,6 +49,7 @@ namespace Tinifier.Core.Services.Realization
         public TImage GetImageById(int Id)
         {
             var image = _imageRepository.GetByKey(Id);
+            CheckExtension(image.Name);
             var path = image.GetValue("umbracoFile").ToString();
 
             if (image == null)
