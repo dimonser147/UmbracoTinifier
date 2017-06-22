@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Tinifier.Core.Models.Db;
+using Tinifier.Core.Models.API;
 using Tinifier.Core.Repository.Realization;
 using Tinifier.Core.Services.Interfaces;
 
@@ -16,39 +16,31 @@ namespace Tinifier.Core.Services.Realization
             _imageService = new ImageService();
         }
 
-        public void CreateStatistic(TImageStatistic statistic)
-        {
-            _statisticRepository.Create(statistic);
-        }
-
         public TImageStatistic GetStatistic()
         {
-            var statistic = _statisticRepository.GetStatistic();
-            statistic.TotalNumberOfImages = _imageService.GetAllImages().ToList().Count;
-            statistic.NumberOfOptimizedImages = _imageService.GetAllOptimizedImages().ToList().Count;
+            var optimizedImages = _imageService.GetAllOptimizedImages().ToList().Count;
+            var totalImages = _imageService.GetAllImages().ToList().Count;
 
-            return statistic;
+            var tImageStatistic = new TImageStatistic()
+            {
+                TotalOptimizedImages = optimizedImages,
+                TotalOriginalImages = totalImages - optimizedImages
+            };
+
+            return tImageStatistic;
         }
 
         public void UpdateStatistic()
         {
-            var statistic = GetStatistic();
-
-            if(statistic != null)
-            {
-                statistic.NumberOfOptimizedImages++;
-                _statisticRepository.Update(statistic);
-            }           
-        }
-
-        public void UpdateNumberOfImages()
-        {
-            var statistic = GetStatistic();
+            var statistic = _statisticRepository.GetStatistic();
 
             if (statistic != null)
             {
-                _statisticRepository.UpdateCount(statistic);
+                statistic.TotalNumberOfImages = _imageService.GetAllImages().ToList().Count;
+                statistic.NumberOfOptimizedImages = _imageService.GetAllOptimizedImages().ToList().Count;
             }
+
+            _statisticRepository.Update(statistic);         
         }
     }
 }

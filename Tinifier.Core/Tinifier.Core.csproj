@@ -273,6 +273,7 @@
     <Compile Include="Filters\ExceptionFilter.cs" />
     <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSupportedException.cs" />
+    <Compile Include="Models\API\TImageStatistic.cs" />
     <Compile Include="Services\Interfaces\IHistoryService.cs" />
     <Compile Include="Services\Interfaces\IImageService.cs" />
     <Compile Include="Services\Interfaces\ISettingsService.cs" />

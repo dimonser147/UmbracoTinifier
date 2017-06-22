@@ -12,6 +12,8 @@
     // Get the timage from the API
     $scope.timage = null;
     $scope.thistory = null;
+    $scope.date = null;
+    $scope.percent = null;
 
     // Check if user choose Image or recycle bin folder
     if (timageId == undefined || timageId == imagesFolderId || timageId == recycleBinFolderId) {
@@ -21,7 +23,15 @@
 
     // Get Image information
     $http.get('/umbraco/backoffice/api/Tinifier/GetTImage?timageId=' + timageId).then(function (response) {
-            $scope.timage = response.data.timage;
-            $scope.thistory = response.data.history;
-        });    
+
+        if (response.data.history != null)
+        {
+            $scope.date = response.data.history.OccuredAt.replace('T', ' ');
+            response.data.history.OccuredAt = $scope.date;
+        }
+        
+        $scope.timage = response.data.timage;
+        $scope.thistory = response.data.history;
+        $scope.percent = ((1 - response.data.history.Ratio) * 100).toFixed(2) + "%";
+    });
 });

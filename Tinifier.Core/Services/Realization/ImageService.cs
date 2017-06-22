@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.Script.Serialization;
+using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Service;
@@ -105,7 +106,7 @@ namespace Tinifier.Core.Services.Realization
         {
             if(!(source.Contains(".png") || source.Contains(".jpg")))
             {
-                throw new Infrastructure.Exceptions.NotSupportedException("This extension not supported. You can tinify only PNG and JPG files");
+                throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
             }
         }
 

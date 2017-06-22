@@ -5,7 +5,15 @@
                 <div class="umb-property">
                     <div class="control-group umb-control-group">
                         <div class="umb-el-wrap">
-                            <div class="umb-property-editor"> <img src="{{timage.Url}}" alt="Description" width="400"/> </div>
+                            <div class="umb-property-editor"> <img src="{{timage.Url}}" alt="Description" style="max-height:150px; max-width:150px"/> </div>
+                        </div> 
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Panda just saved you</label>
+                            <div class="umb-property-editor">{{percent}}</div>
                         </div>
                     </div>
                 </div>
@@ -28,7 +36,7 @@
                 <div class="umb-property">
                     <div class="control-group umb-control-group">
                         <div class="umb-el-wrap">
-                            <label class="control-label">OriginSize</label>
+                            <label class="control-label">Origin Size Bytes</label>
                             <div class="umb-property-editor">{{thistory.OriginSize}}</div>
                         </div>
                     </div>
@@ -36,7 +44,7 @@
                 <div class="umb-property">
                     <div class="control-group umb-control-group">
                         <div class="umb-el-wrap">
-                            <label class="control-label">OptimizedSize</label>
+                            <label class="control-label">Optimized Size Bytes</label>
                             <div class="umb-property-editor">{{thistory.OptimizedSize}}</div>
                         </div>
                     </div>

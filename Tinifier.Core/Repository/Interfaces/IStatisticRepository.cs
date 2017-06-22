@@ -10,7 +10,5 @@ namespace Tinifier.Core.Repository.Interfaces
         int Count();
 
         void Update(TImageStatistic entity);
-
-        void UpdateCount(TImageStatistic entity);
     }
 }

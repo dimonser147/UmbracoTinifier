@@ -40,6 +40,12 @@ namespace Tinifier.Core.Services.Realization
         {
             var history = _historyRepository.GetByKey(timageId);
 
+            if(history !=null)
+            {
+                history.OccuredAt = new DateTime(history.OccuredAt.Year, history.OccuredAt.Month,
+                                history.OccuredAt.Day, history.OccuredAt.Hour, history.OccuredAt.Minute, history.OccuredAt.Second);
+            }
+            
             return history;
         }
     }

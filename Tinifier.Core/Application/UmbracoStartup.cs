@@ -33,7 +33,7 @@ namespace Tinifier.Core.Application
             MediaService.Saved += MediaServiceSaved;
 
             // Delete image handler for updating number of Images in database
-            MediaService.Deleted += MediaServiceDeleted;
+            MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
         }
 
         private void MediaServiceSaved(IMediaService sender, SaveEventArgs<IMedia> e)
@@ -42,18 +42,20 @@ namespace Tinifier.Core.Application
             {
                 if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
                 {
-                    _statisticService.UpdateNumberOfImages();
+                    _statisticService.UpdateStatistic();
                 }
             }
         }
 
-        private void MediaServiceDeleted(IMediaService sender, DeleteEventArgs<IMedia> e)
+        private void MediaService_EmptiedRecycleBin(IMediaService sender, RecycleBinEventArgs e)
         {
-            foreach (var mediaItem in e.DeletedEntities)
+            var iMedias = ApplicationContext.Current.Services.MediaService.GetByIds(e.Ids);
+
+            foreach (var mediaItem in iMedias)
             {
                 if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
                 {
-                    _statisticService.DecNumberOfImages();
+                    _statisticService.UpdateStatistic();
                 }
             }
         }
@@ -84,8 +86,8 @@ namespace Tinifier.Core.Application
                 menuItemTinifyButton.Icon = PackageConstants.MenuIcon;
                 e.Menu.Items.Add(menuItemTinifyButton);
 
-                var menuItemSettingsButton = new MenuItem("Tinifier_Settings", "Settings");
-                menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, "Tinifier Settings");
+                var menuItemSettingsButton = new MenuItem("Tinifier_Settings", "Stats");
+                menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, "Optimization Stats");
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
             }

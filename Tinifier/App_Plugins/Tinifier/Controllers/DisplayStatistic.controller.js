@@ -17,8 +17,8 @@
 
         var data = google.visualization.arrayToDataTable([
               ['Task', 'Hours per Day'],
-              ['Images Total', response.data.TotalNumberOfImages],
-              ['Images Optimized', response.data.NumberOfOptimizedImages]
+              ['Images Original', response.data.TotalOriginalImages],
+              ['Images Optimized', response.data.TotalOptimizedImages]
         ]);
 
         return data;

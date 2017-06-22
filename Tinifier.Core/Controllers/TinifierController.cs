@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Tinifier.Core.Filters;
+using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Services.Interfaces;
 using Tinifier.Core.Services.Realization;
@@ -58,10 +59,10 @@ namespace Tinifier.Core.Controllers
             if(ModelState.IsValid)
             {
                 _settingsService.CreateSettings(setting);
-                return Request.CreateResponse(HttpStatusCode.Created, "ApiKey successfully added!");
+                return Request.CreateResponse(HttpStatusCode.Created, PackageConstants.ApiKeyMessage);
             }
 
-            return Request.CreateResponse(HttpStatusCode.BadRequest, "ApiKey not added! Please, fill ApiKey field with correct value");
+            return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.ApiKeyError);
         }
 
         [HttpGet]
@@ -84,7 +85,7 @@ namespace Tinifier.Core.Controllers
             {
                 if(imageHistory.IsOptimized)
                 {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Picture was optimized before");
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AlreadyOptimized);
                 }                
             }
 
@@ -102,7 +103,7 @@ namespace Tinifier.Core.Controllers
             _historyService.CreateResponseHistoryItem(timageId, tinyResponse);
             _statisticService.UpdateStatistic();
 
-            return Request.CreateResponse(HttpStatusCode.OK, "Picture optimized succesfully");
+            return Request.CreateResponse(HttpStatusCode.OK, PackageConstants.SuccessOptimized);
         }
     }
 }
