@@ -111,7 +111,7 @@ namespace Tinifier.Core.Services.Services
 
         public void CheckExtension(string source)
         {
-            if(!(source.Contains(".png") || source.Contains(".jpg")))
+            if(!(source.Contains(".png") || source.Contains(".jpg") || source.Contains(".jpe") || source.Contains(".jpeg")))
             {
                 throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
             }
@@ -119,10 +119,19 @@ namespace Tinifier.Core.Services.Services
 
         private string GetUrl(string path)
         {
+            string url;
             var serializer = new JavaScriptSerializer();
-            var urlModel = serializer.Deserialize<UrlModel>(path);
-            var url = urlModel.Src;
 
+            if (!path.Contains("src"))
+            {
+                url = path;
+            }
+            else
+            {
+                var urlModel = serializer.Deserialize<UrlModel>(path);
+                url = urlModel.Src;
+            }
+            
             return url;
         }
     }
