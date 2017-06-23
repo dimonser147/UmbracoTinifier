@@ -5,12 +5,13 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 
 [TinyPNG][tp] provides an API which allows compressing images programmatically. 500 successful requests per month are available for free usage. It can be not enough for large enterprise websites, so check prices on the TinyPNG website before the start.
 
-## Quick start
+## Quick start [(download .pdf with screens)][qs]
 1. Install Tinifier package
 2. Register account in the [TinyPNG][tp] and get API key
 3. Go to the Tinifier settings and set API key 
 4. Tinify (compress) an appropriate image 
 5. Your visitors are happy with fast loading pages!
+
 
 ## Features
 - Optimize individual images from the Media
@@ -28,3 +29,4 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 [bd]: http://backend-devs.com/
 [tp]: https://tinypng.com
+[qs]: https://github.com/dimonser147/UmbracoTinifier/blob/master/QuickStart.pdf
