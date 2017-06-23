@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
-using Tinifier.Core.Repository.Realization;
-using Tinifier.Core.Services.Realization;
+using Tinifier.Core.Repository.Repository;
+using Tinifier.Core.Services.Services;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;

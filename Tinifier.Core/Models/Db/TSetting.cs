@@ -17,5 +17,7 @@ namespace Tinifier.Core.Models.Db
 
         [Required]
         public bool EnableOptimizationOnUpload { get; set; }
+
+        public int CurrentMonthRequests { get; set; }
     }
 }

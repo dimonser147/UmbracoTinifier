@@ -2,12 +2,14 @@
 {
     public class PackageConstants
     {
+        public const int MonthlyRequestsLimit = 500;
+        public const string TinyPngUrl = "https://api.tinify.com";
+
         public const string SectionAlias = "tinifier";
         public const string SectionName = "Tinifier";
         public const string SectionIcon = "icon-wand";
         public const string MenuIcon = "umb-settings";
         public const string MenuSettingsIcon = "article";
-        public const string TinyPngUrl = "https://api.tinify.com";
 
         public const string DbSettingsTable = "TinifierUserSettings";
         public const string DbHistoryTable = "TinifierResponseHistory";

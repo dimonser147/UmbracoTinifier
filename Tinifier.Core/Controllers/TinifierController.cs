@@ -6,9 +6,10 @@ using System.Web;
 using System.Web.Http;
 using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Services.Interfaces;
-using Tinifier.Core.Services.Realization;
+using Tinifier.Core.Services.Services;
 using Umbraco.Web.WebApi;
 
 namespace Tinifier.Core.Controllers
@@ -34,7 +35,17 @@ namespace Tinifier.Core.Controllers
         [HttpGet]
         public HttpResponseMessage GetTImage(int timageId)
         {
-            var timage = _imageService.GetImageById(timageId);
+            TImage timage;
+
+            try
+            {
+                timage = _imageService.GetImageById(timageId);
+            }
+            catch(NotSupportedException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
             var history = _historyService.GetHistoryForImage(timageId);
 
             return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
@@ -69,8 +80,10 @@ namespace Tinifier.Core.Controllers
         public HttpResponseMessage GetStatistic()
         {
             var statistic = _statisticService.GetStatistic();
+            var tsetting = _settingsService.GetSettings();
+            var monthlyRequestsLimit = PackageConstants.MonthlyRequestsLimit;
 
-            return Request.CreateResponse(HttpStatusCode.OK, statistic);
+            return Request.CreateResponse(HttpStatusCode.OK, new { statistic, tsetting, monthlyRequestsLimit });
         }
 
         [HttpGet]

@@ -2,7 +2,7 @@
 using System.Web;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Services.Interfaces;
-using Tinifier.Core.Services.Realization;
+using Tinifier.Core.Services.Services;
 using Umbraco.Core;
 using Umbraco.Core.Events;
 using Umbraco.Core.Models;

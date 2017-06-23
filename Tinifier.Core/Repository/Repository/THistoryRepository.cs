@@ -4,7 +4,7 @@ using Tinifier.Core.Repository.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Persistence;
 
-namespace Tinifier.Core.Repository.Realization
+namespace Tinifier.Core.Repository.Repository
 {
     public class THistoryRepository : IEntityReader<TinyPNGResponseHistory>, IEntityCreator<TinyPNGResponseHistory>
     {

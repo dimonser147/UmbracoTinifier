@@ -1,11 +1,16 @@
 ﻿angular.module('umbraco').controller('Tinifier.DisplayStatistic.Controller', function ($scope, $http) {
 
+    $scope.currentRequests = 0;
+    $scope.monthlyRequestsLimit = 0;
+
     google.charts.load("current", {packages:["corechart"]});
     google.charts.setOnLoadCallback(drawChart);
    
     function drawChart() {
 
         $http.get('/umbraco/backoffice/api/Tinifier/GetStatistic').then(function (response) {
+           $scope.currentRequests = response.data.tsetting.CurrentMonthRequests;
+           $scope.monthlyRequestsLimit = response.data.monthlyRequestsLimit;
            var data = CreateData(response);
            var options = CreateOptions();
            var chart = new google.visualization.PieChart(document.getElementById('chart'));
@@ -17,8 +22,8 @@
 
         var data = google.visualization.arrayToDataTable([
               ['Task', 'Hours per Day'],
-              ['Images Original', response.data.TotalOriginalImages],
-              ['Images Optimized', response.data.TotalOptimizedImages]
+              ['Images Original', response.data.statistic.TotalOriginalImages],
+              ['Images Optimized', response.data.statistic.TotalOptimizedImages]
         ]);
 
         return data;
@@ -27,10 +32,10 @@
     function CreateOptions() {
 
         var options = {
-            title: 'Images Statistic',
+            title: 'Optimization Statistics',
             pieHole: 0.4,
-            width: 900,
-            height: 700,
+            width: 750,
+            height: 550,
             backgroundColor: '#f5f5f5'
         };
 

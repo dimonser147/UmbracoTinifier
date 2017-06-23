@@ -1,10 +1,10 @@
 ﻿using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
-using Tinifier.Core.Repository.Realization;
+using Tinifier.Core.Repository.Repository;
 using Tinifier.Core.Services.Interfaces;
 
-namespace Tinifier.Core.Services.Realization
+namespace Tinifier.Core.Services.Services
 {
     public class SettingsService : ISettingsService
     {
@@ -35,6 +35,11 @@ namespace Tinifier.Core.Services.Realization
             {
                 throw new EntityNotFoundException(PackageConstants.ApiKeyNotFound);
             }
+        }
+
+        public void UpdateSettings(int currentMonthRequests)
+        {
+            _settingsRepository.Update(currentMonthRequests);
         }
     }
 }

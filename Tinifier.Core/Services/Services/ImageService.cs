@@ -6,12 +6,12 @@ using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Service;
-using Tinifier.Core.Repository.Realization;
+using Tinifier.Core.Repository.Repository;
 using Tinifier.Core.Services.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 
-namespace Tinifier.Core.Services.Realization
+namespace Tinifier.Core.Services.Services
 {
     public class ImageService : IImageService
     {
@@ -49,6 +49,12 @@ namespace Tinifier.Core.Services.Realization
         public TImage GetImageById(int Id)
         {
             var image = _imageRepository.GetByKey(Id);
+
+            if (!string.IsNullOrEmpty(image.ContentType.Alias) && string.Equals(image.ContentType.Alias, "folder", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
+            }
+
             CheckExtension(image.Name);
             var path = image.GetValue("umbracoFile").ToString();
 
@@ -77,7 +83,7 @@ namespace Tinifier.Core.Services.Realization
                 mediaService.SetMediaFileContent(image.Url, stream);
             }
 
-            mediaItem.UpdateDate = DateTime.Now;
+            mediaItem.UpdateDate = DateTime.UtcNow;
             _imageRepository.UpdateItem(mediaService, mediaItem);
         }
 

@@ -35,6 +35,7 @@
         }
         else {
             $scope.notOptimized = "Image is not optimized, please click 'Tinify' button in the 'Actions' menu to optimize it";
+            document.getElementById('pandaDiv').style.display = 'none';   
         }
 
         $scope.timage = response.timage;

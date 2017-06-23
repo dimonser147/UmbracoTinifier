@@ -12,5 +12,8 @@ namespace Tinifier.Core.Services.Interfaces
 
         // Check if user has settings and ApiKey
         void CheckIfSettingExists();
+
+        // Update number of available requests
+        void UpdateSettings(int currentMonthRequests);
     }
 }

@@ -7,7 +7,7 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 
-namespace Tinifier.Core.Repository.Realization
+namespace Tinifier.Core.Repository.Repository
 {
     public class TImageRepository : IEntityReader<Media>, IImageRepository<Media>
     {

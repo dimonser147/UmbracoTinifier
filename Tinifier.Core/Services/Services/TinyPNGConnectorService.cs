@@ -7,8 +7,11 @@ using Tinifier.Core.Models.API;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Services.Interfaces;
 using Tinifier.Core.Infrastructure;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 
-namespace Tinifier.Core.Services.Realization
+namespace Tinifier.Core.Services.Services
 {
     public class TinyPNGConnectorService : ITinyPNGConnector
     {
@@ -105,8 +108,26 @@ namespace Tinifier.Core.Services.Realization
                 }
             }
 
+            var currentMonthRequests = GetHeaderValue(response);
+            _settingsService.UpdateSettings(currentMonthRequests);
+
             var responseResult = await response.Content.ReadAsStringAsync();
             return responseResult;
+        }
+
+        private int GetHeaderValue(HttpResponseMessage response)
+        {
+            IEnumerable<string> headerValues = response.Headers.GetValues("Compression-Count");
+            var compressionHeader = headerValues.FirstOrDefault();
+
+            if(compressionHeader == null)
+            {
+                throw new HttpRequestException(HttpStatusCode.BadRequest + "Bad request");
+            }
+
+            var currentMonthRequests = int.Parse(compressionHeader);
+
+            return currentMonthRequests;           
         }
     }
 }

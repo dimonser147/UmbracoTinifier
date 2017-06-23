@@ -4,5 +4,7 @@
     public interface ISettingsRepository<TEntity> where TEntity : class
     {
         TEntity GetSettings();
+
+        void Update(int currentMonthRequests);
     }
 }

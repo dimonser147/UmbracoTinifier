@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Tinifier.Core.Services.Interfaces;
 
-namespace Tinifier.Core.Services.Realization
+namespace Tinifier.Core.Services.Services
 {
     public sealed class TinyImageService : ITinyImageService
     {
