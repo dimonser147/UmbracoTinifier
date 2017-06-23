@@ -111,7 +111,9 @@ namespace Tinifier.Core.Services.Services
 
         public void CheckExtension(string source)
         {
-            if(!(source.Contains(".png") || source.Contains(".jpg") || source.Contains(".jpe") || source.Contains(".jpeg")))
+            var fileName = source.ToLower();
+
+            if(!(fileName.Contains(".png") || fileName.Contains(".jpg") || fileName.Contains(".jpe") || fileName.Contains(".jpeg")))
             {
                 throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
             }
