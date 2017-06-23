@@ -89,6 +89,7 @@ namespace Tinifier.Core.Services.Services
 
         private async Task<string> CreateRequest<T>(T inputData)
         {
+            string message;
             HttpResponseMessage response;
             var apiKey = _settingsService.GetSettings().ApiKey;
             var authKey = Convert.ToBase64String(Encoding.UTF8.GetBytes("api:" + apiKey));
@@ -99,11 +100,18 @@ namespace Tinifier.Core.Services.Services
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
                 client.BaseAddress = new Uri(_tinifyAddress);
 
-                response = await client.PostAsync("/shrink", inputData as HttpContent);
-
+                try
+                {
+                    response = await client.PostAsync("/shrink", inputData as HttpContent);
+                }
+                catch (TaskCanceledException)
+                {
+                    throw new HttpRequestException(PackageConstants.TooBigImage);
+                }
+               
                 if (!response.IsSuccessStatusCode)
                 {
-                    var message = (int)response.StatusCode + response.ReasonPhrase;
+                    message = (int)response.StatusCode + response.ReasonPhrase;
                     throw new HttpRequestException(message);
                 }
             }
