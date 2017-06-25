@@ -12,7 +12,7 @@ namespace Tinifier.Core.Controllers
     [PluginController(PackageConstants.SectionName)]
     public class TinifierTreeController : TreeController
     {
-        private IImageService _imageService;
+        private readonly IImageService _imageService;
 
         public TinifierTreeController()
         {

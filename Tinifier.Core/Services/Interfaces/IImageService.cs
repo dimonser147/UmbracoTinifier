@@ -9,7 +9,7 @@ namespace Tinifier.Core.Services.Interfaces
         IEnumerable<TImage> GetAllImages();
 
         // Get Image By Id from Umbraco Media
-        TImage GetImageById(int Id);
+        TImage GetImageById(int id);
 
         // Update Image by tiny image
         void UpdateImage(TImage image, byte[] bytesArray);

@@ -7,8 +7,8 @@ namespace Tinifier.Core.Services.Services
 {
     public class StatisticService : IStatisticService
     {
-        private ImageService _imageService;
-        private TStatisticRepository _statisticRepository;
+        private readonly ImageService _imageService;
+        private readonly TStatisticRepository _statisticRepository;
 
         public StatisticService()
         {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Services.Interfaces;
 using Tinifier.Core.Services.Services;
@@ -14,7 +13,7 @@ namespace Tinifier.Core.Application
 {
     public class UmbracoStartup : ApplicationEventHandler
     {
-        private IStatisticService _statisticService;
+        private readonly IStatisticService _statisticService;
 
         public UmbracoStartup()
         {
@@ -71,14 +70,14 @@ namespace Tinifier.Core.Application
                     PackageConstants.SectionAlias,
                     PackageConstants.SectionIcon);
                 context.Services.UserService.AddSectionToAllUsers(PackageConstants.SectionAlias);
+
+                var dashboard = new ExtendDashboard();
+                dashboard.AddTabs();
             }
         }
 
         private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
-            // Get imageId and create menuItem
-            var timageId = int.Parse(HttpContext.Current.Request.QueryString["id"]);
-
             if (string.Equals(sender.TreeAlias, "media", StringComparison.OrdinalIgnoreCase))
             {
                 var menuItemTinifyButton = new MenuItem("Tinifier_Button", "Tinify");

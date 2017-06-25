@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
 using Tinifier.Core.Infrastructure.Exceptions;
@@ -11,14 +10,14 @@ namespace Tinifier.Core.Filters
     {
         public override void OnException(HttpActionExecutedContext context)
         {
-            Exception ex = context.Exception;
+            var ex = context.Exception;
 
             if (context.Exception is EntityNotFoundException)
             {
                 context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
-            if(context.Exception is Infrastructure.Exceptions.NotSupportedException)
+            if(context.Exception is NotSupportedException)
             {
                 context.Response = context.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType, ex.Message);
             }

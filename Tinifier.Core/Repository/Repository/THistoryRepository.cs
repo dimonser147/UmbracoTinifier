@@ -8,7 +8,7 @@ namespace Tinifier.Core.Repository.Repository
 {
     public class THistoryRepository : IEntityReader<TinyPNGResponseHistory>, IEntityCreator<TinyPNGResponseHistory>
     {
-        private UmbracoDatabase _database;
+        private readonly UmbracoDatabase _database;
 
         public THistoryRepository()
         {

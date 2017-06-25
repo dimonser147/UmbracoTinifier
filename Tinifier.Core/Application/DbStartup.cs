@@ -38,9 +38,11 @@ namespace Tinifier.Core.Application
             {
                 if(statisticRepository.Count() == 0)
                 {
-                    var statistic = new TImageStatistic();
-                    statistic.TotalNumberOfImages = imagesService.GetAllImages().ToList().Count;
-                    statistic.NumberOfOptimizedImages = imagesService.GetAllOptimizedImages().ToList().Count;
+                    var statistic = new TImageStatistic
+                    {
+                        TotalNumberOfImages = imagesService.GetAllImages().ToList().Count,
+                        NumberOfOptimizedImages = imagesService.GetAllOptimizedImages().ToList().Count
+                    };
                     statisticRepository.Create(statistic);
                 }                
             }

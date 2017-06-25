@@ -11,9 +11,9 @@ namespace Tinifier.Core.Repository.Repository
 {
     public class TImageRepository : IEntityReader<Media>, IImageRepository<Media>
     {
-        private IContentTypeService _contentTypeService;
-        private IMediaService _mediaService;
-        private UmbracoDatabase _database;
+        private readonly IContentTypeService _contentTypeService;
+        private readonly IMediaService _mediaService;
+        private readonly UmbracoDatabase _database;
 
         public TImageRepository()
         {
@@ -35,9 +35,9 @@ namespace Tinifier.Core.Repository.Repository
             return mediaList;
         }
 
-        public Media GetByKey(int Id)
+        public Media GetByKey(int id)
         {
-            var mediaItem = _mediaService.GetById(Id) as Media;
+            var mediaItem = _mediaService.GetById(id) as Media;
 
             return mediaItem;
         }

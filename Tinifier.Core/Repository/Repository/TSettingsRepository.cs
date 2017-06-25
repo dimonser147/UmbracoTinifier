@@ -7,7 +7,7 @@ namespace Tinifier.Core.Repository.Repository
 {
     public class TSettingsRepository : IEntityCreator<TSetting>, ISettingsRepository<TSetting>
     {
-        private UmbracoDatabase _database;
+        private readonly UmbracoDatabase _database;
 
         public TSettingsRepository()
         {

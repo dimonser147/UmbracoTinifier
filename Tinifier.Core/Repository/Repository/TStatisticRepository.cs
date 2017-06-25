@@ -7,7 +7,7 @@ namespace Tinifier.Core.Repository.Repository
 {
     public class TStatisticRepository : IEntityCreator<TImageStatistic>, IEntityUpdater<TImageStatistic>, IStatisticRepository<TImageStatistic>
     {
-        private UmbracoDatabase _database;
+        private readonly UmbracoDatabase _database;
 
         public TStatisticRepository()
         {

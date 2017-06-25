@@ -8,7 +8,7 @@ namespace Tinifier.Core.Services.Services
 {
     public class HistoryService : IHistoryService
     {
-        private THistoryRepository _historyRepository;
+        private readonly THistoryRepository _historyRepository;
 
         public HistoryService()
         {
@@ -17,7 +17,7 @@ namespace Tinifier.Core.Services.Services
 
         public void CreateResponseHistoryItem(int timageId, TinyResponse responseItem)
         {
-            TinyPNGResponseHistory newItem = new TinyPNGResponseHistory
+            var newItem = new TinyPNGResponseHistory
             {
                 OccuredAt = DateTime.UtcNow,
                 IsOptimized = responseItem.Output.IsOptimized,

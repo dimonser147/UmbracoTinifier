@@ -1,40 +1,40 @@
 ﻿<div ng-controller="Tinifier.EditTSetting.Controller">
-        <form name="settingsForm" ng-submit="submitForm()" val-form-manager>
-            <umb-editor-view>
-                <umb-editor-container>
-                    <div class="umb-editor-container umb-panel-body umb-scrollable row-fluid">
-                        <div class="umb-pane">
-                            <div class="form-horizontal">
-                                <div class="umb-property">
-                                    <div class="control-group umb-control-group">
-                                        <div class="umb-el-wrap">
-                                            <label class="control-label">Api Key</label>
-                                            <input class="umb-property-editor" type="text" style="width: 400px" ng-model="timage.ApiKey" required>
-                                            <span ng-show="!timage.ApiKey.length">Value can`t be empty!</span>
-                                        </div>
+    <form name="settingsForm" ng-submit="submitForm()" val-form-manager>
+        <umb-editor-view>
+            <umb-editor-container>
+                <div class="umb-editor-container umb-panel-body umb-scrollable row-fluid">
+                    <div class="umb-pane">
+                        <div class="form-horizontal">
+                            <div class="umb-property">
+                                <div class="control-group umb-control-group">
+                                    <div class="umb-el-wrap">
+                                        <label class="control-label">Api Key</label>
+                                        <input class="umb-property-editor" type="text" style="width: 400px" ng-model="timage.ApiKey" required>
+                                        <span ng-show="!timage.ApiKey.length">Value can`t be empty!</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>                                                       
-                </umb-editor-container>
-                <umb-editor-footer>
-                    <umb-editor-footer-content-left>
-                        <umb-breadcrumbs ng-if="ancestors && ancestors.length > 0"
-                                         ancestors="ancestors"
-                                         entity-type="media">
-                        </umb-breadcrumbs>
-                    </umb-editor-footer-content-left>
-                    <umb-editor-footer-content-right>
-                        <umb-button type="submit"
-                                    label="Save"
-                                    label-key="buttons_save"
-                                    button-style="success"
-                                    shortcut="ctrl+s"
-                                    state="page.saveButtonState">
-                        </umb-button>
-                    </umb-editor-footer-content-right>
-                </umb-editor-footer>
-            </umb-editor-view>
-        </form>
+                    </div>
+                </div>
+            </umb-editor-container>
+            <umb-editor-footer>
+                <umb-editor-footer-content-left>
+                    <umb-breadcrumbs ng-if="ancestors && ancestors.length > 0"
+                                     ancestors="ancestors"
+                                     entity-type="media">
+                    </umb-breadcrumbs>
+                </umb-editor-footer-content-left>
+                <umb-editor-footer-content-right>
+                    <umb-button type="submit"
+                                label="Save"
+                                label-key="buttons_save"
+                                button-style="success"
+                                shortcut="ctrl+s"
+                                state="page.saveButtonState">
+                    </umb-button>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+        </umb-editor-view>
+    </form>
 </div>

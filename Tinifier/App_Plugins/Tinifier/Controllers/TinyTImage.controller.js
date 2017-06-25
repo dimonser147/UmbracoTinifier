@@ -1,35 +1,34 @@
-﻿angular.module("umbraco").controller("Tinifier.TinyTImage.Controller", function ($scope, $routeParams, $http, notificationsService, dialogService) {
+﻿angular.module("umbraco").controller("Tinifier.TinyTImage.Controller", function($scope, $routeParams, $http, notificationsService, dialogService) {
 
-    // Get the ID from the route parameters (URL)
-    var timageId = $routeParams.id;
+        // Get the ID from the route parameters (URL)
+        var timageId = $routeParams.id;
 
-    // RecycleBinFolderId
-    var recycleBinFolderId = -21;
+        // RecycleBinFolderId
+        var recycleBinFolderId = -21;
 
-    // Get from the API
-    $scope.timage = null;
-    
-    // Tinify Image and show notification
-    $scope.tinify = function () {
+        // Get from the API
+        $scope.timage = null;
 
-        // Check if user choose Image or recycle bin folder
-        if (timageId == recycleBinFolderId)
-        {
-            notificationsService.error("Error", "You cant`t tinify Folder!");
-            return;
-        }
+        // Tinify Image and show notification
+        $scope.tinify = function() {
 
-        notificationsService.info("Tinifing.....");
+            // Check if user choose Image or recycle bin folder
+            if (timageId === recycleBinFolderId) {
+                notificationsService.error("Error", "You cant`t tinify Folder!");
+                return;
+            }
 
-        $http.get('/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=' + timageId).success(function (response) {
-            notificationsService.success("Success", response);
+            notificationsService.info("Tinifing.....");
 
-            dialogService.open({
-                template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
+            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=" + timageId).success(function(response) {
+                notificationsService.success("Success", response);
+
+                dialogService.open({
+                    template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
+                });
+
+            }).error(function(response) {
+                notificationsService.error("Error", response);
             });
-
-        }).error(function (response) {
-            notificationsService.error("Error", response);
-        });
-    };
+        };
 });

@@ -15,13 +15,11 @@ namespace Tinifier.Core.Services.Services
 {
     public class ImageService : IImageService
     {
-        private TImageRepository _imageRepository;
-        private THistoryRepository _historyRepository;
+        private readonly TImageRepository _imageRepository;
 
         public ImageService()
         {
             _imageRepository = new TImageRepository();
-            _historyRepository = new THistoryRepository();
         }
 
         public IEnumerable<TImage> GetAllImages()
@@ -46,9 +44,9 @@ namespace Tinifier.Core.Services.Services
             return images;
         }
 
-        public TImage GetImageById(int Id)
+        public TImage GetImageById(int id)
         {
-            var image = _imageRepository.GetByKey(Id);
+            var image = _imageRepository.GetByKey(id);
 
             if (!string.IsNullOrEmpty(image.ContentType.Alias) && string.Equals(image.ContentType.Alias, "folder", StringComparison.OrdinalIgnoreCase))
             {
@@ -60,12 +58,12 @@ namespace Tinifier.Core.Services.Services
 
             if (image == null)
             {
-                throw new EntityNotFoundException($"Image with such id doesn't exist. Id: {Id}");
+                throw new EntityNotFoundException($"Image with such id doesn't exist. Id: {id}");
             }
 
             var tImage = new TImage
             {
-                Id = Id,
+                Id = id,
                 Name = image.Name,
                 Url = GetUrl(path)
             };
@@ -83,8 +81,11 @@ namespace Tinifier.Core.Services.Services
                 mediaService.SetMediaFileContent(image.Url, stream);
             }
 
-            mediaItem.UpdateDate = DateTime.UtcNow;
-            _imageRepository.UpdateItem(mediaService, mediaItem);
+            if (mediaItem != null)
+            {
+                mediaItem.UpdateDate = DateTime.UtcNow;
+                _imageRepository.UpdateItem(mediaService, mediaItem);
+            }
         }
 
         public IEnumerable<TImage> GetAllOptimizedImages()

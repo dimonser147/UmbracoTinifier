@@ -17,11 +17,11 @@ namespace Tinifier.Core.Controllers
     [ExceptionFilter]
     public class TinifierController : UmbracoAuthorizedApiController
     {
-        private IImageService _imageService;
-        private ITinyPNGConnector _tinyPngConnectorService;
-        private IHistoryService _historyService;
-        private ISettingsService _settingsService;
-        private IStatisticService _statisticService;
+        private readonly IImageService _imageService;
+        private readonly ITinyPNGConnector _tinyPngConnectorService;
+        private readonly IHistoryService _historyService;
+        private readonly ISettingsService _settingsService;
+        private readonly IStatisticService _statisticService;
 
         public TinifierController()
         {
@@ -41,14 +41,14 @@ namespace Tinifier.Core.Controllers
             {
                 timage = _imageService.GetImageById(timageId);
             }
-            catch(NotSupportedException ex)
+            catch (NotSupportedException ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
             var history = _historyService.GetHistoryForImage(timageId);
 
-            return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
+            return Request.CreateResponse(HttpStatusCode.OK, new {timage, history});
         }
 
         [HttpGet]

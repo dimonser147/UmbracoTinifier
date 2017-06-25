@@ -7,7 +7,6 @@ using Tinifier.Core.Models.API;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Services.Interfaces;
 using Tinifier.Core.Infrastructure;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
@@ -15,9 +14,9 @@ namespace Tinifier.Core.Services.Services
 {
     public class TinyPNGConnectorService : ITinyPNGConnector
     {
-        private string _tinifyAddress;
-        private JavaScriptSerializer _serializer;
-        private ISettingsService _settingsService;
+        private readonly string _tinifyAddress;
+        private readonly JavaScriptSerializer _serializer;
+        private readonly ISettingsService _settingsService;
 
         public TinyPNGConnectorService()
         {
@@ -29,7 +28,7 @@ namespace Tinifier.Core.Services.Services
         public async Task<TinyResponse> TinifyByteArray(byte[] imageByteArray)
         {
             TinyResponse tinyResponse;
-            ByteArrayContent byteContent = new ByteArrayContent(imageByteArray);
+            var byteContent = new ByteArrayContent(imageByteArray);
 
             try
             {
@@ -89,7 +88,6 @@ namespace Tinifier.Core.Services.Services
 
         private async Task<string> CreateRequest<T>(T inputData)
         {
-            string message;
             HttpResponseMessage response;
             var apiKey = _settingsService.GetSettings().ApiKey;
             var authKey = Convert.ToBase64String(Encoding.UTF8.GetBytes("api:" + apiKey));
@@ -111,7 +109,7 @@ namespace Tinifier.Core.Services.Services
                
                 if (!response.IsSuccessStatusCode)
                 {
-                    message = (int)response.StatusCode + response.ReasonPhrase;
+                    var message = (int)response.StatusCode + response.ReasonPhrase;
                     throw new HttpRequestException(message);
                 }
             }
@@ -125,7 +123,7 @@ namespace Tinifier.Core.Services.Services
 
         private int GetHeaderValue(HttpResponseMessage response)
         {
-            IEnumerable<string> headerValues = response.Headers.GetValues("Compression-Count");
+            var headerValues = response.Headers.GetValues("Compression-Count");
             var compressionHeader = headerValues.FirstOrDefault();
 
             if(compressionHeader == null)

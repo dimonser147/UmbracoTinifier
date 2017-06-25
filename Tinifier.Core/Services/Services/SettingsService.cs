@@ -8,7 +8,7 @@ namespace Tinifier.Core.Services.Services
 {
     public class SettingsService : ISettingsService
     {
-        private TSettingsRepository _settingsRepository;
+        private readonly TSettingsRepository _settingsRepository;
 
         public SettingsService()
         {

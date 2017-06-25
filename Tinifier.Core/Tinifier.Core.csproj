@@ -311,6 +311,7 @@
     <Compile Include="Services\Services\StatisticService.cs" />
     <Compile Include="Services\Services\TinyPNGConnectorService.cs" />
     <Compile Include="Services\Services\TinyImageService.cs" />
+    <Compile Include="Infrastructure\ExtendDashboard.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Actions\" />
