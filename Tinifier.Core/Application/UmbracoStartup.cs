@@ -2,6 +2,7 @@
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Services.Interfaces;
 using Tinifier.Core.Services.Services;
+using umbraco.cms.businesslogic.packager;
 using Umbraco.Core;
 using Umbraco.Core.Events;
 using Umbraco.Core.Models;
@@ -33,6 +34,17 @@ namespace Tinifier.Core.Application
 
             // Delete image handler for updating number of Images in database
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
+
+            // Clear dashboard.config before deleting
+            InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
+        }
+
+        private void InstalledPackage_BeforeDelete(InstalledPackage sender, EventArgs e)
+        {
+            if (string.Equals(sender.Data.Name, "tinifier", StringComparison.OrdinalIgnoreCase))
+            {
+                ExtendDashboard.ClearTabs();
+            }
         }
 
         private void MediaServiceSaved(IMediaService sender, SaveEventArgs<IMedia> e)
@@ -71,8 +83,7 @@ namespace Tinifier.Core.Application
                     PackageConstants.SectionIcon);
                 context.Services.UserService.AddSectionToAllUsers(PackageConstants.SectionAlias);
 
-                var dashboard = new ExtendDashboard();
-                dashboard.AddTabs();
+                ExtendDashboard.AddTabs();
             }
         }
 

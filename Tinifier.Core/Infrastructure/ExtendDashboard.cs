@@ -1,13 +1,15 @@
 ﻿using System.Web;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace Tinifier.Core.Infrastructure
 {
-    public class ExtendDashboard
+    public static class ExtendDashboard
     {
-        public void AddTabs()
+        public static void AddTabs()
         {
-            var doc = XDocument.Load(HttpContext.Current.Server.MapPath("~/config/dashboard.config"));
+            var path = HttpContext.Current.Server.MapPath("~/config/dashboard.config");
+            var doc = XDocument.Load(path);
 
             var restaurant = new XElement("section",
                 new XAttribute("alias", "TinifierSettings"),
@@ -19,7 +21,23 @@ namespace Tinifier.Core.Infrastructure
                     new XElement("control", "/App_Plugins/Tinifier/BackOffice/Dashboards/statistic.html"))
             );
             doc.Root?.Add(restaurant);
-            doc.Save(HttpContext.Current.Server.MapPath("~/config/dashboard.config"));
+            doc.Save(path);
+        }
+
+        public static void ClearTabs()
+        {
+            var path = HttpContext.Current.Server.MapPath("~/config/dashboard.config");
+            var doc = new XmlDocument();
+            doc.Load(path);
+            var node = doc.SelectSingleNode("//section[@alias='TinifierSettings']");
+
+            if (node != null)
+            {
+                var parent = node.ParentNode;
+                parent.RemoveChild(node);
+                var newXML = doc.OuterXml;
+                doc.Save(path);
+            }
         }
     }
 }
