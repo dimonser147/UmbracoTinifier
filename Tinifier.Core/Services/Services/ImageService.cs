@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Web;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
@@ -76,10 +76,8 @@ namespace Tinifier.Core.Services.Services
             var mediaService = ApplicationContext.Current.Services.MediaService;
             var mediaItem = mediaService.GetById(image.Id) as Media;
 
-            using (var stream = new MemoryStream(bytesArray))
-            {
-                mediaService.SetMediaFileContent(image.Url, stream);
-            }
+            System.IO.File.Delete(HttpContext.Current.Server.MapPath($"~{image.Url}"));
+            System.IO.File.WriteAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"), bytesArray);
 
             if (mediaItem != null)
             {

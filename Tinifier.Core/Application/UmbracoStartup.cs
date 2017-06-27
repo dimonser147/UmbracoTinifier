@@ -44,6 +44,13 @@ namespace Tinifier.Core.Application
             if (string.Equals(sender.Data.Name, "tinifier", StringComparison.OrdinalIgnoreCase))
             {
                 ExtendDashboard.ClearTabs();
+
+                var section = ApplicationContext.Current.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
+
+                if (section != null)
+                {
+                    ApplicationContext.Current.Services.SectionService.DeleteSection(section);
+                }
             }
         }
 
