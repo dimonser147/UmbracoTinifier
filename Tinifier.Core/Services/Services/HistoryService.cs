@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Repository;
@@ -40,13 +41,37 @@ namespace Tinifier.Core.Services.Services
         {
             var history = _historyRepository.GetByKey(timageId);
 
-            if(history !=null)
+            if(history != null)
             {
                 history.OccuredAt = new DateTime(history.OccuredAt.Year, history.OccuredAt.Month,
                                 history.OccuredAt.Day, history.OccuredAt.Hour, history.OccuredAt.Minute, history.OccuredAt.Second);
             }
             
             return history;
+        }
+
+        public List<TImage> CheckImageHistory(IEnumerable<TImage> images)
+        {
+            var imagesList = new List<TImage>();
+
+            foreach (var image in images)
+            {
+                var imageHistory = _historyRepository.GetByKey(image.Id);
+
+                if (imageHistory != null)
+                {
+                    if (!imageHistory.IsOptimized)
+                    {
+                        imagesList.Add(image);
+                    }
+                }
+                else
+                {
+                    imagesList.Add(image);
+                }
+            }
+
+            return imagesList;
         }
     }
 }

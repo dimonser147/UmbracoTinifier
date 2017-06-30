@@ -1,7 +1,7 @@
 ﻿namespace Tinifier.Core.Models.API
 {
-    // Information of origin and optimized images
-    public class TImageStatistic
+    // Statistic for chart
+    public class TinifyImageStatistic
     {
         public int TotalOriginalImages { get; set; }
 

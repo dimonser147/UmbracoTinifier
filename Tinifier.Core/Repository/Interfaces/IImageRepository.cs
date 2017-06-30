@@ -4,10 +4,18 @@ using Umbraco.Core.Services;
 namespace Tinifier.Core.Repository.Interfaces
 {
     // Repository for images with custom Methods
-    public interface IImageRepository<TEntity> where TEntity : class
+    public interface IImageRepository<Media>
     {
-        void UpdateItem(IMediaService mediaService, TEntity mediaItem);
+        void UpdateItem(IMediaService mediaService, Media mediaItem);
 
-        IEnumerable<TEntity> GetOptimizedItems();
+        IEnumerable<Media> GetOptimizedItems();
+
+        IEnumerable<Media> GetItemsFromFolder(int folderId);
+
+        int AmounthOfItems();
+
+        int AmounthOfOptimizedItems();
+
+        int AmounthImagesFromFolder(int folderId);
     }
 }

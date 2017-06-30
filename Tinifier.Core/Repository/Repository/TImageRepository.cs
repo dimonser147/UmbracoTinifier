@@ -65,5 +65,61 @@ namespace Tinifier.Core.Repository.Repository
 
             return mediaList;
         }
+
+        public IEnumerable<Media> GetItemsFromFolder(int folderId)
+        {
+            var mediaList = new List<Media>();
+            var imagesFolder = _mediaService.GetRootMedia().FirstOrDefault(x => x.Id == folderId);
+
+            foreach(IMedia media in imagesFolder.Children())
+            {
+                if (media.ContentType.Alias == "Image")
+                {
+                    mediaList.Add(media as Media);
+                }
+            }
+
+            return mediaList;
+        }
+
+        public int AmounthOfItems()
+        {
+            var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id);
+            var numberOfItems = mediaItems.ToList().Count();
+
+            return numberOfItems;
+        }
+
+        public int AmounthOfOptimizedItems()
+        {
+            var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
+            var historyIds = _database.Fetch<int>(query);
+
+            var mediaItems = _mediaService.
+                             GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id).
+                             Where(item => historyIds.Contains(item.Id));
+
+            var numberOfOptimizedItems = mediaItems.ToList().Count();
+
+            return numberOfOptimizedItems;
+        }
+
+        public int AmounthImagesFromFolder(int folderId)
+        {
+            var mediaList = new List<Media>();
+            var imagesFolder = _mediaService.GetRootMedia().FirstOrDefault(x => x.Id == folderId);
+
+            foreach (IMedia media in imagesFolder.Children())
+            {
+                if (media.ContentType.Alias == "Image")
+                {
+                    mediaList.Add(media as Media);
+                }
+            }
+
+            var numberOfImages = mediaList.Count;
+
+            return numberOfImages;
+        }
     }
 }

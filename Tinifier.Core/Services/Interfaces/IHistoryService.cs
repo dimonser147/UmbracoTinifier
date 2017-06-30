@@ -1,4 +1,5 @@
-﻿using Tinifier.Core.Models.API;
+﻿using System.Collections.Generic;
+using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 
 namespace Tinifier.Core.Services.Interfaces
@@ -10,5 +11,8 @@ namespace Tinifier.Core.Services.Interfaces
 
         // Get History for Image
         TinyPNGResponseHistory GetHistoryForImage(int timageId);
+
+        // Get not optimized Images that don`t have history
+        List<TImage> CheckImageHistory(IEnumerable<TImage> images);
     }
 }

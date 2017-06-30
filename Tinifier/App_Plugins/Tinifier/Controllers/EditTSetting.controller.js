@@ -13,14 +13,14 @@
         ];
 
         // Fill form from web api
-        $http.get("/umbraco/backoffice/api/Tinifier/GetTSetting").success(function(response) {
+        $http.get("/umbraco/backoffice/api/Settings/GetTSetting").success(function(response) {
             $scope.timage = response;
         });
 
         // Submit form with settings
         $scope.submitForm = function() {
             timage = $scope.timage;
-            $http.post("/umbraco/backoffice/api/Tinifier/CreateSettings", JSON.stringify(timage))
+            $http.post("/umbraco/backoffice/api/Settings/CreateSettings", JSON.stringify(timage))
                 .success(function(response) {
                     notificationsService.success("Success", response);
                 }).error(function(response) {

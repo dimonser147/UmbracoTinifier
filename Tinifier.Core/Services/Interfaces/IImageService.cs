@@ -15,9 +15,15 @@ namespace Tinifier.Core.Services.Interfaces
         void UpdateImage(TImage image, byte[] bytesArray);
 
         // Check Image Extension
-        void CheckExtension(string source);
+        bool CheckExtension(string source);
 
         // Get all optimized images
         IEnumerable<TImage> GetAllOptimizedImages();
+
+        // Get all images from specific folder
+        IEnumerable<TImage> GetImagesFromFolder(int folderId);
+
+        // Check folder this or Image
+        bool CheckFolder(int itemId);
     }
 }

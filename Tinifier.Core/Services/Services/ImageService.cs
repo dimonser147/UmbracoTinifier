@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Infrastructure;
@@ -16,10 +17,14 @@ namespace Tinifier.Core.Services.Services
     public class ImageService : IImageService
     {
         private readonly TImageRepository _imageRepository;
+        private readonly IHistoryService _historyService;
+        private readonly JavaScriptSerializer _serializer;
 
         public ImageService()
         {
             _imageRepository = new TImageRepository();
+            _historyService = new HistoryService();
+            _serializer = new JavaScriptSerializer();
         }
 
         public IEnumerable<TImage> GetAllImages()
@@ -48,18 +53,17 @@ namespace Tinifier.Core.Services.Services
         {
             var image = _imageRepository.GetByKey(id);
 
-            if (!string.IsNullOrEmpty(image.ContentType.Alias) && string.Equals(image.ContentType.Alias, "folder", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
-            }
-
-            CheckExtension(image.Name);
-            var path = image.GetValue("umbracoFile").ToString();
-
             if (image == null)
             {
                 throw new EntityNotFoundException($"Image with such id doesn't exist. Id: {id}");
             }
+
+            if(!CheckExtension(image.Name))
+            {
+                throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
+            }
+
+            var path = image.GetValue("umbracoFile").ToString();
 
             var tImage = new TImage
             {
@@ -89,7 +93,7 @@ namespace Tinifier.Core.Services.Services
         public IEnumerable<TImage> GetAllOptimizedImages()
         {
             var images = new List<TImage>();
-            var imagesMedia = _imageRepository.GetOptimizedItems();
+            var imagesMedia = _imageRepository.GetOptimizedItems().OrderByDescending(x => x.UpdateDate);
 
             foreach (var item in imagesMedia)
             {
@@ -108,20 +112,55 @@ namespace Tinifier.Core.Services.Services
             return images;
         }
 
-        public void CheckExtension(string source)
+        public IEnumerable<TImage> GetImagesFromFolder(int folderId)
+        {
+            var images = new List<TImage>();
+            var imagesMedia = _imageRepository.GetItemsFromFolder(folderId);
+
+            foreach (var item in imagesMedia)
+            {
+                var path = item.GetValue("umbracoFile").ToString();
+
+                var image = new TImage
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Url = GetUrl(path)
+                };
+
+                images.Add(image);
+            }
+
+            return images;
+        }
+
+        public bool CheckFolder(int itemId)
+        {
+            var folder = _imageRepository.GetByKey(itemId);
+
+            if (!string.Equals(folder.ContentType.Alias, "Folder", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool CheckExtension(string source)
         {
             var fileName = source.ToLower();
 
             if(!(fileName.Contains(".png") || fileName.Contains(".jpg") || fileName.Contains(".jpe") || fileName.Contains(".jpeg")))
             {
-                throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
+                return false;
             }
+
+            return true;
         }
 
         private string GetUrl(string path)
         {
             string url;
-            var serializer = new JavaScriptSerializer();
 
             if (!path.Contains("src"))
             {
@@ -129,7 +168,7 @@ namespace Tinifier.Core.Services.Services
             }
             else
             {
-                var urlModel = serializer.Deserialize<UrlModel>(path);
+                var urlModel = _serializer.Deserialize<UrlModel>(path);
                 url = urlModel.Src;
             }
             

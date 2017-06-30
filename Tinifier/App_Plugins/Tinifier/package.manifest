@@ -4,6 +4,7 @@
 "~/App_Plugins/Tinifier/Controllers/EditTSetting.controller.js",
 "~/App_Plugins/Tinifier/Controllers/TinyTImage.controller.js",
 "~/App_Plugins/Tinifier/Controllers/DisplayStatistic.controller.js",
-"https://www.gstatic.com/charts/loader.js"
+"https://www.gstatic.com/charts/loader.js",
+"~/App_Plugins/Tinifier/Controllers/TinyTFolder.controller.js"
 ]
 }

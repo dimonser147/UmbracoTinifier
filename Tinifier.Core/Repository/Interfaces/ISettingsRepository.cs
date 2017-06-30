@@ -1,9 +1,9 @@
 ﻿namespace Tinifier.Core.Repository.Interfaces
 {
     // Repository for settings with custom methods
-    public interface ISettingsRepository<TEntity> where TEntity : class
+    public interface ISettingsRepository<TSetting>
     {
-        TEntity GetSettings();
+        TSetting GetSettings();
 
         void Update(int currentMonthRequests);
     }

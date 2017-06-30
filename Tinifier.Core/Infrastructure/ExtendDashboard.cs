@@ -4,6 +4,7 @@ using System.Xml.Linq;
 
 namespace Tinifier.Core.Infrastructure
 {
+    // Extend dashboard.config with our custom tabs and views
     public static class ExtendDashboard
     {
         public static void AddTabs()

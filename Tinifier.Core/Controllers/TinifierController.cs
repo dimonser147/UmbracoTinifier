@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace Tinifier.Core.Controllers
         private readonly IHistoryService _historyService;
         private readonly ISettingsService _settingsService;
         private readonly IStatisticService _statisticService;
+        private readonly IStateService _stateService;
 
         public TinifierController()
         {
@@ -30,6 +32,7 @@ namespace Tinifier.Core.Controllers
             _tinyPngConnectorService = new TinyPNGConnectorService();
             _settingsService = new SettingsService();
             _statisticService = new StatisticService();
+            _stateService = new StateService();
         }
 
         [HttpGet]
@@ -48,75 +51,92 @@ namespace Tinifier.Core.Controllers
 
             var history = _historyService.GetHistoryForImage(timageId);
 
-            return Request.CreateResponse(HttpStatusCode.OK, new {timage, history});
+            return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
         }
 
         [HttpGet]
-        public HttpResponseMessage GetTSetting()
+        public async Task<HttpResponseMessage> TinyTImage(int itemId)
         {
-            var tsetting = _settingsService.GetSettings(); 
-
-            if(tsetting == null)
-            {
-                tsetting = new TSetting();
-            }
-
-            return Request.CreateResponse(HttpStatusCode.OK, tsetting);
-        }
-
-        [HttpPost]
-        public HttpResponseMessage CreateSettings(TSetting setting)
-        {
-            if(ModelState.IsValid)
-            {
-                _settingsService.CreateSettings(setting);
-                return Request.CreateResponse(HttpStatusCode.Created, PackageConstants.ApiKeyMessage);
-            }
-
-            return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.ApiKeyError);
-        }
-
-        [HttpGet]
-        public HttpResponseMessage GetStatistic()
-        {
-            var statistic = _statisticService.GetStatistic();
-            var tsetting = _settingsService.GetSettings();
-            var monthlyRequestsLimit = PackageConstants.MonthlyRequestsLimit;
-
-            return Request.CreateResponse(HttpStatusCode.OK, new { statistic, tsetting, monthlyRequestsLimit });
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> TinyTImage(int timageId)
-        {
-            var image = _imageService.GetImageById(timageId);
-            _imageService.CheckExtension(image.Name);
             _settingsService.CheckIfSettingExists();
+            var imagesList = new List<TImage>();
+
+            var image = _imageService.GetImageById(itemId);
+            _imageService.CheckExtension(image.Name);
             var imageHistory = _historyService.GetHistoryForImage(image.Id);
 
-            if(imageHistory != null)
+            if (imageHistory != null)
             {
-                if(imageHistory.IsOptimized)
+                if (imageHistory.IsOptimized)
                 {
                     return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AlreadyOptimized);
-                }                
+                }
             }
 
-            var imageBytes = File.ReadAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"));            
-            var tinyResponse = await _tinyPngConnectorService.TinifyByteArray(imageBytes);
+            imagesList.Add(image);
+            var responseMessage = await CallTinyPngService(imagesList);
 
-            if(tinyResponse.Output.Url == null)
+            return responseMessage;
+        }
+
+        [HttpGet]
+        public async Task<HttpResponseMessage> TinyTFolder(int folderId)
+        {
+            _settingsService.CheckIfSettingExists();
+            _imageService.CheckFolder(folderId);
+            var images = _imageService.GetImagesFromFolder(folderId);
+            var imagesList = _historyService.CheckImageHistory(images);
+
+            if (imagesList.Count == 0)
             {
-                _historyService.CreateResponseHistoryItem(timageId, tinyResponse);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, tinyResponse.Output.Error);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AllImagesAlreadyOptimized);
             }
 
-            var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
-            _imageService.UpdateImage(image, tinyImageBytes);
-            _historyService.CreateResponseHistoryItem(timageId, tinyResponse);
-            _statisticService.UpdateStatistic();
+            _stateService.CreateState(folderId);
+
+            var responseMessage = await CallTinyPngService(imagesList);
+
+            return responseMessage;
+        }
+
+        public HttpResponseMessage GetCurrentTinifingState()
+        {
+            var state = _stateService.GetState();
+            return Request.CreateResponse(HttpStatusCode.OK, state);
+        }
+
+        private async Task<HttpResponseMessage> CallTinyPngService(IEnumerable<TImage> imagesList)
+        {
+            try
+            {
+                await GetTinyImage(imagesList);
+            }
+            catch (NotSuccessfullRequestException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
 
             return Request.CreateResponse(HttpStatusCode.OK, PackageConstants.SuccessOptimized);
+        }
+
+        private async Task GetTinyImage(IEnumerable<TImage> imagesList)
+        {
+            foreach (var image in imagesList)
+            {
+                var imageBytes = File.ReadAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"));
+                var tinyResponse = await _tinyPngConnectorService.TinifyByteArray(imageBytes);
+
+                if (tinyResponse.Output.Url == null)
+                {
+                    _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
+                    throw new NotSuccessfullRequestException($"Request to TinyPNG with Image name {image.Name} was not successfull");
+                }
+
+                var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
+                _imageService.UpdateImage(image, tinyImageBytes);
+                _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
+                _statisticService.UpdateStatistic();
+                _stateService.UpdateState();
+            }            
         }
     }
 }

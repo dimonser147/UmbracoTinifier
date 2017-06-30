@@ -1,15 +1,22 @@
-﻿angular.module("umbraco").controller("Tinifier.DisplayStatistic.Controller", function($scope, $http) {
+﻿angular.module("umbraco").controller("Tinifier.DisplayStatistic.Controller", function ($scope, $http, notificationsService, $timeout) {
 
         $scope.currentRequests = 0;
         $scope.monthlyRequestsLimit = 0;
+        $scope.currentImage = 0;
+        $scope.amounthOfImages = 0;
 
         google.charts.load("current", { packages: ["corechart"] });
         google.charts.setOnLoadCallback(drawChart);
 
         function drawChart() {
 
-            $http.get("/umbraco/backoffice/api/Tinifier/GetStatistic").then(function(response) {
-                $scope.currentRequests = response.data.tsetting.CurrentMonthRequests;
+            $http.get("/umbraco/backoffice/api/Statistic/GetStatistic").then(function (response) {
+
+                if (response.data.tsetting != null)
+                {
+                    $scope.currentRequests = response.data.tsetting.CurrentMonthRequests;
+                }
+                
                 $scope.monthlyRequestsLimit = response.data.monthlyRequestsLimit;
                 var data = createData(response);
                 var options = createOptions();
@@ -41,4 +48,17 @@
 
             return options;
         }
+
+        $http.get("/umbraco/backoffice/api/Tinifier/GetCurrentTinifingState").then(function (response) {
+
+            if (response.data == "null")
+            {
+                document.getElementById("currentState").style.display = 'none'; 
+            }
+            else
+            {
+                $scope.currentImage = response.data.CurrentImage;
+                $scope.amounthOfImages = response.data.AmounthOfImages;
+            }
+        });
 });

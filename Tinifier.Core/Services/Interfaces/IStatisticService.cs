@@ -5,9 +5,12 @@ namespace Tinifier.Core.Services.Interfaces
     public interface IStatisticService
     {
         // Get statistic and display with chart
-        TImageStatistic GetStatistic();
+        TinifyImageStatistic GetStatistic();
 
         // Update Statistic in database
         void UpdateStatistic();
+
+        // Create Statistic in database
+        void CreateStatistic();
     }
 }

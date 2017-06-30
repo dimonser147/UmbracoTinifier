@@ -23,6 +23,9 @@ namespace Tinifier.Core.Application
 
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
+            // Set statistic before optimizing
+            _statisticService.CreateStatistic();
+
             // Create a new section
             CreateTinifySection(context);
 
@@ -107,6 +110,11 @@ namespace Tinifier.Core.Application
                 menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, "Optimization Stats");
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
+
+                var menuItemBulkButton = new MenuItem("Tinifier_Bulk", "Bulk Tinify");
+                menuItemBulkButton.LaunchDialogView(PackageConstants.TinyTFolderRoute, "Bulk Optimization");
+                menuItemBulkButton.Icon = PackageConstants.MenuIconBulk;
+                e.Menu.Items.Add(menuItemBulkButton);
             }
         }
     }

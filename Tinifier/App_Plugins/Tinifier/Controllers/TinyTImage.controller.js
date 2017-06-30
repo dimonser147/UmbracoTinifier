@@ -20,7 +20,7 @@
 
             notificationsService.info("Tinifing.....");
 
-            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?timageId=" + timageId).success(function(response) {
+            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?itemId=" + timageId).success(function (response) {
                 notificationsService.success("Success", response);
 
                 dialogService.open({
