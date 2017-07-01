@@ -23,12 +23,7 @@ namespace Tinifier.Core.Controllers
         [HttpGet]
         public HttpResponseMessage GetTSetting()
         {
-            var tsetting = _settingsService.GetSettings();
-
-            if (tsetting == null)
-            {
-                tsetting = new TSetting();
-            }
+            var tsetting = _settingsService.GetSettings() ?? new TSetting();
 
             return Request.CreateResponse(HttpStatusCode.OK, tsetting);
         }

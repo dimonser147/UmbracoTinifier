@@ -29,7 +29,7 @@ namespace Tinifier.Core.Application
                 dbHelper.CreateTable<TImageStatistic>(false);
             }
 
-            if(!dbHelper.TableExist(PackageConstants.DBStateTable))
+            if(!dbHelper.TableExist(PackageConstants.DbStateTable))
             {
                 dbHelper.CreateTable<TState>(false);
             }

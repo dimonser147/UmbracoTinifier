@@ -35,8 +35,7 @@ namespace Tinifier.Core.Infrastructure
             if (node != null)
             {
                 var parent = node.ParentNode;
-                parent.RemoveChild(node);
-                var newXML = doc.OuterXml;
+                parent?.RemoveChild(node);
                 doc.Save(path);
             }
         }

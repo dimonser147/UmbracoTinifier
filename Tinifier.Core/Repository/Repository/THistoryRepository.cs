@@ -23,9 +23,9 @@ namespace Tinifier.Core.Repository.Repository
             return histories;
         }
 
-        public TinyPNGResponseHistory GetByKey(int Id)
+        public TinyPNGResponseHistory GetByKey(int id)
         {
-            var query = new Sql($"SELECT * FROM TinifierResponseHistory WHERE ImageId = {Id}");
+            var query = new Sql($"SELECT * FROM TinifierResponseHistory WHERE ImageId = {id}");
             var history = _database.FirstOrDefault<TinyPNGResponseHistory>(query);
 
             return history;

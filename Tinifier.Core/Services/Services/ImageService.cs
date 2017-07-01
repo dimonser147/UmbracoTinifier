@@ -17,13 +17,11 @@ namespace Tinifier.Core.Services.Services
     public class ImageService : IImageService
     {
         private readonly TImageRepository _imageRepository;
-        private readonly IHistoryService _historyService;
         private readonly JavaScriptSerializer _serializer;
 
         public ImageService()
         {
             _imageRepository = new TImageRepository();
-            _historyService = new HistoryService();
             _serializer = new JavaScriptSerializer();
         }
 
@@ -138,24 +136,14 @@ namespace Tinifier.Core.Services.Services
         {
             var folder = _imageRepository.GetByKey(itemId);
 
-            if (!string.Equals(folder.ContentType.Alias, "Folder", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            return true;
+            return string.Equals(folder.ContentType.Alias, "Folder", StringComparison.OrdinalIgnoreCase);
         }
 
         public bool CheckExtension(string source)
         {
             var fileName = source.ToLower();
 
-            if(!(fileName.Contains(".png") || fileName.Contains(".jpg") || fileName.Contains(".jpe") || fileName.Contains(".jpeg")))
-            {
-                return false;
-            }
-
-            return true;
+            return fileName.Contains(".png") || fileName.Contains(".jpg") || fileName.Contains(".jpe") || fileName.Contains(".jpeg");
         }
 
         private string GetUrl(string path)

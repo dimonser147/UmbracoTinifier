@@ -5,14 +5,12 @@
 
     // RecycleBinFolderId
     var recycleBinFolderId = -21;
-    var currentImageNumber = 0;
-    var fullNumberOfImages = 0;
 
     // Get from the API
     $scope.timage = null;
 
     // Tinify Image and show notification
-    $scope.tinify = function () {
+    $scope.tinify = function() {
 
         // Check if user choose Image or recycle bin folder
         if (folderId === recycleBinFolderId) {
@@ -20,12 +18,13 @@
             return;
         }
 
-        notificationsService.info("Tinifing..... Bulk optimization started and you can see progress in the Tinifier section");
+        notificationsService
+            .info("Tinifing..... Bulk optimization started and you can see progress in the Tinifier section");
 
-        $http.get("/umbraco/backoffice/api/Tinifier/TinyTFolder?folderId=" + folderId).success(function (response) {
+        $http.get("/umbraco/backoffice/api/Tinifier/TinyTFolder?folderId=" + folderId).success(function(response) {
             notificationsService.success("Success", response);
 
-        }).error(function (response) {
+        }).error(function(response) {
             notificationsService.error("Error", response);
         });
     };

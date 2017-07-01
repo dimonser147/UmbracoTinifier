@@ -6,7 +6,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 namespace Tinifier.Core.Models.Db
 {
     // State table with information about current tinifing
-    [TableName(PackageConstants.DBStateTable)]
+    [TableName(PackageConstants.DbStateTable)]
     [PrimaryKey("Id", autoIncrement = true)]
     public class TState
     {

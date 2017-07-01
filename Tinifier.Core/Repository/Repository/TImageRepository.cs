@@ -71,7 +71,7 @@ namespace Tinifier.Core.Repository.Repository
             var mediaList = new List<Media>();
             var imagesFolder = _mediaService.GetRootMedia().FirstOrDefault(x => x.Id == folderId);
 
-            foreach(IMedia media in imagesFolder.Children())
+            foreach(var media in imagesFolder.Children())
             {
                 if (media.ContentType.Alias == "Image")
                 {
@@ -109,7 +109,7 @@ namespace Tinifier.Core.Repository.Repository
             var mediaList = new List<Media>();
             var imagesFolder = _mediaService.GetRootMedia().FirstOrDefault(x => x.Id == folderId);
 
-            foreach (IMedia media in imagesFolder.Children())
+            foreach (var media in imagesFolder.Children())
             {
                 if (media.ContentType.Alias == "Image")
                 {

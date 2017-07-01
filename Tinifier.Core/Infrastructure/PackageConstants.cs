@@ -15,7 +15,7 @@
         public const string DbSettingsTable = "TinifierUserSettings";
         public const string DbHistoryTable = "TinifierResponseHistory";
         public const string DbStatisticTable = "TinifierImagesStatistic";
-        public const string DBStateTable = "TinifierState";
+        public const string DbStateTable = "TinifierState";
 
         public const string TinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/tinifyDialog.html";
         public const string TinyTFolderRoute = "/App_Plugins/Tinifier/BackOffice/timages/BulkOptimizationDialog.html";
