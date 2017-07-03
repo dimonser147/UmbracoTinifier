@@ -271,9 +271,12 @@
     <Compile Include="Application\DbStartup.cs" />
     <Compile Include="Application\UmbracoStartup.cs" />
     <Compile Include="Controllers\SettingsController.cs" />
+    <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Controllers\StatisticController.cs" />
     <Compile Include="Filters\ExceptionFilter.cs" />
+    <Compile Include="Infrastructure\Enums\SourceTypes.cs" />
     <Compile Include="Infrastructure\Enums\Statuses.cs" />
+    <Compile Include="Infrastructure\Exceptions\ConcurrentOptimizingException.cs" />
     <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSuccessfullRequestException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSupportedException.cs" />
@@ -312,6 +315,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Repository\TSettingsRepository.cs" />
     <Compile Include="Repository\Repository\TStatisticRepository.cs" />
+    <Compile Include="Services\Interfaces\IValidationService.cs" />
     <Compile Include="Services\Services\HistoryService.cs" />
     <Compile Include="Services\Services\ImageService.cs" />
     <Compile Include="Services\Services\SettingsService.cs" />
@@ -320,6 +324,7 @@
     <Compile Include="Services\Services\TinyPNGConnectorService.cs" />
     <Compile Include="Services\Services\TinyImageService.cs" />
     <Compile Include="Infrastructure\ExtendDashboard.cs" />
+    <Compile Include="Services\Services\ValidationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Actions\" />

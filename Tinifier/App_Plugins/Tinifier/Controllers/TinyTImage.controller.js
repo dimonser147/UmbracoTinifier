@@ -5,6 +5,7 @@
 
     // RecycleBinFolderId
     var recycleBinFolderId = -21;
+    var sourceTypeImageId = 2;
 
     // Get from the API
     $scope.timage = null;
@@ -18,14 +19,17 @@
             return;
         }
 
-        notificationsService.info("Tinifing.....");
+        notificationsService.info("Tinifing..... Optimization started and if you tinifing Folder you can see progress in the Tinifier section");
 
         $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?itemId=" + timageId).success(function(response) {
-            notificationsService.success("Success", response);
+            notificationsService.success("Success", response.SuccessOptimized);
 
-            dialogService.open({
-                template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
-            });
+            if (response.sourceType === sourceTypeImageId)
+            {
+                dialogService.open({
+                    template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
+                });
+            }
 
         }).error(function(response) {
             notificationsService.error("Error", response);

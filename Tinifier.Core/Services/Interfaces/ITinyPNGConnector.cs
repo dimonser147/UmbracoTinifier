@@ -5,10 +5,7 @@ namespace Tinifier.Core.Services.Interfaces
 {
     public interface ITinyPNGConnector
     {
-        // CreateRequest to TinyPng Service with input byte array
-        Task<TinyResponse> TinifyByteArray(byte[] imageByteArray);
-
-        // CreateRequest to TinyPng Service with input imageUrl
-        Task<TinyResponse> TinifyJsonObject(string imageUrl);
+        // Send Image to TinyPNG Service 
+        Task<TinyResponse> SendImageToTinyPngService(string imageUrl);
     }
 }

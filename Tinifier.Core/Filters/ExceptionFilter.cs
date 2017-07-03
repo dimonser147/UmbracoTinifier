@@ -22,6 +22,11 @@ namespace Tinifier.Core.Filters
                 context.Response = context.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType, ex.Message);
             }
 
+            if(context.Exception is ConcurrentOptimizingException)
+            {
+                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
             LogHelper.Error(GetType(), ex.StackTrace, ex);
         }
     }

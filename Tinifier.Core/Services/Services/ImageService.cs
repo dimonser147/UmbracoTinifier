@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
+using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Service;
 using Tinifier.Core.Repository.Repository;
@@ -16,13 +18,21 @@ namespace Tinifier.Core.Services.Services
 {
     public class ImageService : IImageService
     {
+        private readonly IValidationService _validationService;
         private readonly TImageRepository _imageRepository;
         private readonly JavaScriptSerializer _serializer;
+        private readonly IHistoryService _historyService;
+        private readonly IStatisticService _statisticService;
+        private readonly IStateService _stateService;
 
         public ImageService()
         {
             _imageRepository = new TImageRepository();
+            _validationService = new ValidationService();
             _serializer = new JavaScriptSerializer();
+            _historyService = new HistoryService();
+            _statisticService = new StatisticService();
+            _stateService = new StateService();
         }
 
         public IEnumerable<TImage> GetAllImages()
@@ -56,7 +66,7 @@ namespace Tinifier.Core.Services.Services
                 throw new EntityNotFoundException($"Image with such id doesn't exist. Id: {id}");
             }
 
-            if(!CheckExtension(image.Name))
+            if(!_validationService.CheckExtension(image.Name))
             {
                 throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
             }
@@ -132,21 +142,7 @@ namespace Tinifier.Core.Services.Services
             return images;
         }
 
-        public bool CheckFolder(int itemId)
-        {
-            var folder = _imageRepository.GetByKey(itemId);
-
-            return string.Equals(folder.ContentType.Alias, "Folder", StringComparison.OrdinalIgnoreCase);
-        }
-
-        public bool CheckExtension(string source)
-        {
-            var fileName = source.ToLower();
-
-            return fileName.Contains(".png") || fileName.Contains(".jpg") || fileName.Contains(".jpe") || fileName.Contains(".jpeg");
-        }
-
-        private string GetUrl(string path)
+        public string GetUrl(string path)
         {
             string url;
 
@@ -161,6 +157,19 @@ namespace Tinifier.Core.Services.Services
             }
             
             return url;
+        }
+
+        public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, SourceTypes sourceType)
+        {
+            var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
+            UpdateImage(image, tinyImageBytes);
+            _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
+            _statisticService.UpdateStatistic();
+
+            if (sourceType == SourceTypes.Folder)
+            {
+                _stateService.UpdateState();
+            }
         }
     }
 }

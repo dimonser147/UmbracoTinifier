@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Tinifier.Core.Infrastructure.Enums;
+using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 
 namespace Tinifier.Core.Services.Interfaces
@@ -14,16 +16,14 @@ namespace Tinifier.Core.Services.Interfaces
         // Update Image by tiny image
         void UpdateImage(TImage image, byte[] bytesArray);
 
-        // Check Image Extension
-        bool CheckExtension(string source);
-
         // Get all optimized images
         IEnumerable<TImage> GetAllOptimizedImages();
 
         // Get all images from specific folder
         IEnumerable<TImage> GetImagesFromFolder(int folderId);
 
-        // Check folder this or Image
-        bool CheckFolder(int itemId);
+        string GetUrl(string path);
+
+        void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, SourceTypes sourceType);
     }
 }

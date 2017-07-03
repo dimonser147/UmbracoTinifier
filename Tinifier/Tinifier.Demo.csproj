@@ -309,13 +309,11 @@
     <Content Include="App_Plugins\ModelsBuilder\modelsbuilder.resource.js" />
     <Content Include="App_Plugins\Tinifier\BackOffice\Dashboards\settings.html" />
     <Content Include="App_Plugins\Tinifier\BackOffice\Dashboards\statistic.html" />
-    <Content Include="App_Plugins\Tinifier\BackOffice\timages\BulkOptimizationDialog.html" />
     <Content Include="App_Plugins\Tinifier\BackOffice\timages\edit.html" />
     <Content Include="App_Plugins\Tinifier\BackOffice\timages\tinifyDialog.html" />
     <Content Include="App_Plugins\Tinifier\Controllers\DisplayStatistic.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\EditTimage.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\EditTSetting.controller.js" />
-    <Content Include="App_Plugins\Tinifier\Controllers\TinyTFolder.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinyTImage.controller.js" />
     <Content Include="App_Plugins\Tinifier\Lang\en-US.xml" />
     <Content Include="config\grid.editors.config.js" />

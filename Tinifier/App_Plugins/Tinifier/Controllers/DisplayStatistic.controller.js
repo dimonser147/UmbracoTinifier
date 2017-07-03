@@ -48,7 +48,7 @@
         return options;
     }
 
-    $http.get("/umbraco/backoffice/api/Tinifier/GetCurrentTinifingState").then(function(response) {
+    $http.get("/umbraco/backoffice/api/State/GetCurrentTinifingState").then(function(response) {
 
         if (response.data == "null") {
             document.getElementById("currentState").style.display = "none";

@@ -11,6 +11,6 @@ namespace Tinifier.Core.Services.Interfaces
         void UpdateState();
 
         // Create state in bulk tinifing
-        void CreateState(int folderId);
+        void CreateState(int folderId, int numberOfImages);
     }
 }

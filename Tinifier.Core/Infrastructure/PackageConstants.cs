@@ -20,6 +20,7 @@
         public const string TinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/tinifyDialog.html";
         public const string TinyTFolderRoute = "/App_Plugins/Tinifier/BackOffice/timages/BulkOptimizationDialog.html";
         public const string TinySettingsRoute = "/App_Plugins/Tinifier/BackOffice/timages/edit.html";
+        public const string OptimizationUploadUrl = "/umbraco/backoffice/api/Tinifier/TinyTImage?itemId=";
 
         public const string ApiKeyMessage = "ApiKey successfully added!";
         public const string ApiKeyError = "ApiKey not added! Please, fill ApiKey field with correct value";
@@ -31,5 +32,7 @@
         public const string AllImagesAlreadyOptimized = "All Images are already optimized";
 
         public const string BulkOnlyFolder = "You can bulk tinify only folders!";
+        public const string ConcurrentOptimizing = "Sorry, but at the same time you can tinify only one folder";
+        public const string NotSuccessfullRequest = "Request to TinyPNG was not successfull";
     }
 }

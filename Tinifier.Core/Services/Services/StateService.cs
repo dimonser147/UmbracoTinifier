@@ -8,20 +8,18 @@ namespace Tinifier.Core.Services.Services
     public class StateService : IStateService
     {
         private readonly TStateRepository _stateRepository;
-        private readonly TImageRepository _imageRepository;
 
         public StateService()
         {
             _stateRepository = new TStateRepository();
-            _imageRepository = new TImageRepository();
         }
 
-        public void CreateState(int folderId)
+        public void CreateState(int folderId, int numberOfImages)
         {
             var state = new TState
             {
                 CurrentImage = 0,
-                AmounthOfImages = _imageRepository.AmounthImagesFromFolder(folderId),
+                AmounthOfImages = numberOfImages,
                 StatusType = Statuses.InProgress
             };
 

@@ -15,10 +15,12 @@ namespace Tinifier.Core.Application
     public class UmbracoStartup : ApplicationEventHandler
     {
         private readonly IStatisticService _statisticService;
+        private readonly ISettingsService _settingsService;
 
         public UmbracoStartup()
         {
             _statisticService = new StatisticService();
+            _settingsService = new SettingsService();
         }
 
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
@@ -61,10 +63,17 @@ namespace Tinifier.Core.Application
         {
             foreach (var mediaItem in e.SavedEntities)
             {
-                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
-                {
+                 if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
+                 {
+                    var settings = _settingsService.GetSettings();
+
+                    if (settings != null && settings.EnableOptimizationOnUpload)
+                    {                                  
+                        //e.Messages.Add(new EventMessage("Test", ex.Message, EventMessageType.Error));                                           
+                    }
+
                     _statisticService.UpdateStatistic();
-                }
+                 }
             }
         }
 
@@ -99,6 +108,7 @@ namespace Tinifier.Core.Application
 
         private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
+            // Add menuItem to menu
             if (string.Equals(sender.TreeAlias, "media", StringComparison.OrdinalIgnoreCase))
             {
                 var menuItemTinifyButton = new MenuItem("Tinifier_Button", "Tinify");
@@ -110,11 +120,6 @@ namespace Tinifier.Core.Application
                 menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, "Optimization Stats");
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
-
-                var menuItemBulkButton = new MenuItem("Tinifier_Bulk", "Bulk Tinify");
-                menuItemBulkButton.LaunchDialogView(PackageConstants.TinyTFolderRoute, "Bulk Optimization");
-                menuItemBulkButton.Icon = PackageConstants.MenuIconBulk;
-                e.Menu.Items.Add(menuItemBulkButton);
             }
         }
     }

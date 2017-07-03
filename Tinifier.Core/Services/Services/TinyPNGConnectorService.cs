@@ -9,6 +9,7 @@ using Tinifier.Core.Services.Interfaces;
 using Tinifier.Core.Infrastructure;
 using System.Linq;
 using System.Net;
+using System.Web;
 
 namespace Tinifier.Core.Services.Services
 {
@@ -25,7 +26,15 @@ namespace Tinifier.Core.Services.Services
             _serializer = new JavaScriptSerializer();
         }
 
-        public async Task<TinyResponse> TinifyByteArray(byte[] imageByteArray)
+        public async Task<TinyResponse> SendImageToTinyPngService(string imageUrl)
+        {
+            var imageBytes = System.IO.File.ReadAllBytes(HttpContext.Current.Server.MapPath($"~{imageUrl}"));
+            var tinyResponse = await TinifyByteArray(imageBytes);
+
+            return tinyResponse;
+        }
+
+        private async Task<TinyResponse> TinifyByteArray(byte[] imageByteArray)
         {
             TinyResponse tinyResponse;
             var byteContent = new ByteArrayContent(imageByteArray);
@@ -51,7 +60,7 @@ namespace Tinifier.Core.Services.Services
             return tinyResponse;
         }
 
-        public async Task<TinyResponse> TinifyJsonObject(string imageUrl)
+        private async Task<TinyResponse> TinifyJsonObject(string imageUrl)
         {
             TinyResponse tinyResponse;
 

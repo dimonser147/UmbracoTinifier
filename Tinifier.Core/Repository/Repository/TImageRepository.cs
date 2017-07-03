@@ -69,7 +69,7 @@ namespace Tinifier.Core.Repository.Repository
         public IEnumerable<Media> GetItemsFromFolder(int folderId)
         {
             var mediaList = new List<Media>();
-            var imagesFolder = _mediaService.GetRootMedia().FirstOrDefault(x => x.Id == folderId);
+            var imagesFolder = _mediaService.GetById(folderId);
 
             foreach(var media in imagesFolder.Children())
             {
@@ -102,24 +102,6 @@ namespace Tinifier.Core.Repository.Repository
             var numberOfOptimizedItems = mediaItems.ToList().Count();
 
             return numberOfOptimizedItems;
-        }
-
-        public int AmounthImagesFromFolder(int folderId)
-        {
-            var mediaList = new List<Media>();
-            var imagesFolder = _mediaService.GetRootMedia().FirstOrDefault(x => x.Id == folderId);
-
-            foreach (var media in imagesFolder.Children())
-            {
-                if (media.ContentType.Alias == "Image")
-                {
-                    mediaList.Add(media as Media);
-                }
-            }
-
-            var numberOfImages = mediaList.Count;
-
-            return numberOfImages;
         }
     }
 }

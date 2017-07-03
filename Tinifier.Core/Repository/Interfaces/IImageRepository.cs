@@ -15,7 +15,5 @@ namespace Tinifier.Core.Repository.Interfaces
         int AmounthOfItems();
 
         int AmounthOfOptimizedItems();
-
-        int AmounthImagesFromFolder(int folderId);
     }
 }
