@@ -60,41 +60,6 @@ namespace Tinifier.Core.Services.Services
             return tinyResponse;
         }
 
-        private async Task<TinyResponse> TinifyJsonObject(string imageUrl)
-        {
-            TinyResponse tinyResponse;
-
-            var source = new TinyJsonObject
-            {
-                Source = new Source
-                {
-                    Url = imageUrl
-                }
-            };
-
-            var content = new StringContent(_serializer.Serialize(source).ToLower(), Encoding.UTF8, "application/json");
-
-            try
-            {
-                var responseResult = await CreateRequest(content);
-                tinyResponse = _serializer.Deserialize<TinyResponse>(responseResult);
-                tinyResponse.Output.IsOptimized = true;
-            }
-            catch (HttpRequestException ex)
-            {
-                tinyResponse = new TinyResponse
-                {
-                    Output = new TinyOutput
-                    {
-                        Error = ex.Message,
-                        IsOptimized = false
-                    }
-                };
-            }
-
-            return tinyResponse;
-        }
-
         private async Task<string> CreateRequest<T>(T inputData)
         {
             HttpResponseMessage response;

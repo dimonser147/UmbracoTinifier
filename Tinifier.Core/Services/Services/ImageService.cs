@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
@@ -11,8 +10,6 @@ using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Service;
 using Tinifier.Core.Repository.Repository;
 using Tinifier.Core.Services.Interfaces;
-using Umbraco.Core;
-using Umbraco.Core.Models;
 
 namespace Tinifier.Core.Services.Services
 {
@@ -24,6 +21,7 @@ namespace Tinifier.Core.Services.Services
         private readonly IHistoryService _historyService;
         private readonly IStatisticService _statisticService;
         private readonly IStateService _stateService;
+        private readonly ITinyPNGConnector _tinyPngConnectorService;
 
         public ImageService()
         {
@@ -33,28 +31,7 @@ namespace Tinifier.Core.Services.Services
             _historyService = new HistoryService();
             _statisticService = new StatisticService();
             _stateService = new StateService();
-        }
-
-        public IEnumerable<TImage> GetAllImages()
-        {
-            var images = new List<TImage>();
-            var imagesMedia = _imageRepository.GetAll();
-
-            foreach (var item in imagesMedia)
-            {
-                var path = item.GetValue("umbracoFile").ToString();
-
-                var image = new TImage
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Url = GetUrl(path)
-                };
-
-                images.Add(image);
-            }
-
-            return images;
+            _tinyPngConnectorService = new TinyPNGConnectorService();
         }
 
         public TImage GetImageById(int id)
@@ -68,7 +45,7 @@ namespace Tinifier.Core.Services.Services
 
             if(!_validationService.CheckExtension(image.Name))
             {
-                throw new Infrastructure.Exceptions.NotSupportedException(PackageConstants.NotSupported);
+                throw new NotSupportedException(PackageConstants.NotSupported);
             }
 
             var path = image.GetValue("umbracoFile").ToString();
@@ -85,17 +62,24 @@ namespace Tinifier.Core.Services.Services
 
         public void UpdateImage(TImage image, byte[] bytesArray)
         {
-            var mediaService = ApplicationContext.Current.Services.MediaService;
-            var mediaItem = mediaService.GetById(image.Id) as Media;
-
             System.IO.File.Delete(HttpContext.Current.Server.MapPath($"~{image.Url}"));
             System.IO.File.WriteAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"), bytesArray);
 
-            if (mediaItem != null)
+            _imageRepository.UpdateItem(image.Id);
+        }
+
+        public async void OptimizeImage(TImage image)
+        {
+            var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(GetUrl(image.Url));
+
+            if (tinyResponse.Output.Url == null)
             {
-                mediaItem.UpdateDate = DateTime.UtcNow;
-                _imageRepository.UpdateItem(mediaService, mediaItem);
+                _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
+
+                return;
             }
+
+            UpdateImageAfterSuccessfullRequest(tinyResponse, image, SourceTypes.Image);
         }
 
         public IEnumerable<TImage> GetAllOptimizedImages()
@@ -162,8 +146,9 @@ namespace Tinifier.Core.Services.Services
         public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, SourceTypes sourceType)
         {
             var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
-            UpdateImage(image, tinyImageBytes);
+
             _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
+            UpdateImage(image, tinyImageBytes);
             _statisticService.UpdateStatistic();
 
             if (sourceType == SourceTypes.Folder)

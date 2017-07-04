@@ -34,14 +34,5 @@ namespace Tinifier.Core.Repository.Repository
 
             _database.Execute(query);
         }
-
-        public int Count()
-        {
-            var query = new Sql("SELECT * FROM TinifierImagesStatistic");
-
-            var numberOfElements = _database.Fetch<TImageStatistic>(query);
-
-            return numberOfElements.Count;
-        }
     }
 }

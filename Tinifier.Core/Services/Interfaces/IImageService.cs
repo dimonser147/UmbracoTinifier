@@ -7,9 +7,6 @@ namespace Tinifier.Core.Services.Interfaces
 {
     public interface IImageService
     {
-        // Get all images from Umbraco Media
-        IEnumerable<TImage> GetAllImages();
-
         // Get Image By Id from Umbraco Media
         TImage GetImageById(int id);
 
@@ -22,8 +19,13 @@ namespace Tinifier.Core.Services.Interfaces
         // Get all images from specific folder
         IEnumerable<TImage> GetImagesFromFolder(int folderId);
 
+        // Parse UmbracoFile in Media and get Image url
         string GetUrl(string path);
 
+        // Optimize image and update history
+        void OptimizeImage(TImage image);
+
+        // Update image and state if its image from folder
         void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, SourceTypes sourceType);
     }
 }

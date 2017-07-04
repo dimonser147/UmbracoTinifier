@@ -3,6 +3,23 @@
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
 
+    var arrOfIds = [];
+    var selectedImages = document.querySelectorAll(".-selected");
+
+    for (var i = 0; i < selectedImages.length; i++)
+    {
+        var innerHtml = selectedImages[i].innerHTML;
+        var regex = /<img.*?src=['"](.*?)['"]/;
+        var src = regex.exec(innerHtml)[1];
+        var Id = src.split('/')[2];
+        arrOfIds.push(Id);
+    }
+
+    if (arrOfIds.length === 0)
+    {
+        arrOfIds.push(timageId);
+    }
+
     // RecycleBinFolderId
     var recycleBinFolderId = -21;
     var sourceTypeImageId = 2;
@@ -21,7 +38,7 @@
 
         notificationsService.info("Tinifing..... Optimization started and if you tinifing Folder you can see progress in the Tinifier section");
 
-        $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?itemId=" + timageId).success(function(response) {
+        $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage", {"items": arrOfIds }).success(function (response) {
             notificationsService.success("Success", response.SuccessOptimized);
 
             if (response.sourceType === sourceTypeImageId)

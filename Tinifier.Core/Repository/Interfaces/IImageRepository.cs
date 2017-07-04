@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using Umbraco.Core.Services;
 
 namespace Tinifier.Core.Repository.Interfaces
 {
     // Repository for images with custom Methods
     public interface IImageRepository<Media>
     {
-        void UpdateItem(IMediaService mediaService, Media mediaItem);
+        void UpdateItem(int imageId);
 
         IEnumerable<Media> GetOptimizedItems();
 

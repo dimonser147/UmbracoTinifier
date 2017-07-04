@@ -42,10 +42,13 @@ namespace Tinifier.Core.Repository.Repository
             return mediaItem;
         }
 
-        public void UpdateItem(IMediaService mediaService, Media mediaItem)
+        public void UpdateItem(int imageId)
         {
+            var mediaItem = _mediaService.GetById(imageId) as Media;
+
             mediaItem.UpdateDate = DateTime.UtcNow;
-            mediaService.Save(mediaItem);
+
+            _mediaService.Save(mediaItem);
         }
 
         public IEnumerable<Media> GetOptimizedItems()

@@ -1,6 +1,6 @@
 ﻿namespace Tinifier.Core.Infrastructure.Enums
 {
-    // Enum for status of bulk
+    // Enum for statuses of folders optimization 
     public enum Statuses
     {
         InProgress = 1,

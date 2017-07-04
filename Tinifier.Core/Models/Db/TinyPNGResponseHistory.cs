@@ -5,6 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Tinifier.Core.Models.Db
 {
+    // Response history for database
     [TableName(PackageConstants.DbHistoryTable)]
     [PrimaryKey("Id", autoIncrement = true)]
     public class TinyPNGResponseHistory

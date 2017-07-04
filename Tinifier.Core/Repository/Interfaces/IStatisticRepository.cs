@@ -4,9 +4,5 @@
     public interface IStatisticRepository<TImageStatistic>
     {
         TImageStatistic GetStatistic();
-
-        int Count();
-
-        void Update(TImageStatistic entity);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Models.Db;
 using Tinifier.Core.Services.Interfaces;
 using Tinifier.Core.Services.Services;
 using umbraco.cms.businesslogic.packager;
@@ -16,11 +17,15 @@ namespace Tinifier.Core.Application
     {
         private readonly IStatisticService _statisticService;
         private readonly ISettingsService _settingsService;
+        private readonly IImageService _imageService;
+        private readonly IHistoryService _historyService;
 
         public UmbracoStartup()
         {
             _statisticService = new StatisticService();
             _settingsService = new SettingsService();
+            _imageService = new ImageService();
+            _historyService = new HistoryService();
         }
 
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
@@ -34,8 +39,8 @@ namespace Tinifier.Core.Application
             // Extend dropdownMenu with Tinify button
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
 
-            // Save image handler for updating number of Images in database
-            MediaService.Saved += MediaServiceSaved;
+            // Save image handler for updating number of Images in database and tinifing on upload
+            MediaService.Saved += MediaServiceSaving;
 
             // Delete image handler for updating number of Images in database
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
@@ -44,6 +49,7 @@ namespace Tinifier.Core.Application
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
         }
 
+        // Remove section and clear tabs before deleting package
         private void InstalledPackage_BeforeDelete(InstalledPackage sender, EventArgs e)
         {
             if (string.Equals(sender.Data.Name, "tinifier", StringComparison.OrdinalIgnoreCase))
@@ -59,24 +65,36 @@ namespace Tinifier.Core.Application
             }
         }
 
-        private void MediaServiceSaved(IMediaService sender, SaveEventArgs<IMedia> e)
+        // Update statistic when image upload and optimize if flag is true
+        private void MediaServiceSaving(IMediaService sender, SaveEventArgs<IMedia> eventArg)
         {
-            foreach (var mediaItem in e.SavedEntities)
+            foreach (var mediaItem in eventArg.SavedEntities)
             {
-                 if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
-                 {
+                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
+                {
                     var settings = _settingsService.GetSettings();
 
-                    if (settings != null && settings.EnableOptimizationOnUpload)
-                    {                                  
-                        //e.Messages.Add(new EventMessage("Test", ex.Message, EventMessageType.Error));                                           
+                    if (settings != null)
+                    {
+                        if(settings.EnableOptimizationOnUpload)
+                        {
+                            try
+                            {
+                                OptimizeOnUpload(mediaItem.Id, eventArg);
+                            }
+                            catch(Infrastructure.Exceptions.NotSupportedException)
+                            {
+                                continue;
+                            }
+                        }                                       
                     }
 
                     _statisticService.UpdateStatistic();
-                 }
+                }
             }
         }
 
+        // Update statistic when recycle bin is empty
         private void MediaService_EmptiedRecycleBin(IMediaService sender, RecycleBinEventArgs e)
         {
             var iMedias = ApplicationContext.Current.Services.MediaService.GetByIds(e.Ids);
@@ -90,9 +108,9 @@ namespace Tinifier.Core.Application
             }
         }
 
+        // Create a new section
         private void CreateTinifySection(ApplicationContext context)
         {
-            // Create a new section
             var section = context.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
 
             if (section == null)
@@ -106,9 +124,9 @@ namespace Tinifier.Core.Application
             }
         }
 
+        // Add menuItems to menu
         private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
-            // Add menuItem to menu
             if (string.Equals(sender.TreeAlias, "media", StringComparison.OrdinalIgnoreCase))
             {
                 var menuItemTinifyButton = new MenuItem("Tinifier_Button", "Tinify");
@@ -120,6 +138,29 @@ namespace Tinifier.Core.Application
                 menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, "Optimization Stats");
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
+            }
+        }
+
+        // Call methods for tinifing when upload image
+        private void OptimizeOnUpload(int mediaItemId, SaveEventArgs<IMedia> e)
+        {
+            TImage image;
+
+            try
+            {
+                image = _imageService.GetImageById(mediaItemId);
+            }
+            catch (Infrastructure.Exceptions.NotSupportedException ex)
+            {
+                e.Messages.Add(new EventMessage("Validation", PackageConstants.NotSupported, EventMessageType.Error));
+                throw ex;
+            }
+
+            var imageHistory = _historyService.GetHistoryForImage(image.Id);
+
+            if (imageHistory == null)
+            {
+                _imageService.OptimizeImage(image);
             }
         }
     }
