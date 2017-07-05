@@ -40,8 +40,8 @@
         var options = {
             title: "Optimization Statistics",
             pieHole: 0.4,
-            width: 750,
-            height: 550,
+            width: 505,
+            height: 350,
             backgroundColor: "#f5f5f5"
         };
 
@@ -51,7 +51,7 @@
     $http.get("/umbraco/backoffice/api/State/GetCurrentTinifingState").then(function(response) {
 
         if (response.data == "null") {
-            document.getElementById("currentState").style.display = "none";
+            document.getElementById("tinifierStatus").innerHTML = "Panda is sleeping now";
         } else {
             $scope.currentImage = response.data.CurrentImage;
             $scope.amounthOfImages = response.data.AmounthOfImages;

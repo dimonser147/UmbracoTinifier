@@ -1,19 +1,42 @@
 ﻿<div ng-controller="Tinifier.DisplayStatistic.Controller">
 
-    <div id="apiRequests" style="background-color: #f5f5f5; width: 750px; text-align: center">
-        <p style="font-size: 20px;">Your usage this month</p>
-        <p style="font-size: 16px;">Compressed images: {{currentRequests}} / <b>{{monthlyRequestsLimit}}</b>
-        </p>
+    <div class="umb-package-link" id="apiRequests" style="width: 250px; display:inline-block">
+
+        <div class="umb-package-icon">
+            <img src="../../../../Media/Pictures/photo.jpg" alt="Tinifier" />
+        </div>
+
+        <div class="umb-package-info">
+            <div class="umb-package-name ng-binding">Your usage this month</div>
+
+            <div class="umb-package-numbers">
+                <small class="umb-package-downloads">
+                    <strong class="ng-binding">Compressed images: {{currentRequests}} / <b>{{monthlyRequestsLimit}}</b></strong>
+                </small>
+            </div>
+
+        </div>
     </div>
+    <div class="umb-package-link" id="currentState" style="width: 250px; display:inline-block">
 
-    <div id="chart"></div>
+        <div class="umb-package-icon">
+            <img src="../../../../Media/Pictures/sleeping_panda_by_citruspop-d2v8hdd.jpg" alt="Status"/>
+        </div>
 
-    <div id="currentState" style="background-color: #f5f5f5; width: 750px; text-align: center; margin-top:15px">
-        <p style="font-size: 20px;">Tinifier Progress</p>
-        <p style="font-size: 16px;">
-            Processing: {{currentImage}} / <b>{{amounthOfImages}}</b>
-        </p>
+        <div class="umb-package-info">
+            <div class="umb-package-name ng-binding">Tinifier Status</div>
+
+            <div class="umb-package-numbers">
+                <small class="umb-package-downloads">
+                    <strong class="ng-binding" id="tinifierStatus">Processing: {{currentImage}} / <b>{{amounthOfImages}}</b></strong>
+                </small>
+            </div>
+
+        </div>
     </div>
-
+        <div id="chart" style="margin-top:5px;width: 505px;height: 350px;">
+            <div style="height: 50px; background: url('../../../../Media/Pictures/spinner.gif') center center no-repeat;">
+            </div>
+    </div>
 </div>
 
