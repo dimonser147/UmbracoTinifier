@@ -14,5 +14,7 @@ namespace Tinifier.Core.Repository.Interfaces
         int AmounthOfItems();
 
         int AmounthOfOptimizedItems();
+
+        Media GetByPath(string path);
     }
 }

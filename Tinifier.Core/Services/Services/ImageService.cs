@@ -60,14 +60,6 @@ namespace Tinifier.Core.Services.Services
             return tImage;
         }
 
-        public void UpdateImage(TImage image, byte[] bytesArray)
-        {
-            System.IO.File.Delete(HttpContext.Current.Server.MapPath($"~{image.Url}"));
-            System.IO.File.WriteAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"), bytesArray);
-
-            _imageRepository.UpdateItem(image.Id);
-        }
-
         public async void OptimizeImage(TImage image)
         {
             var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(GetUrl(image.Url));
@@ -80,6 +72,32 @@ namespace Tinifier.Core.Services.Services
             }
 
             UpdateImageAfterSuccessfullRequest(tinyResponse, image, SourceTypes.Image);
+        }
+
+        public TImage GetImageByPath(string path)
+        {
+            var image = _imageRepository.GetByPath(path);
+
+            if (image == null)
+            {
+                throw new EntityNotFoundException($"Image with such name doesn't exist. Name: {path}");
+            }
+
+            if (!_validationService.CheckExtension(image.Name))
+            {
+                throw new NotSupportedException(PackageConstants.NotSupported);
+            }
+
+            var umbracoFilepath = image.GetValue("umbracoFile").ToString();
+
+            var tImage = new TImage
+            {
+                Id = image.Id,
+                Name = image.Name,
+                Url = GetUrl(umbracoFilepath)
+            };
+
+            return tImage;
         }
 
         public IEnumerable<TImage> GetAllOptimizedImages()
@@ -126,23 +144,6 @@ namespace Tinifier.Core.Services.Services
             return images;
         }
 
-        public string GetUrl(string path)
-        {
-            string url;
-
-            if (!path.Contains("src"))
-            {
-                url = path;
-            }
-            else
-            {
-                var urlModel = _serializer.Deserialize<UrlModel>(path);
-                url = urlModel.Src;
-            }
-            
-            return url;
-        }
-
         public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, SourceTypes sourceType)
         {
             var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
@@ -155,6 +156,31 @@ namespace Tinifier.Core.Services.Services
             {
                 _stateService.UpdateState();
             }
+        }
+
+        private void UpdateImage(TImage image, byte[] bytesArray)
+        {
+            System.IO.File.Delete(HttpContext.Current.Server.MapPath($"~{image.Url}"));
+            System.IO.File.WriteAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"), bytesArray);
+
+            _imageRepository.UpdateItem(image.Id);
+        }
+
+        private string GetUrl(string path)
+        {
+            string url;
+
+            if (!path.Contains("src"))
+            {
+                url = path;
+            }
+            else
+            {
+                var urlModel = _serializer.Deserialize<UrlModel>(path);
+                url = urlModel.Src;
+            }
+
+            return url;
         }
     }
 }

@@ -3,7 +3,7 @@
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
 
-    var arrOfIds = [];
+    var arrOfNames = [];
     var selectedImages = document.querySelectorAll(".-selected");
 
     for (var i = 0; i < selectedImages.length; i++)
@@ -11,13 +11,8 @@
         var innerHtml = selectedImages[i].innerHTML;
         var regex = /<img.*?src=['"](.*?)['"]/;
         var src = regex.exec(innerHtml)[1];
-        var Id = src.split('/')[2];
-        arrOfIds.push(Id);
-    }
-
-    if (arrOfIds.length === 0)
-    {
-        arrOfIds.push(timageId);
+        var slice = src.split('?')[0];
+        arrOfNames.push(slice);
     }
 
     // RecycleBinFolderId
@@ -32,24 +27,33 @@
 
         // Check if user choose Image or recycle bin folder
         if (timageId === recycleBinFolderId) {
-            notificationsService.error("Error", "You cant`t tinify Folder!");
+            notificationsService.error("Error", "You can`t tinify RecycleBin Folder!");
             return;
         }
 
-        notificationsService.info("Tinifing..... Optimization started and if you tinifing Folder you can see progress in the Tinifier section");
+        notificationsService.info("Tinifing.... Optimization started ! If you tinifing more than one Image you can see progress in the Tinifier 'Statistic' section");
 
-        $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage", {"items": arrOfIds }).success(function (response) {
-            notificationsService.success("Success", response.SuccessOptimized);
+        if (arrOfNames.length != 0)
+        {
+            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?" + $.param({imagesSrc: arrOfNames })).success(function (response) {
+                notificationsService.success("Success", response.SuccessOptimized);
+            }).error(function (response) {
+                notificationsService.error("Error", response);
+            });
+        }
+        else {
+            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?item=" + timageId).success(function (response) {
+                notificationsService.success("Success", response.SuccessOptimized);
 
-            if (response.sourceType === sourceTypeImageId)
-            {
-                dialogService.open({
-                    template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
-                });
-            }
+                if (response.sourceType === sourceTypeImageId) {
+                    dialogService.open({
+                        template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
+                    });
+                }
 
-        }).error(function(response) {
-            notificationsService.error("Error", response);
-        });
+            }).error(function (response) {
+                notificationsService.error("Error", response);
+            });
+        }
     };
 });

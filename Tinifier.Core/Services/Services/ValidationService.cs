@@ -30,9 +30,9 @@ namespace Tinifier.Core.Services.Services
 
         public bool CheckFolder(int itemId)
         {
-            var folder = _imageRepository.GetByKey(itemId);
+            var item = _imageRepository.GetByKey(itemId);
 
-            return string.Equals(folder.ContentType.Alias, "Folder", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(item.ContentType.Alias, "Folder", StringComparison.OrdinalIgnoreCase);
         }
 
         public bool CheckExtension(string source)

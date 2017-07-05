@@ -14,7 +14,7 @@ namespace Tinifier.Core.Services.Services
             _stateRepository = new TStateRepository();
         }
 
-        public void CreateState(int folderId, int numberOfImages)
+        public void CreateState(int numberOfImages)
         {
             var state = new TState
             {

@@ -106,5 +106,12 @@ namespace Tinifier.Core.Repository.Repository
 
             return numberOfOptimizedItems;
         }
+
+        public Media GetByPath(string path)
+        {
+            var mediaItem = _mediaService.GetMediaByPath(path) as Media;
+
+            return mediaItem;
+        }
     }
 }
