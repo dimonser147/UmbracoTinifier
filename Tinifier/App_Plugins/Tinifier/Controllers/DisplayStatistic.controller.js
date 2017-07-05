@@ -4,6 +4,8 @@
     $scope.monthlyRequestsLimit = 0;
     $scope.currentImage = 0;
     $scope.amounthOfImages = 0;
+    $scope.TotalImages = 0;
+    $scope.TotalOptimizedImages = 0;
 
     google.charts.load("current", { packages: ["corechart"] });
     google.charts.setOnLoadCallback(drawChart);
@@ -32,17 +34,18 @@
             ["Images Optimized", response.data.statistic.TotalOptimizedImages]
         ]);
 
+        $scope.TotalImages = response.data.statistic.TotalOriginalImages + response.data.statistic.TotalOptimizedImages;
+        $scope.TotalOptimizedImages = response.data.statistic.TotalOptimizedImages;
+
         return data;
     }
 
     function createOptions() {
 
         var options = {
-            title: "Optimization Statistics",
             pieHole: 0.4,
-            width: 505,
-            height: 350,
-            backgroundColor: "#f5f5f5"
+            width: 500,
+            height: 350
         };
 
         return options;
@@ -53,6 +56,7 @@
         if (response.data == "null") {
             document.getElementById("tinifierStatus").innerHTML = "Panda is sleeping now";
         } else {
+            document.getElementById("statusPanda").src = "../../../../Media/Pictures/runPanda.jpg";
             $scope.currentImage = response.data.CurrentImage;
             $scope.amounthOfImages = response.data.AmounthOfImages;
         }

@@ -341,6 +341,7 @@
     <Content Include="Media\1057\grass-png-4770.png" />
     <Content Include="Media\1058\firefox_png16.png" />
     <Content Include="Media\Pictures\photo.jpg" />
+    <Content Include="Media\Pictures\runPanda.jpg" />
     <Content Include="Media\Pictures\sleeping_panda_by_citruspop-d2v8hdd.jpg" />
     <Content Include="Media\Pictures\spinner.gif" />
     <Content Include="scripts\fanoe.js" />
