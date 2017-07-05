@@ -21,7 +21,6 @@ namespace Tinifier.Core.Controllers
         private readonly ITinyPNGConnector _tinyPngConnectorService;
         private readonly IHistoryService _historyService;
         private readonly ISettingsService _settingsService;
-        private readonly IStatisticService _statisticService;
         private readonly IStateService _stateService;
         private readonly IValidationService _validationService;
 
@@ -31,7 +30,6 @@ namespace Tinifier.Core.Controllers
             _historyService = new HistoryService();
             _tinyPngConnectorService = new TinyPNGConnectorService();
             _settingsService = new SettingsService();
-            _statisticService = new StatisticService();
             _stateService = new StateService();
             _validationService = new ValidationService();
         }
@@ -104,25 +102,23 @@ namespace Tinifier.Core.Controllers
             HttpResponseMessage responseMessage;
             var imagesList = new List<TImage>();
 
-            if(typeof(T) == typeof(int))
+            if (typeof(T) == typeof(int))
             {
-                var Id = Convert.ToInt32(image);
-                responseMessage = await TinifyOneImage(Id, imagesList);
+                var id = Convert.ToInt32(image);
+                responseMessage = await TinifyOneImage(id, imagesList);
             }
             else
             {
-                var ImagesSrc = image as string[];
-                responseMessage = await TinifyCheckedImages(ImagesSrc, imagesList);
+                var imagesSrc = image as string[];
+                responseMessage = await TinifyCheckedImages(imagesSrc, imagesList);
             }
-            
+
             return responseMessage;
         }
 
-        private async Task<HttpResponseMessage> TinifyCheckedImages(string[] ImagesSrc, List<TImage> imagesList)
+        private async Task<HttpResponseMessage> TinifyCheckedImages(IEnumerable<string> imagesSrc, ICollection<TImage> imagesList)
         {
-            HttpResponseMessage responseMessage;
-
-            foreach (var imageSrc in ImagesSrc)
+            foreach (var imageSrc in imagesSrc)
             {
                 var imageByName = _imageService.GetImageByPath(imageSrc);
                 var notOptimizedImage = _historyService.GetHistoryForImage(imageByName.Id);
@@ -144,15 +140,14 @@ namespace Tinifier.Core.Controllers
             }
 
             _stateService.CreateState(imagesList.Count);
-            responseMessage = await CallTinyPngService(imagesList, SourceTypes.Folder);
+            var responseMessage = await CallTinyPngService(imagesList, SourceTypes.Folder);
 
             return responseMessage;
         }
 
-        private async Task<HttpResponseMessage> TinifyOneImage(int Id, List<TImage> imagesList)
+        private async Task<HttpResponseMessage> TinifyOneImage(int id, ICollection<TImage> imagesList)
         {
-            HttpResponseMessage responseMessage;
-            var imageById = _imageService.GetImageById(Id);
+            var imageById = _imageService.GetImageById(id);
             _validationService.CheckExtension(imageById.Name);
             var notOptimizedImage = _historyService.GetHistoryForImage(imageById.Id);
 
@@ -165,7 +160,7 @@ namespace Tinifier.Core.Controllers
             }
 
             imagesList.Add(imageById);
-            responseMessage = await CallTinyPngService(imagesList, SourceTypes.Image);
+            var responseMessage = await CallTinyPngService(imagesList, SourceTypes.Image);
 
             return responseMessage;
         }

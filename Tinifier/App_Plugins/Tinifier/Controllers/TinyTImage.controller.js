@@ -6,12 +6,11 @@
     var arrOfNames = [];
     var selectedImages = document.querySelectorAll(".-selected");
 
-    for (var i = 0; i < selectedImages.length; i++)
-    {
+    for (var i = 0; i < selectedImages.length; i++) {
         var innerHtml = selectedImages[i].innerHTML;
         var regex = /<img.*?src=['"](.*?)['"]/;
         var src = regex.exec(innerHtml)[1];
-        var slice = src.split('?')[0];
+        var slice = src.split("?")[0];
         arrOfNames.push(slice);
     }
 
@@ -31,18 +30,18 @@
             return;
         }
 
-        notificationsService.info("Tinifing.... Optimization started ! If you tinifing more than one Image you can see progress in the Tinifier 'Statistic' section");
+        notificationsService
+            .info("Tinifing.... Optimization started ! If you tinifing more than one Image you can see progress in the Tinifier 'Statistic' section");
 
-        if (arrOfNames.length != 0)
-        {
-            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?" + $.param({imagesSrc: arrOfNames })).success(function (response) {
-                notificationsService.success("Success", response.SuccessOptimized);
-            }).error(function (response) {
-                notificationsService.error("Error", response);
-            });
-        }
-        else {
-            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?item=" + timageId).success(function (response) {
+        if (arrOfNames.length !== 0) {
+            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?" + $.param({ imagesSrc: arrOfNames }))
+                .success(function(response) {
+                    notificationsService.success("Success", response.SuccessOptimized);
+                }).error(function(response) {
+                    notificationsService.error("Error", response);
+                });
+        } else {
+            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?item=" + timageId).success(function(response) {
                 notificationsService.success("Success", response.SuccessOptimized);
 
                 if (response.sourceType === sourceTypeImageId) {
@@ -51,7 +50,7 @@
                     });
                 }
 
-            }).error(function (response) {
+            }).error(function(response) {
                 notificationsService.error("Error", response);
             });
         }

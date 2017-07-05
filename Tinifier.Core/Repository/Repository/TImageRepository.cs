@@ -46,9 +46,12 @@ namespace Tinifier.Core.Repository.Repository
         {
             var mediaItem = _mediaService.GetById(imageId) as Media;
 
-            mediaItem.UpdateDate = DateTime.UtcNow;
+            if (mediaItem != null)
+            {
+                mediaItem.UpdateDate = DateTime.UtcNow;
 
-            _mediaService.Save(mediaItem);
+                _mediaService.Save(mediaItem);
+            }
         }
 
         public IEnumerable<Media> GetOptimizedItems()
@@ -88,7 +91,7 @@ namespace Tinifier.Core.Repository.Repository
         public int AmounthOfItems()
         {
             var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id);
-            var numberOfItems = mediaItems.ToList().Count();
+            var numberOfItems = mediaItems.ToList().Count;
 
             return numberOfItems;
         }
@@ -102,7 +105,7 @@ namespace Tinifier.Core.Repository.Repository
                              GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id).
                              Where(item => historyIds.Contains(item.Id));
 
-            var numberOfOptimizedItems = mediaItems.ToList().Count();
+            var numberOfOptimizedItems = mediaItems.ToList().Count;
 
             return numberOfOptimizedItems;
         }
