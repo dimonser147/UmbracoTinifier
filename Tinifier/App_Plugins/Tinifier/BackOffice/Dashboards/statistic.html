@@ -1,55 +1,41 @@
 ﻿<div ng-controller="Tinifier.DisplayStatistic.Controller">
-
-    <div class="umb-package-link" id="apiRequests" style="width: 250px; display:inline-block">
-
-        <div class="umb-package-icon">
+    <div id="apiRequests" class="stat-block">
+        <div class="stat-image">
             <img src="../../../../Media/Pictures/photo.jpg" alt="Tinifier" />
         </div>
-
-        <div class="umb-package-info">
-            <div class="umb-package-name ng-binding">Your usage this month</div>
-
-            <div class="umb-package-numbers">
-                <small class="umb-package-downloads">
-                    <strong class="ng-binding">TinyPNG API Requests: {{currentRequests}} / <b>{{monthlyRequestsLimit}}</b></strong>
+        <div class="stat-content">
+            <div class="stat-text">Your usage this month</div>
+            <div class="stat-info">
+                <small class="stat-numbers">
+                    <strong>TinyPNG API Requests: {{currentRequests}} / <b>{{monthlyRequestsLimit}}</b></strong>
                 </small>
             </div>
-
         </div>
     </div>
-    <div class="umb-package-link" id="currentState" style="width: 250px; display:inline-block">
-
-        <div class="umb-package-icon">
+    <div id="currentState" class="stat-block">
+        <div class="stat-image">
             <img src="../../../../Media/Pictures/sleeping_panda_by_citruspop-d2v8hdd.jpg" alt="Status" id="statusPanda"/>
         </div>
-
-        <div class="umb-package-info">
-            <div class="umb-package-name ng-binding">Tinifier Status</div>
-
-            <div class="umb-package-numbers">
-                <small class="umb-package-downloads">
-                    <strong class="ng-binding" id="tinifierStatus">Processing: {{currentImage}} / <b>{{amounthOfImages}}</b></strong>
+        <div class="stat-content">
+            <div class="stat-text">Tinifier Status</div>
+            <div class="stat-info">
+                <small class="stat-numbers">
+                    <strong id="tinifierStatus">Processing: {{currentImage}} / <b>{{amounthOfImages}}</b></strong>
                 </small>
             </div>
-
         </div>
     </div>
-
-    <div class="umb-package-link" style="width: 505px; margin-top:5px">
-
-        <div class="umb-package-icon" id="chart">
-            <div style="height: 50px; width:50px; background: url('../../../../Media/Pictures/spinner.gif') center center no-repeat;"></div>
+    <div class="chart-block">
+        <div class="stat-image" id="chart">
+            <div class="loading-image"></div>
         </div>
-
-        <div class="umb-package-info">
-            <div class="umb-package-name ng-binding">Optimization Statistics</div>
-
-            <div class="umb-package-numbers">
-                <small class="umb-package-downloads">
-                    <strong class="ng-binding" id="tinifierStatus">Optimized images: {{TotalOptimizedImages}} / <b>{{TotalImages}}</b></strong>
+        <div class="stat-content">
+            <div class="stat-text">Optimization Statistics</div>
+            <div class="stat-info">
+                <small class="stat-numbers">
+                    <strong>Optimized images: {{TotalOptimizedImages}} / <b>{{TotalImages}}</b></strong>
                 </small>
             </div>
-
         </div>
     </div>
 </div>

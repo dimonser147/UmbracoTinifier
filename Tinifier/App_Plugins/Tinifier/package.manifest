@@ -5,5 +5,8 @@
 "~/App_Plugins/Tinifier/Controllers/TinyTImage.controller.js",
 "~/App_Plugins/Tinifier/Controllers/DisplayStatistic.controller.js",
 "https://www.gstatic.com/charts/loader.js"
+],
+"css": [
+"~/App_Plugins/Tinifier/css/style.css"
 ]
 }

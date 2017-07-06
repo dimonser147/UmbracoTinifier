@@ -335,6 +335,10 @@
     <Content Include="config\Lang\ru-RU.user.xml" />
     <Content Include="config\Lang\sv-SE.user.xml" />
     <Content Include="config\Lang\zh-CN.user.xml" />
+    <Content Include="App_Plugins\Tinifier\css\style.css" />
+    <Content Include="css\bootstrap.min.css" />
+    <Content Include="css\fanoe.css" />
+    <Content Include="css\rte.css" />
     <Content Include="css\style.css" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
