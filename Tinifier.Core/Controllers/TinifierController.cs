@@ -8,8 +8,13 @@ using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Models.Db;
-using Tinifier.Core.Services.Interfaces;
-using Tinifier.Core.Services.Services;
+using Tinifier.Core.Services.BackendDevs;
+using Tinifier.Core.Services.History;
+using Tinifier.Core.Services.Media;
+using Tinifier.Core.Services.Settings;
+using Tinifier.Core.Services.State;
+using Tinifier.Core.Services.TinyPNG;
+using Tinifier.Core.Services.Validation;
 using Umbraco.Web.WebApi;
 
 namespace Tinifier.Core.Controllers
@@ -23,6 +28,7 @@ namespace Tinifier.Core.Controllers
         private readonly ISettingsService _settingsService;
         private readonly IStateService _stateService;
         private readonly IValidationService _validationService;
+        private readonly IBackendDevsConnector _backendDevsConnectorService;
 
         public TinifierController()
         {
@@ -32,6 +38,7 @@ namespace Tinifier.Core.Controllers
             _settingsService = new SettingsService();
             _stateService = new StateService();
             _validationService = new ValidationService();
+            _backendDevsConnectorService = new BackendDevsConnectorService();
         }
 
         [HttpGet]
@@ -41,127 +48,76 @@ namespace Tinifier.Core.Controllers
 
             try
             {
-                timage = _imageService.GetImageById(timageId);
+                timage = _imageService.GetImage(timageId);
             }
             catch (Infrastructure.Exceptions.NotSupportedException ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
-            var history = _historyService.GetHistoryForImage(timageId);
-
+            var history = _historyService.GetImageHistory(timageId);
             return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
         }
 
         [HttpGet]
-        public async Task<HttpResponseMessage> TinyTImage([FromUri]string[] imagesSrc, int item = 0)
-        {          
-            HttpResponseMessage responseMessage;
-            _settingsService.CheckIfSettingExists();
-
-            if(imagesSrc.Length != 0)
-            {
-                responseMessage = await TinifyImages(imagesSrc);
-            }
-            else
-            {
-                var checkIfFolder = _validationService.CheckFolder(item);
-
-                if (checkIfFolder)
-                {
-                    _validationService.CheckConcurrentOptimizing();
-                    responseMessage = await TinifyImagesFromFolder(item);
-                }
-                else
-                {
-                    responseMessage = await TinifyImages(item);
-                }
-            }
-            
-            return responseMessage;      
-        }
-
-        private async Task<HttpResponseMessage> TinifyImagesFromFolder(int itemId)
+        public async Task<HttpResponseMessage> TinyTImage([FromUri]string[] imageRelativeUrls, int mediaId)
         {
-            var images = _imageService.GetImagesFromFolder(itemId);
+            _settingsService.CheckIfSettingExists();
+            // TODO: check any Tinifier activity
+            _validationService.CheckConcurrentOptimizing();
+
+            return imageRelativeUrls.Length != 0
+                ? await TinifyImages(imageRelativeUrls)
+                : _validationService.IsFolder(mediaId) 
+                    ? await TinifyFolder(mediaId) 
+                    : await TinifyImage(mediaId);          
+        }
+        private async Task<HttpResponseMessage> TinifyFolder(int folderId)
+        {
+            var images = _imageService.GetFolderImages(folderId);
             var imagesList = _historyService.CheckImageHistory(images);
 
-            if (imagesList.Count == 0)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AllImagesAlreadyOptimized);
-            }
-
+            if (imagesList.Count == 0)           
+                return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AllImagesAlreadyOptimized);     
+                  
             _stateService.CreateState(imagesList.Count);
-            var responseMessage = await CallTinyPngService(imagesList, SourceTypes.Folder);
-
-            return responseMessage;
+            return await CallTinyPngService(imagesList, SourceTypes.Folder);
         }
 
-        private async Task<HttpResponseMessage> TinifyImages<T>(T image)
+        private async Task<HttpResponseMessage> TinifyImages(IEnumerable<string> imagesRelativeUrls)
         {
-            HttpResponseMessage responseMessage;
-            var imagesList = new List<TImage>();
+            var nonOptimizedImages = new List<TImage>();
 
-            if (typeof(T) == typeof(int))
+            foreach (var imageRelativeUrl in imagesRelativeUrls)
             {
-                var id = Convert.ToInt32(image);
-                responseMessage = await TinifyOneImage(id, imagesList);
-            }
-            else
-            {
-                var imagesSrc = image as string[];
-                responseMessage = await TinifyCheckedImages(imagesSrc, imagesList);
-            }
+                TImage image = _imageService.GetImage(imageRelativeUrl);
+                TinyPNGResponseHistory imageHistory = _historyService.GetImageHistory(image.Id);
 
-            return responseMessage;
-        }
+                if (imageHistory != null && imageHistory.IsOptimized)
+                    continue;
 
-        private async Task<HttpResponseMessage> TinifyCheckedImages(IEnumerable<string> imagesSrc, ICollection<TImage> imagesList)
-        {
-            foreach (var imageSrc in imagesSrc)
-            {
-                var imageByName = _imageService.GetImageByPath(imageSrc);
-                var notOptimizedImage = _historyService.GetHistoryForImage(imageByName.Id);
-
-                if (notOptimizedImage != null)
-                {
-                    if (notOptimizedImage.IsOptimized)
-                    {
-                        continue;
-                    }
-                }
-
-                imagesList.Add(imageByName);
+                nonOptimizedImages.Add(image);
             }
 
-            if (imagesList.Count == 0)
-            {
+            if (nonOptimizedImages.Count == 0)           
                 return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AllImagesAlreadyOptimized);
-            }
 
-            _stateService.CreateState(imagesList.Count);
-            var responseMessage = await CallTinyPngService(imagesList, SourceTypes.Folder);
-
-            return responseMessage;
+            _stateService.CreateState(nonOptimizedImages.Count);
+            return await CallTinyPngService(nonOptimizedImages, SourceTypes.Folder);
         }
 
-        private async Task<HttpResponseMessage> TinifyOneImage(int id, ICollection<TImage> imagesList)
-        {
-            var imageById = _imageService.GetImageById(id);
+        private async Task<HttpResponseMessage> TinifyImage(int imageId)
+        {            
+            var imageById = _imageService.GetImage(imageId);
             _validationService.CheckExtension(imageById.Name);
-            var notOptimizedImage = _historyService.GetHistoryForImage(imageById.Id);
+            var notOptimizedImage = _historyService.GetImageHistory(imageById.Id);
 
-            if (notOptimizedImage != null)
-            {
-                if (notOptimizedImage.IsOptimized)
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AlreadyOptimized);
-                }
-            }
+            if (notOptimizedImage != null && notOptimizedImage.IsOptimized)
+                return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AlreadyOptimized);
 
-            imagesList.Add(imageById);
-            var responseMessage = await CallTinyPngService(imagesList, SourceTypes.Image);
-
+            var nonOptimizedImages = new List<TImage>();
+            nonOptimizedImages.Add(imageById);
+            var responseMessage = await CallTinyPngService(nonOptimizedImages, SourceTypes.Image);
             return responseMessage;
         }
 
@@ -185,6 +141,7 @@ namespace Tinifier.Core.Controllers
                 }
 
                 _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, image, sourceType);
+                _backendDevsConnectorService.SendStatistic(Request.RequestUri.GetLeftPart(UriPartial.Authority));
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, new { PackageConstants.SuccessOptimized, sourceType});

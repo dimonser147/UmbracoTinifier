@@ -1,8 +1,10 @@
 ﻿using System;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
-using Tinifier.Core.Services.Interfaces;
-using Tinifier.Core.Services.Services;
+using Tinifier.Core.Services.History;
+using Tinifier.Core.Services.Media;
+using Tinifier.Core.Services.Settings;
+using Tinifier.Core.Services.Statistic;
 using umbraco.cms.businesslogic.packager;
 using Umbraco.Core;
 using Umbraco.Core.Events;
@@ -31,7 +33,7 @@ namespace Tinifier.Core.Application
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
             // Set statistic before optimizing
-            _statisticService.CreateStatistic();
+            _statisticService.CreateStatistic();     //Hmm...
 
             // Create a new section
             CreateTinifySection(context);
@@ -52,9 +54,9 @@ namespace Tinifier.Core.Application
         // Remove section and clear tabs before deleting package
         private void InstalledPackage_BeforeDelete(InstalledPackage sender, EventArgs e)
         {
-            if (string.Equals(sender.Data.Name, "tinifier", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(sender.Data.Name, PackageConstants.SectionAlias, StringComparison.OrdinalIgnoreCase))
             {
-                ExtendDashboard.ClearTabs();
+                DashboardExtension.ClearTabs();
 
                 var section = ApplicationContext.Current.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
 
@@ -70,7 +72,8 @@ namespace Tinifier.Core.Application
         {
             foreach (var mediaItem in eventArg.SavedEntities)
             {
-                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) 
+                    && string.Equals(mediaItem.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
                 {
                     var settings = _settingsService.GetSettings();
 
@@ -101,7 +104,8 @@ namespace Tinifier.Core.Application
 
             foreach (var mediaItem in iMedias)
             {
-                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) 
+                    && string.Equals(mediaItem.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
                 {
                     _statisticService.UpdateStatistic();
                 }
@@ -120,22 +124,22 @@ namespace Tinifier.Core.Application
                     PackageConstants.SectionIcon);
                 context.Services.UserService.AddSectionToAllUsers(PackageConstants.SectionAlias);
 
-                ExtendDashboard.AddTabs();
+                DashboardExtension.AddTabs();
             }
         }
 
         // Add menuItems to menu
         private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
-            if (string.Equals(sender.TreeAlias, "media", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(sender.TreeAlias, PackageConstants.MediaAlias, StringComparison.OrdinalIgnoreCase))
             {
-                var menuItemTinifyButton = new MenuItem("Tinifier_Button", "Tinify");
-                menuItemTinifyButton.LaunchDialogView(PackageConstants.TinyTImageRoute, "Tinifier");
+                var menuItemTinifyButton = new MenuItem(PackageConstants.TinifierButton, PackageConstants.TinifierButtonCaption);
+                menuItemTinifyButton.LaunchDialogView(PackageConstants.TinyTImageRoute, PackageConstants.SectionName);
                 menuItemTinifyButton.Icon = PackageConstants.MenuIcon;
                 e.Menu.Items.Add(menuItemTinifyButton);
 
-                var menuItemSettingsButton = new MenuItem("Tinifier_Settings", "Stats");
-                menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, "Optimization Stats");
+                var menuItemSettingsButton = new MenuItem(PackageConstants.StatsButton, PackageConstants.StatsButtonCaption);
+                menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, PackageConstants.StatsDialogCaption);
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
             }
@@ -148,15 +152,15 @@ namespace Tinifier.Core.Application
 
             try
             {
-                image = _imageService.GetImageById(mediaItemId);
+                image = _imageService.GetImage(mediaItemId);
             }
             catch (Infrastructure.Exceptions.NotSupportedException ex)
             {
-                e.Messages.Add(new EventMessage("Validation", PackageConstants.NotSupported, EventMessageType.Error));
+                e.Messages.Add(new EventMessage(PackageConstants.ErrorCategory, PackageConstants.NotSupported, EventMessageType.Error));
                 throw ex;
             }
 
-            var imageHistory = _historyService.GetHistoryForImage(image.Id);
+            var imageHistory = _historyService.GetImageHistory(image.Id);
 
             if (imageHistory == null)
             {

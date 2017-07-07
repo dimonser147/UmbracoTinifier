@@ -2,8 +2,7 @@
 using System.Net.Http;
 using System.Web.Http;
 using Tinifier.Core.Filters;
-using Tinifier.Core.Services.Interfaces;
-using Tinifier.Core.Services.Services;
+using Tinifier.Core.Services.State;
 using Umbraco.Web.WebApi;
 
 namespace Tinifier.Core.Controllers

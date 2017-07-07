@@ -1,14 +1,13 @@
 ﻿using System.Net.Http.Formatting;
 using Tinifier.Core.Infrastructure;
-using Tinifier.Core.Services.Interfaces;
-using Tinifier.Core.Services.Services;
+using Tinifier.Core.Services.Media;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.Trees;
 
 namespace Tinifier.Core.Controllers
 {
-    [Tree(PackageConstants.SectionAlias, "timages", "Optimized Images")]
+    [Tree(PackageConstants.SectionAlias, PackageConstants.TreeAlias, PackageConstants.TreeTitle)]
     [PluginController(PackageConstants.SectionName)]
     public class TinifierTreeController : TreeController
     {
@@ -28,11 +27,11 @@ namespace Tinifier.Core.Controllers
         {
             var nodes = new TreeNodeCollection();
 
-            if (id == "-1")
+            if (id == PackageConstants.FirstNodeId)
             {
-                foreach (var timage in _imageService.GetAllOptimizedImages())
+                foreach (var timage in _imageService.GetOptimizedImages())
                 {
-                    nodes.Add(CreateTreeNode(timage.Id + "", id, queryStrings, timage.Name, "icon-umb-media"));
+                    nodes.Add(CreateTreeNode(timage.Id + "", id, queryStrings, timage.Name, PackageConstants.TreeIcon));
                 }
             }
 

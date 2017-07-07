@@ -4,8 +4,7 @@ using System.Web.Http;
 using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
-using Tinifier.Core.Services.Interfaces;
-using Tinifier.Core.Services.Services;
+using Tinifier.Core.Services.Settings;
 using Umbraco.Web.WebApi;
 
 namespace Tinifier.Core.Controllers
