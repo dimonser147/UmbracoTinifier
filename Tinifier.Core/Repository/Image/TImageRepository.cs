@@ -22,19 +22,22 @@ namespace Tinifier.Core.Repository.Image
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
         }
 
+        /// <summary>
+        /// Get all media
+        /// </summary>
+        /// <returns>IEnumerable of Media</returns>
         public IEnumerable<Media> GetAll()
         {
-            var mediaList = new List<Media>();
             var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id);
 
-            foreach(var item in mediaItems)
-            {
-                mediaList.Add(item as Media);
-            }
-
-            return mediaList;
+            return mediaItems.Select(item => item as Media).ToList();
         }
 
+        /// <summary>
+        /// Get Media by Id
+        /// </summary>
+        /// <param name="id">Media Id</param>
+        /// <returns>Media</returns>
         public Media GetByKey(int id)
         {
             var mediaItem = _mediaService.GetById(id) as Media;
@@ -42,9 +45,13 @@ namespace Tinifier.Core.Repository.Image
             return mediaItem;
         }
 
-        public void UpdateItem(int imageId)
+        /// <summary>
+        /// Update Media
+        /// </summary>
+        /// <param name="id">Media Id</param>
+        public void UpdateItem(int id)
         {
-            var mediaItem = _mediaService.GetById(imageId) as Media;
+            var mediaItem = _mediaService.GetById(id) as Media;
 
             if (mediaItem != null)
             {
@@ -54,9 +61,12 @@ namespace Tinifier.Core.Repository.Image
             }
         }
 
+        /// <summary>
+        /// Get Optimized Images
+        /// </summary>
+        /// <returns>IEnumerable of Media</returns>
         public IEnumerable<Media> GetOptimizedItems()
         {
-            var mediaList = new List<Media>();
             var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
             var historyIds = _database.Fetch<int>(query);
 
@@ -64,14 +74,14 @@ namespace Tinifier.Core.Repository.Image
                              GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id).
                              Where(item => historyIds.Contains(item.Id));
 
-            foreach (var item in mediaItems)
-            {
-                mediaList.Add(item as Media);
-            }
-
-            return mediaList;
+            return mediaItems.Select(item => item as Media).ToList();
         }
 
+        /// <summary>
+        /// Get Media from folder
+        /// </summary>
+        /// <param name="folderId">Folder Id</param>
+        /// <returns>IEnumerable of Media</returns>
         public IEnumerable<Media> GetItemsFromFolder(int folderId)
         {
             var mediaList = new List<Media>();
@@ -88,6 +98,10 @@ namespace Tinifier.Core.Repository.Image
             return mediaList;
         }
 
+        /// <summary>
+        /// Get Count of Images
+        /// </summary>
+        /// <returns>Number of Images</returns>
         public int AmounthOfItems()
         {
             var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id);
@@ -96,6 +110,10 @@ namespace Tinifier.Core.Repository.Image
             return numberOfItems;
         }
 
+        /// <summary>
+        /// Get Count of Optimized Images
+        /// </summary>
+        /// <returns>Number of optimized Images</returns>
         public int AmounthOfOptimizedItems()
         {
             var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
@@ -110,6 +128,11 @@ namespace Tinifier.Core.Repository.Image
             return numberOfOptimizedItems;
         }
 
+        /// <summary>
+        /// Get Media By path
+        /// </summary>
+        /// <param name="path">relative path</param>
+        /// <returns>Media</returns>
         public Media GetByPath(string path)
         {
             var mediaItem = _mediaService.GetMediaByPath(path) as Media;

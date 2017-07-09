@@ -7,6 +7,7 @@ using System.Web.Http;
 using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Enums;
+using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Services.BackendDevs;
 using Tinifier.Core.Services.History;
@@ -41,6 +42,11 @@ namespace Tinifier.Core.Controllers
             _backendDevsConnectorService = new BackendDevsConnectorService();
         }
 
+        /// <summary>
+        /// Get Image by id
+        /// </summary>
+        /// <param name="timageId">Image Id</param>
+        /// <returns>Response(StatusCode, {image, history}}</returns>
         [HttpGet]
         public HttpResponseMessage GetTImage(int timageId)
         {
@@ -50,28 +56,53 @@ namespace Tinifier.Core.Controllers
             {
                 timage = _imageService.GetImage(timageId);
             }
-            catch (Infrastructure.Exceptions.NotSupportedException ex)
+            catch (NotSupportedExtensionException ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
             var history = _historyService.GetImageHistory(timageId);
-            return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
+            return Request.CreateResponse(HttpStatusCode.OK, new {timage, history});
         }
 
+        /// <summary>
+        /// Tinify Image(s)
+        /// </summary>
+        /// <param name="imageRelativeUrls">Array of media items urls</param>
+        /// <param name="mediaId">Media item id</param>
+        /// <returns>Response(StatusCode, message)</returns>
         [HttpGet]
         public async Task<HttpResponseMessage> TinyTImage([FromUri]string[] imageRelativeUrls, int mediaId)
         {
+            HttpResponseMessage responseMessage;
             _settingsService.CheckIfSettingExists();
             // TODO: check any Tinifier activity
             _validationService.CheckConcurrentOptimizing();
 
-            return imageRelativeUrls.Length != 0
-                ? await TinifyImages(imageRelativeUrls)
-                : _validationService.IsFolder(mediaId) 
-                    ? await TinifyFolder(mediaId) 
-                    : await TinifyImage(mediaId);          
+            if (imageRelativeUrls.Length != 0)
+            {
+                responseMessage = await TinifyImages(imageRelativeUrls);
+            }
+            else
+            {
+                if (_validationService.IsFolder(mediaId))
+                {
+                    responseMessage = await TinifyFolder(mediaId);
+                }
+                else
+                {
+                    responseMessage = await TinifyImage(mediaId);
+                }
+            }
+
+            return responseMessage;
         }
+
+        /// <summary>
+        /// Tinify folder By Id
+        /// </summary>
+        /// <param name="folderId">Folder Id</param>
+        /// <returns>Response(StatusCode, message)</returns>
         private async Task<HttpResponseMessage> TinifyFolder(int folderId)
         {
             var images = _imageService.GetFolderImages(folderId);
@@ -84,14 +115,19 @@ namespace Tinifier.Core.Controllers
             return await CallTinyPngService(imagesList, SourceTypes.Folder);
         }
 
+        /// <summary>
+        /// Tinify Images by urls
+        /// </summary>
+        /// <param name="imagesRelativeUrls">Array of images urls</param>
+        /// <returns>Response(StatusCode, message)</returns>
         private async Task<HttpResponseMessage> TinifyImages(IEnumerable<string> imagesRelativeUrls)
         {
             var nonOptimizedImages = new List<TImage>();
 
             foreach (var imageRelativeUrl in imagesRelativeUrls)
             {
-                TImage image = _imageService.GetImage(imageRelativeUrl);
-                TinyPNGResponseHistory imageHistory = _historyService.GetImageHistory(image.Id);
+                var image = _imageService.GetImage(imageRelativeUrl);
+                var imageHistory = _historyService.GetImageHistory(image.Id);
 
                 if (imageHistory != null && imageHistory.IsOptimized)
                     continue;
@@ -106,6 +142,11 @@ namespace Tinifier.Core.Controllers
             return await CallTinyPngService(nonOptimizedImages, SourceTypes.Folder);
         }
 
+        /// <summary>
+        /// Tinify image by Id
+        /// </summary>
+        /// <param name="imageId">Image Id</param>
+        /// <returns>Response(StatusCode, message)</returns>
         private async Task<HttpResponseMessage> TinifyImage(int imageId)
         {            
             var imageById = _imageService.GetImage(imageId);
@@ -115,12 +156,16 @@ namespace Tinifier.Core.Controllers
             if (notOptimizedImage != null && notOptimizedImage.IsOptimized)
                 return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AlreadyOptimized);
 
-            var nonOptimizedImages = new List<TImage>();
-            nonOptimizedImages.Add(imageById);
-            var responseMessage = await CallTinyPngService(nonOptimizedImages, SourceTypes.Image);
-            return responseMessage;
+            var nonOptimizedImages = new List<TImage> {imageById};
+            return await CallTinyPngService(nonOptimizedImages, SourceTypes.Image);
         }
 
+        /// <summary>
+        /// Create request to TinyPNG service and get response
+        /// </summary>
+        /// <param name="imagesList">Images that needs to be tinifing</param>
+        /// <param name="sourceType">Folder or Image</param>
+        /// <returns>Response(StatusCode, message)</returns>
         private async Task<HttpResponseMessage> CallTinyPngService(IEnumerable<TImage> imagesList, SourceTypes sourceType)
         {
             foreach (var image in imagesList)
@@ -132,9 +177,7 @@ namespace Tinifier.Core.Controllers
                     _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
 
                     if (sourceType == SourceTypes.Image)
-                    {
                         return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.NotSuccessfullRequest);
-                    }
 
                     _stateService.UpdateState();
                     continue;

@@ -23,6 +23,12 @@ namespace Tinifier.Core.Controllers
             return new MenuItemCollection();
         }
 
+        /// <summary>
+        /// Get nodes for custom trees
+        /// </summary>
+        /// <param name="id">Node Id</param>
+        /// <param name="queryStrings">FormDataCollection</param>
+        /// <returns>Nodes for custom tree</returns>
         protected override TreeNodeCollection GetTreeNodes(string id, FormDataCollection queryStrings)
         {
             var nodes = new TreeNodeCollection();
@@ -31,7 +37,7 @@ namespace Tinifier.Core.Controllers
             {
                 foreach (var timage in _imageService.GetOptimizedImages())
                 {
-                    nodes.Add(CreateTreeNode(timage.Id + "", id, queryStrings, timage.Name, PackageConstants.TreeIcon));
+                    nodes.Add(CreateTreeNode(timage.Id + string.Empty, id, queryStrings, timage.Name, PackageConstants.TreeIcon));
                 }
             }
 

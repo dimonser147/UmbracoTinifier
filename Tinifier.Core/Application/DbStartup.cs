@@ -1,4 +1,7 @@
-﻿using Tinifier.Core.Infrastructure;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
@@ -8,30 +11,31 @@ namespace Tinifier.Core.Application
 {
     public class DbStartup : ApplicationEventHandler
     {
+        /// <summary>
+        /// Add custom tables to Umbraco database
+        /// </summary>
+        /// <param name="umbracoApplication">UmbracoApplicationBase</param>
+        /// <param name="applicationContext">ApplicationContext</param>
         protected override void ApplicationStarted(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
             var logger = LoggerResolver.Current.Logger;
             var dbContext = applicationContext.DatabaseContext;
             var dbHelper = new DatabaseSchemaHelper(dbContext.Database, logger, dbContext.SqlSyntax);
 
-            if (!dbHelper.TableExist(PackageConstants.DbSettingsTable))
+            var tables = new Dictionary<string, Type>
             {
-                dbHelper.CreateTable<TSetting>(false);
-            }
+                { PackageConstants.DbSettingsTable, typeof(TSetting) },
+                { PackageConstants.DbHistoryTable, typeof(TinyPNGResponseHistory) },
+                { PackageConstants.DbStatisticTable, typeof(TImageStatistic) },
+                { PackageConstants.DbStateTable, typeof(TState) }
+            };
 
-            if (!dbHelper.TableExist(PackageConstants.DbHistoryTable))
+            for (var i = 0; i < tables.Count; i++)
             {
-                dbHelper.CreateTable<TinyPNGResponseHistory>(false);
-            }
-
-            if (!dbHelper.TableExist(PackageConstants.DbStatisticTable))
-            {
-                dbHelper.CreateTable<TImageStatistic>(false);
-            }
-
-            if(!dbHelper.TableExist(PackageConstants.DbStateTable))
-            {
-                dbHelper.CreateTable<TState>(false);
+                if (!dbHelper.TableExist(tables.ElementAt(i).Key))
+                {
+                    dbHelper.CreateTable(false, tables.ElementAt(i).Value);
+                }
             }
 
             base.ApplicationStarted(umbracoApplication, applicationContext);

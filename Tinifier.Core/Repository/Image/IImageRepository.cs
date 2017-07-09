@@ -2,7 +2,10 @@
 
 namespace Tinifier.Core.Repository.Image
 {
-    // Repository for images with custom Methods
+    /// <summary>
+    /// Repository for images with custom Methods
+    /// </summary>
+    /// <typeparam name="Media">Media type</typeparam>
     public interface IImageRepository<Media>
     {
         void UpdateItem(int imageId);

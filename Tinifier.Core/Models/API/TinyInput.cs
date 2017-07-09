@@ -1,12 +1,18 @@
 ﻿namespace Tinifier.Core.Models.API
 {
-    // Response from TinyPng Service
+    /// <summary>
+    /// Response from TinyPng Service
+    /// </summary>
     public class TinyInput
     {
-        // Origin size of image
+        /// <summary>
+        /// Origin size of image
+        /// </summary>
         public int Size { get; set; }
 
-        // Type of Image
+        /// <summary>
+        /// Type of Image
+        /// </summary>
         public string Type { get; set; }
     }
 }

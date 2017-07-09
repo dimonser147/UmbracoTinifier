@@ -19,6 +19,10 @@ namespace Tinifier.Core.Controllers
             _settingsService = new SettingsService();
         }
 
+        /// <summary>
+        /// Get user settings
+        /// </summary>
+        /// <returns>Response(StatusCode, settings)</returns>
         [HttpGet]
         public HttpResponseMessage GetTSetting()
         {
@@ -27,8 +31,13 @@ namespace Tinifier.Core.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, tsetting);
         }
 
+        /// <summary>
+        /// Post user settings
+        /// </summary>
+        /// <param name="setting">TSetting</param>
+        /// <returns>Response(StatusCode, message)</returns>
         [HttpPost]
-        public HttpResponseMessage CreateSettings(TSetting setting)
+        public HttpResponseMessage PostTSetting(TSetting setting)
         {
             if (ModelState.IsValid)
             {

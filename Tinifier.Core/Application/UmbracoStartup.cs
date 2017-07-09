@@ -1,5 +1,6 @@
 ﻿using System;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.Media;
@@ -30,74 +31,73 @@ namespace Tinifier.Core.Application
             _historyService = new HistoryService();
         }
 
+        /// <summary>
+        /// Add custom section and event handlers 
+        /// </summary>
+        /// <param name="umbraco">UmbracoApplicationBase</param>
+        /// <param name="context">ApplicationContext</param>
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
-            // Set statistic before optimizing
-            _statisticService.CreateStatistic();     //Hmm...
-
-            // Create a new section
+            _statisticService.CreateStatistic();
             CreateTinifySection(context);
-
-            // Extend dropdownMenu with Tinify button
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
-
-            // Save image handler for updating number of Images in database and tinifing on upload
             MediaService.Saved += MediaServiceSaving;
-
-            // Delete image handler for updating number of Images in database
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
-
-            // Clear dashboard.config before deleting
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
         }
 
-        // Remove section and clear tabs before deleting package
+        /// <summary>
+        /// Remove section and clear tabs in dashboard.config before deleting package
+        /// </summary>
+        /// <param name="sender">InstalledPackage</param>
+        /// <param name="e">EventArgs</param>
         private void InstalledPackage_BeforeDelete(InstalledPackage sender, EventArgs e)
         {
             if (string.Equals(sender.Data.Name, PackageConstants.SectionAlias, StringComparison.OrdinalIgnoreCase))
             {
                 DashboardExtension.ClearTabs();
-
                 var section = ApplicationContext.Current.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
 
                 if (section != null)
-                {
                     ApplicationContext.Current.Services.SectionService.DeleteSection(section);
-                }
             }
         }
 
-        // Update statistic when image upload and optimize if flag is true
+        /// <summary>
+        /// Update statistic when image upload and image optimizing during upload
+        /// </summary>
+        /// <param name="sender">IMediaService</param>
+        /// <param name="eventArg">SaveEventArgs</param>
         private void MediaServiceSaving(IMediaService sender, SaveEventArgs<IMedia> eventArg)
         {
+            var settings = _settingsService.GetSettings();
+
             foreach (var mediaItem in eventArg.SavedEntities)
             {
                 if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) 
                     && string.Equals(mediaItem.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
                 {
-                    var settings = _settingsService.GetSettings();
-
-                    if (settings != null)
+                    if (settings != null && settings.EnableOptimizationOnUpload)
                     {
-                        if(settings.EnableOptimizationOnUpload)
-                        {
                             try
                             {
                                 OptimizeOnUpload(mediaItem.Id, eventArg);
                             }
-                            catch(Infrastructure.Exceptions.NotSupportedException)
+                            catch(NotSupportedExtensionException)
                             {
                                 continue;
                             }
-                        }                                       
-                    }
-
+                    }                                       
                     _statisticService.UpdateStatistic();
                 }
             }
         }
 
-        // Update statistic when recycle bin is empty
+        /// <summary>
+        /// Update number of images in statistic before removing from recyclebin
+        /// </summary>
+        /// <param name="sender">IMediaService</param>
+        /// <param name="e">RecycleBinEventArgs</param>
         private void MediaService_EmptiedRecycleBin(IMediaService sender, RecycleBinEventArgs e)
         {
             var iMedias = ApplicationContext.Current.Services.MediaService.GetByIds(e.Ids);
@@ -112,7 +112,10 @@ namespace Tinifier.Core.Application
             }
         }
 
-        // Create a new section
+        /// <summary>
+        /// Create a new section
+        /// </summary>
+        /// <param name="context">ApplicationContext</param>
         private void CreateTinifySection(ApplicationContext context)
         {
             var section = context.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
@@ -128,7 +131,11 @@ namespace Tinifier.Core.Application
             }
         }
 
-        // Add menuItems to menu
+        /// <summary>
+        /// Extend dropdownMenu with Tinify and Stats buttons
+        /// </summary>
+        /// <param name="sender">TreeControllerBase</param>
+        /// <param name="e">EventArgs</param>
         private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
             if (string.Equals(sender.TreeAlias, PackageConstants.MediaAlias, StringComparison.OrdinalIgnoreCase))
@@ -145,8 +152,12 @@ namespace Tinifier.Core.Application
             }
         }
 
-        // Call methods for tinifing when upload image
-        private void OptimizeOnUpload(int mediaItemId, SaveEventArgs<IMedia> e)
+        /// <summary>
+        /// Call methods for tinifing when upload image
+        /// </summary>
+        /// <param name="mediaItemId">Media Item Id</param>
+        /// <param name="e">CancellableEventArgs</param>
+        private void OptimizeOnUpload(int mediaItemId, CancellableEventArgs e)
         {
             TImage image;
 
@@ -154,18 +165,17 @@ namespace Tinifier.Core.Application
             {
                 image = _imageService.GetImage(mediaItemId);
             }
-            catch (Infrastructure.Exceptions.NotSupportedException ex)
+            catch (NotSupportedExtensionException)
             {
-                e.Messages.Add(new EventMessage(PackageConstants.ErrorCategory, PackageConstants.NotSupported, EventMessageType.Error));
-                throw ex;
+                e.Messages.Add(new EventMessage(PackageConstants.ErrorCategory, PackageConstants.NotSupported,
+                    EventMessageType.Error));
+                throw;
             }
 
             var imageHistory = _historyService.GetImageHistory(image.Id);
 
             if (imageHistory == null)
-            {
                 _imageService.OptimizeImage(image);
-            }
         }
     }
 }

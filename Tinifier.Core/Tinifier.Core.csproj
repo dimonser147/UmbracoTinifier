@@ -279,7 +279,7 @@
     <Compile Include="Infrastructure\Exceptions\ConcurrentOptimizingException.cs" />
     <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSuccessfullRequestException.cs" />
-    <Compile Include="Infrastructure\Exceptions\NotSupportedException.cs" />
+    <Compile Include="Infrastructure\Exceptions\NotSupportedExtensionException.cs" />
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TState.cs" />
     <Compile Include="Repository\State\TStateRepository.cs" />
@@ -299,7 +299,7 @@
     <Compile Include="Models\Db\TImageStatistic.cs" />
     <Compile Include="Models\Db\TinyPNGResponseHistory.cs" />
     <Compile Include="Models\Db\TSetting.cs" />
-    <Compile Include="Models\Service\UrlModel.cs" />
+    <Compile Include="Models\Services\UrlModel.cs" />
     <Compile Include="Repository\Common\IEntityCreator.cs" />
     <Compile Include="Repository\Common\IEntityReader.cs" />
     <Compile Include="Repository\Common\IEntityUpdater.cs" />

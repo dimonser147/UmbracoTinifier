@@ -45,7 +45,8 @@
         var options = {
             pieHole: 0.4,
             width: 500,
-            height: 350
+            height: 350,
+            legend: { position: "bottom", alignment: "center" }
         };
 
         return options;

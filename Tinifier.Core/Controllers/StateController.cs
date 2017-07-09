@@ -17,10 +17,15 @@ namespace Tinifier.Core.Controllers
             _stateService = new StateService();
         }
 
+        /// <summary>
+        /// Get current tinifing state
+        /// </summary>
+        /// <returns>Response(StatusCode, state)</returns>
         [HttpGet]
         public HttpResponseMessage GetCurrentTinifingState()
         {
             var state = _stateService.GetState();
+
             return Request.CreateResponse(HttpStatusCode.OK, state);
         }
     }

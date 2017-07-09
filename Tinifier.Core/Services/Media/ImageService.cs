@@ -49,7 +49,7 @@ namespace Tinifier.Core.Services.Media
 
             if(!_validationService.CheckExtension(image.Name))
             {
-                throw new NotSupportedException(PackageConstants.NotSupported);
+                throw new NotSupportedExtensionException(PackageConstants.NotSupported);
             }
 
             var path = image.GetValue(PackageConstants.UmbracoFileAlias).ToString();
@@ -89,7 +89,7 @@ namespace Tinifier.Core.Services.Media
 
             if (!_validationService.CheckExtension(image.Name))
             {
-                throw new NotSupportedException(PackageConstants.NotSupported);
+                throw new NotSupportedExtensionException(PackageConstants.NotSupported);
             }
 
             var umbracoFilepath = image.GetValue(PackageConstants.UmbracoFileAlias).ToString();

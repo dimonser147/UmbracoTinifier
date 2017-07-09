@@ -15,6 +15,10 @@ namespace Tinifier.Core.Repository.History
             _database = ApplicationContext.Current.DatabaseContext.Database;
         }
 
+        /// <summary>
+        /// Get all tinifing histories from database
+        /// </summary>
+        /// <returns>IEnumerable of TinyPNGResponseHistory</returns>
         public IEnumerable<TinyPNGResponseHistory> GetAll()
         {
             var select = new Sql("SELECT * FROM TinifierResponseHistory");
@@ -23,6 +27,11 @@ namespace Tinifier.Core.Repository.History
             return histories;
         }
 
+        /// <summary>
+        /// Get history by Id
+        /// </summary>
+        /// <param name="id">history Id</param>
+        /// <returns>TinyPNGResponseHistory</returns>
         public TinyPNGResponseHistory GetByKey(int id)
         {
             var query = new Sql($"SELECT * FROM TinifierResponseHistory WHERE ImageId = {id}");
@@ -31,6 +40,10 @@ namespace Tinifier.Core.Repository.History
             return history;
         }
 
+        /// <summary>
+        /// Create history
+        /// </summary>
+        /// <param name="newItem">TinyPNGResponseHistory</param>
         public void Create(TinyPNGResponseHistory newItem)
         {
             _database.Insert(newItem);

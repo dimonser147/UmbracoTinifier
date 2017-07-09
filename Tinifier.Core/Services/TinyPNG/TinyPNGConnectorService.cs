@@ -97,7 +97,7 @@ namespace Tinifier.Core.Services.TinyPNG
 
         private int GetHeaderValue(HttpResponseMessage response)
         {
-            var headerValues = response.Headers.GetValues(PackageConstants.TinyPNGHeader);
+            var headerValues = response.Headers.GetValues(PackageConstants.TinyPngHeader);
             var compressionHeader = headerValues.FirstOrDefault();
 
             if(compressionHeader == null)

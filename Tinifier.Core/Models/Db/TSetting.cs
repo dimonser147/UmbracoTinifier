@@ -5,7 +5,9 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Tinifier.Core.Models.Db
 {
-    // User settings for database
+    /// <summary>
+    /// User settings for database
+    /// </summary>
     [TableName(PackageConstants.DbSettingsTable)]
     [PrimaryKey("Id", autoIncrement = true)]
     public class TSetting

@@ -21,6 +21,10 @@ namespace Tinifier.Core.Controllers
             _statisticService = new StatisticService();
         }
 
+        /// <summary>
+        /// Get Images Statistic
+        /// </summary>
+        /// <returns>Response(StatusCode, {statistic, tsettings, requestLimit})</returns>
         [HttpGet]
         public HttpResponseMessage GetStatistic()
         {

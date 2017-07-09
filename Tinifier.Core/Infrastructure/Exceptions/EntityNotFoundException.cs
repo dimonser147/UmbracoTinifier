@@ -2,6 +2,9 @@
 
 namespace Tinifier.Core.Infrastructure.Exceptions
 {
+    /// <summary>
+    /// Exception occurs when entity not found 
+    /// </summary>
     public class EntityNotFoundException : Exception
     {
         public EntityNotFoundException(string message) : base(message)

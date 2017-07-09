@@ -4,9 +4,11 @@ using System.Xml.Linq;
 
 namespace Tinifier.Core.Infrastructure
 {
-    // Extend dashboard.config with our custom tabs and views
     public static class DashboardExtension
     {
+        /// <summary>
+        /// Extend dashboard.config with our custom tabs and views
+        /// </summary>
         public static void AddTabs()
         {
             var path = HttpContext.Current.Server.MapPath(PackageConstants.PathToDashboard);
@@ -25,6 +27,9 @@ namespace Tinifier.Core.Infrastructure
             doc.Save(path);
         }
 
+        /// <summary>
+        /// Clear custom tabs and views from dashboard.config
+        /// </summary>
         public static void ClearTabs()
         {
             var path = HttpContext.Current.Server.MapPath(PackageConstants.PathToDashboard);

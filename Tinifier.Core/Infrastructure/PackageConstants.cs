@@ -45,7 +45,7 @@
         public const string BasicAuth = "Basic";
         public const string ContentTypeHeader = "Content-Type";
         public const string ContentType = "application/json";
-        public const string TinyPNGHeader = "Compression-Count";
+        public const string TinyPngHeader = "Compression-Count";
 
         public const string DbSettingsTable = "TinifierUserSettings";
         public const string DbHistoryTable = "TinifierResponseHistory";

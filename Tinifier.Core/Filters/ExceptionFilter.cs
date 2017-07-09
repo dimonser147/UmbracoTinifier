@@ -8,24 +8,22 @@ namespace Tinifier.Core.Filters
 {
     public class ExceptionFilter : ExceptionFilterAttribute
     {
+        /// <summary>
+        /// Custom exception filter
+        /// </summary>
+        /// <param name="context">HttpActionExecutedContext</param>
         public override void OnException(HttpActionExecutedContext context)
         {
             var ex = context.Exception;
 
             if (context.Exception is EntityNotFoundException)
-            {
                 context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
 
-            if(context.Exception is NotSupportedException)
-            {
+            if (context.Exception is NotSupportedExtensionException)
                 context.Response = context.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType, ex.Message);
-            }
 
-            if(context.Exception is ConcurrentOptimizingException)
-            {
+            if (context.Exception is ConcurrentOptimizingException)
                 context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
 
             LogHelper.Error(GetType(), ex.StackTrace, ex);
         }
