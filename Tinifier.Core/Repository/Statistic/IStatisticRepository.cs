@@ -1,6 +1,9 @@
 ﻿namespace Tinifier.Core.Repository.Statistic
 {
-    // Repository for statistic with custom methods
+    /// <summary>
+    /// Repository for statistic with custom methods
+    /// </summary>
+    /// <typeparam name="TImageStatistic">class</typeparam>
     public interface IStatisticRepository<TImageStatistic>
     {
         TImageStatistic GetStatistic();

@@ -57,12 +57,9 @@ namespace Tinifier.Core.Services.History
             {
                 var imageHistory = _historyRepository.GetByKey(image.Id);
 
-                if (imageHistory != null)
+                if (imageHistory != null && !imageHistory.IsOptimized)
                 {
-                    if (!imageHistory.IsOptimized)
-                    {
-                        imagesList.Add(image);
-                    }
+                    imagesList.Add(image);
                 }
                 else
                 {

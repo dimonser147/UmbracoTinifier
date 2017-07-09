@@ -7,7 +7,7 @@ using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
-using Tinifier.Core.Models.Service;
+using Tinifier.Core.Models.Services;
 using Tinifier.Core.Repository.Image;
 using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.State;
@@ -43,14 +43,10 @@ namespace Tinifier.Core.Services.Media
             var image = _imageRepository.GetByKey(id);
 
             if (image == null)
-            {
                 throw new EntityNotFoundException(PackageConstants.ImageNotExists + id);
-            }
 
-            if(!_validationService.CheckExtension(image.Name))
-            {
+            if (!_validationService.CheckExtension(image.Name))
                 throw new NotSupportedExtensionException(PackageConstants.NotSupported);
-            }
 
             var path = image.GetValue(PackageConstants.UmbracoFileAlias).ToString();
 
@@ -71,7 +67,6 @@ namespace Tinifier.Core.Services.Media
             if (tinyResponse.Output.Url == null)
             {
                 _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
-
                 return;
             }
 
@@ -83,14 +78,10 @@ namespace Tinifier.Core.Services.Media
             var image = _imageRepository.GetByPath(path);
 
             if (image == null)
-            {
                 throw new EntityNotFoundException(PackageConstants.ImageWithPathNotExists + path);
-            }
 
             if (!_validationService.CheckExtension(image.Name))
-            {
                 throw new NotSupportedExtensionException(PackageConstants.NotSupported);
-            }
 
             var umbracoFilepath = image.GetValue(PackageConstants.UmbracoFileAlias).ToString();
 
@@ -157,16 +148,13 @@ namespace Tinifier.Core.Services.Media
             _statisticService.UpdateStatistic();
 
             if (sourceType == SourceTypes.Folder)
-            {
                 _stateService.UpdateState();
-            }
         }
 
         private void UpdateImage(TImage image, byte[] bytesArray)
         {
             System.IO.File.Delete(HttpContext.Current.Server.MapPath($"~{image.Url}"));
             System.IO.File.WriteAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"), bytesArray);
-
             _imageRepository.UpdateItem(image.Id);
         }
 

@@ -31,9 +31,7 @@ namespace Tinifier.Core.Services.Settings
             var setting = _settingsRepository.GetSettings();
 
             if (setting == null)
-            {
                 throw new EntityNotFoundException(PackageConstants.ApiKeyNotFound);
-            }
         }
 
         public void UpdateSettings(int currentMonthRequests)

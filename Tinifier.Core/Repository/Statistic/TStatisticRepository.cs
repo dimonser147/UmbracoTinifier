@@ -14,11 +14,19 @@ namespace Tinifier.Core.Repository.Statistic
             _database = ApplicationContext.Current.DatabaseContext.Database;
         }
 
+        /// <summary>
+        /// Create Statistic
+        /// </summary>
+        /// <param name="entity">TImageStatistic</param>
         public void Create(TImageStatistic entity)
         {
             _database.Insert(entity);
         }
 
+        /// <summary>
+        /// Get Statistic
+        /// </summary>
+        /// <returns>TImageStatistic</returns>
         public TImageStatistic GetStatistic()
         {
             var query = new Sql("SELECT * FROM TinifierImagesStatistic");
@@ -28,6 +36,10 @@ namespace Tinifier.Core.Repository.Statistic
             return statistic;
         }
 
+        /// <summary>
+        /// Update Statistic
+        /// </summary>
+        /// <param name="entity">TImageStatistic</param>
         public void Update(TImageStatistic entity)
         {
             var query = new Sql($"UPDATE TinifierImagesStatistic SET NumberOfOptimizedImages = {entity.NumberOfOptimizedImages}, TotalNumberOfImages = {entity.TotalNumberOfImages}");

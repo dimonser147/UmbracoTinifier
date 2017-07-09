@@ -34,17 +34,13 @@ namespace Tinifier.Core.Services.State
 
         public void UpdateState()
         {
-            var state = _stateRepository.GetByKey((int)Statuses.InProgress);
+            var state = _stateRepository.GetByKey((int) Statuses.InProgress);
 
-            if(state.CurrentImage < state.AmounthOfImages)
-            {
+            if (state.CurrentImage < state.AmounthOfImages)
                 state.CurrentImage++;
-            }
 
             if (state.CurrentImage == state.AmounthOfImages)
-            {
                 state.StatusType = Statuses.Done;
-            }
 
             _stateRepository.Update(state);
         }

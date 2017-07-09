@@ -14,6 +14,10 @@ namespace Tinifier.Core.Repository.Settings
             _database = ApplicationContext.Current.DatabaseContext.Database;
         }
 
+        /// <summary>
+        /// Get settings
+        /// </summary>
+        /// <returns></returns>
         public TSetting GetSettings()
         {
             var query = new Sql("SELECT * FROM TinifierUserSettings ORDER BY Id DESC");
@@ -23,11 +27,19 @@ namespace Tinifier.Core.Repository.Settings
             return setting;
         }
 
+        /// <summary>
+        /// Create settings
+        /// </summary>
+        /// <param name="entity">TSetting</param>
         public void Create(TSetting entity)
         {
             _database.Insert(entity);
         }
 
+        /// <summary>
+        /// Update currentMonthRequests in settings
+        /// </summary>
+        /// <param name="currentMonthRequests">currentMonthRequests</param>
         public void Update(int currentMonthRequests)
         {
             var query = new Sql($"UPDATE TinifierUserSettings SET CurrentMonthRequests = {currentMonthRequests}");

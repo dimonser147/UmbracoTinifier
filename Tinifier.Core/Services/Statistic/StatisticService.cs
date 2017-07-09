@@ -20,7 +20,7 @@ namespace Tinifier.Core.Services.Statistic
         {
             var statistic = _statisticRepository.GetStatistic();
 
-            if(statistic == null)
+            if (statistic == null)
             {
                 var newStat = new TImageStatistic
                 {
