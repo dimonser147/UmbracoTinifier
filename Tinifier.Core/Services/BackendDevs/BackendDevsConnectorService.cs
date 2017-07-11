@@ -23,9 +23,9 @@ namespace Tinifier.Core.Services.BackendDevs
             {
                 await CreateRequest(domainName);
             }
-            catch(NotSuccessfullRequestException ex)
+            catch(NotSuccessfullRequestException)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -44,7 +44,7 @@ namespace Tinifier.Core.Services.BackendDevs
                 {
                     response = await client.PostAsync(PackageConstants.BackEndDevsPostStatistic, content);
                 }
-                catch (TaskCanceledException ex)
+                catch (Exception ex)
                 {
                     throw new NotSuccessfullRequestException(ex.Message);
                 }

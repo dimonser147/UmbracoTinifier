@@ -73,16 +73,16 @@ namespace Tinifier.Core.Services.Media
                 return;
             }
 
+            UpdateImageAfterSuccessfullRequest(tinyResponse, image);
+
             try
             {
                 await _backendDevsConnectorService.SendStatistic(HttpContext.Current.Request.Url.Host);
             }
-            catch(NotSuccessfullRequestException ex)
+            catch (NotSuccessfullRequestException)
             {
-                throw ex;
+                return;
             }
-
-            UpdateImageAfterSuccessfullRequest(tinyResponse, image);
         }
 
         public TImage GetImage(string path)

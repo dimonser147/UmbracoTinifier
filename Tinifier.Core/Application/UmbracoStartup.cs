@@ -82,7 +82,7 @@ namespace Tinifier.Core.Application
                         {
                             OptimizeOnUpload(mediaItem.Id, eventArg);
                         }
-                        catch(Exception)
+                        catch(NotSupportedExtensionException)
                         {
                             _statisticService.UpdateStatistic();
                             continue;
@@ -178,17 +178,8 @@ namespace Tinifier.Core.Application
             var imageHistory = _historyService.GetImageHistory(image.Id);
 
             if (imageHistory == null)
-            {
-                try
-                {
-                    _imageService.OptimizeImage(image);
-                }
-                catch(NotSuccessfullRequestException)
-                {
-                    throw;
-                }                
+                    _imageService.OptimizeImage(image);               
             }                
         }
-    }
 }
 

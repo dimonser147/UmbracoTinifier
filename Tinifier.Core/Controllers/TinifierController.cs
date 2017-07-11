@@ -187,7 +187,15 @@ namespace Tinifier.Core.Controllers
                 }
 
                 _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, image);
-                await _backendDevsConnectorService.SendStatistic(HttpContext.Current.Request.Url.Host);
+
+                try
+                {
+                    await _backendDevsConnectorService.SendStatistic(HttpContext.Current.Request.Url.Host);
+                }
+                catch(NotSuccessfullRequestException)
+                {
+                    continue;
+                }
             }
 
             if (nonOptimizedImagesCount > 0)
