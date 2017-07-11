@@ -4,16 +4,27 @@ namespace Tinifier.Core.Services.Settings
 {
     public interface ISettingsService
     {
-        // Add settings to database
+        /// <summary>
+        /// Add settings to database
+        /// </summary>
+        /// <param name="setting">TSetting</param>
         void CreateSettings(TSetting setting);
 
-        // Get settings for displaying
+        /// <summary>
+        /// Get settings for displaying
+        /// </summary>
+        /// <returns>TSetting</returns>
         TSetting GetSettings();
 
-        // Check if user has settings and ApiKey
+        /// <summary>
+        /// Check if user has settings and ApiKey
+        /// </summary>
         void CheckIfSettingExists();
 
-        // Update number of available requests
+        /// <summary>
+        /// Update number of available requests
+        /// </summary>
+        /// <param name="currentMonthRequests">number of user requests</param>
         void UpdateSettings(int currentMonthRequests);
     }
 }

@@ -4,13 +4,21 @@ namespace Tinifier.Core.Services.State
 {
     public interface IStateService
     {
-        // Get state from database to show for user
+        /// <summary>
+        /// Get state from database to show for user
+        /// </summary>
+        /// <returns>TState</returns>
         TState GetState();
 
-        // Update state 
+        /// <summary>
+        /// Update state
+        /// </summary>
         void UpdateState();
 
-        // Create state in bulk tinifing
+        /// <summary>
+        /// Create state 
+        /// </summary>
+        /// <param name="numberOfImages">Number of Images</param>
         void CreateState(int numberOfImages);
     }
 }

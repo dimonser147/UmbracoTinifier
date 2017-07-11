@@ -38,7 +38,6 @@ namespace Tinifier.Core.Application
         /// <param name="context">ApplicationContext</param>
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
-            _statisticService.CreateStatistic();
             CreateTinifySection(context);
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
             MediaService.Saved += MediaServiceSaving;
@@ -85,10 +84,14 @@ namespace Tinifier.Core.Application
                             }
                             catch(NotSupportedExtensionException)
                             {
+                                _statisticService.UpdateStatistic();
                                 continue;
                             }
-                    }                                       
-                    _statisticService.UpdateStatistic();
+                    }
+                    else
+                    {
+                        _statisticService.UpdateStatistic();
+                    }                                                          
                 }
             }
         }

@@ -42,6 +42,11 @@
         $scope.timage = response.timage;
 
     }).error(function(response) {
-        notificationsService.error("Error", response);
+        if (response.Error === 1) {
+            notificationsService.warning("Warning", response.Message);
+        }
+        else {
+            notificationsService.error("Error", response.Message);
+        }
     });
 });

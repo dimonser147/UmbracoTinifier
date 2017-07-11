@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Services.Statistic;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
@@ -11,6 +12,13 @@ namespace Tinifier.Core.Application
 {
     public class DbStartup : ApplicationEventHandler
     {
+        private readonly IStatisticService _statisticService;
+
+        public DbStartup()
+        {
+            _statisticService = new StatisticService();
+        }
+
         /// <summary>
         /// Add custom tables to Umbraco database
         /// </summary>
@@ -37,6 +45,8 @@ namespace Tinifier.Core.Application
                     dbHelper.CreateTable(false, tables.ElementAt(i).Value);
                 }
             }
+
+            _statisticService.CreateStatistic();
 
             base.ApplicationStarted(umbracoApplication, applicationContext);
         }

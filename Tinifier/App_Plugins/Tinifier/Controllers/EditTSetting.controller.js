@@ -17,11 +17,16 @@
     // Submit form with settings
     $scope.submitForm = function() {
         timage = $scope.timage;
-        $http.post("/umbraco/backoffice/api/Settings/CreateSettings", JSON.stringify(timage))
+        $http.post("/umbraco/backoffice/api/Settings/PostTSetting", JSON.stringify(timage))
             .success(function(response) {
                 notificationsService.success("Success", response);
             }).error(function(response) {
-                notificationsService.error("Error", response);
+                if (response.Error === 1) {
+                    notificationsService.warning("Warning", response.Message);
+                }
+                else {
+                    notificationsService.error("Error", response.Message);
+                }
             });
     };
 });

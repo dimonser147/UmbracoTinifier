@@ -274,6 +274,7 @@
     <Compile Include="Controllers\StateController.cs" />
     <Compile Include="Controllers\StatisticController.cs" />
     <Compile Include="Filters\ExceptionFilter.cs" />
+    <Compile Include="Infrastructure\Enums\ErrorTypes.cs" />
     <Compile Include="Infrastructure\Enums\SourceTypes.cs" />
     <Compile Include="Infrastructure\Enums\Statuses.cs" />
     <Compile Include="Infrastructure\Exceptions\ConcurrentOptimizingException.cs" />

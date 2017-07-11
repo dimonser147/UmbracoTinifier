@@ -2,7 +2,11 @@
 {
     public interface ITinyImageService
     {
-        // Download image from url
+        /// <summary>
+        /// Download image from url
+        /// </summary>
+        /// <param name="url">Image url</param>
+        /// <returns>byte[]</returns>
         byte[] GetTinyImage(string url);
     }
 }

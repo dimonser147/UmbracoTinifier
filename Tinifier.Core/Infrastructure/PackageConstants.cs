@@ -4,6 +4,8 @@
     {
         public const int MonthlyRequestsLimit = 500;
         public const string TinyPngUrl = "https://api.tinify.com";
+        // public const string BackEndDevsUrl = "http://backend-devs.com";
+        public const string BackEndDevsUrl = "http://localhost:53151/";
 
         public const string TinyPngUri = "/shrink";
         public const string FirstNodeId = "-1";
@@ -56,6 +58,7 @@
         public const string TinySettingsRoute = "/App_Plugins/Tinifier/BackOffice/timages/edit.html";
         public const string SettingsTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/settings.html";
         public const string StatisticTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/statistic.html";
+        public const string BackEndDevsPostStatistic = "/umbraco/api/Tinifier/PostStatistic";
         public const string PathToDashboard = "~/config/dashboard.config";
         public const string PathToSectionDashboard = "//section[@alias='TinifierSettings']";
 
@@ -68,9 +71,10 @@
         public const string ApiKeyNotFound = "You don`t have ApiKey in settings! Please, go to tinifier section and add ApiKey there!";
         public const string TooBigImage = "The request was timed out! Your image is too big!";
         public const string AllImagesAlreadyOptimized = "All Images are already optimized";
-        public const string ConcurrentOptimizing = "Sorry, but at the same time you can tinify only one folder";
+        public const string ConcurrentOptimizing = "Sorry, but at the same time you can tinify only one Image";
         public const string NotSuccessfullRequest = "Request to TinyPNG was not successfull";
         public const string ImageNotExists = "Image with such id doesn't exist. Id: ";
-        public const string ImageWithPathNotExists = "Image with such path doesn't exist. Name: "; 
+        public const string ImageWithPathNotExists = "Image with such path doesn't exist. Name: ";
+        public const string NotAllImagesWereOptimized = "Not all images have been optimized";
     }
 }

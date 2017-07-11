@@ -49,7 +49,7 @@ namespace Tinifier.Core.Services.History
             return history;
         }
 
-        public List<TImage> CheckImageHistory(IEnumerable<TImage> images)
+        public List<TImage> GetImagesWithoutHistory(IEnumerable<TImage> images)
         {
             var imagesList = new List<TImage>();
 
@@ -57,11 +57,7 @@ namespace Tinifier.Core.Services.History
             {
                 var imageHistory = _historyRepository.GetByKey(image.Id);
 
-                if (imageHistory != null && !imageHistory.IsOptimized)
-                {
-                    imagesList.Add(image);
-                }
-                else
+                if (imageHistory == null || ( imageHistory != null && !imageHistory.IsOptimized))
                 {
                     imagesList.Add(image);
                 }

@@ -4,13 +4,20 @@ namespace Tinifier.Core.Services.Statistic
 {
     public interface IStatisticService
     {
-        // Get statistic and display with chart
+        /// <summary>
+        /// Get statistic and display with chart
+        /// </summary>
+        /// <returns>TinifyImageStatistic</returns>
         TinifyImageStatistic GetStatistic();
 
-        // Update Statistic in database
+        /// <summary>
+        /// Update Statistic in database
+        /// </summary>
         void UpdateStatistic();
 
-        // Create Statistic in database
+        /// <summary>
+        /// Create Statistic in database
+        /// </summary>
         void CreateStatistic();
     }
 }

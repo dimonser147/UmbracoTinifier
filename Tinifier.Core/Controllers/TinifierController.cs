@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -58,11 +58,12 @@ namespace Tinifier.Core.Controllers
             }
             catch (NotSupportedExtensionException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, 
+                    new { Message = ex.Message, Error = ErrorTypes.Error });
             }
 
             var history = _historyService.GetImageHistory(timageId);
-            return Request.CreateResponse(HttpStatusCode.OK, new {timage, history});
+            return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
         }
 
         /// <summary>
@@ -76,8 +77,7 @@ namespace Tinifier.Core.Controllers
         {
             HttpResponseMessage responseMessage;
             _settingsService.CheckIfSettingExists();
-            // TODO: check any Tinifier activity
-            _validationService.CheckConcurrentOptimizing();
+            _validationService.ValidateConcurrentOptimizing();
 
             if (imageRelativeUrls.Length != 0)
             {
@@ -106,13 +106,14 @@ namespace Tinifier.Core.Controllers
         private async Task<HttpResponseMessage> TinifyFolder(int folderId)
         {
             var images = _imageService.GetFolderImages(folderId);
-            var imagesList = _historyService.CheckImageHistory(images);
+            var imagesList = _historyService.GetImagesWithoutHistory(images);
 
             if (imagesList.Count == 0)           
-                return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AllImagesAlreadyOptimized);     
+                return Request.CreateResponse(HttpStatusCode.BadRequest, 
+                    new { Message = PackageConstants.AllImagesAlreadyOptimized, Error = ErrorTypes.Warning });     
                   
             _stateService.CreateState(imagesList.Count);
-            return await CallTinyPngService(imagesList, SourceTypes.Folder);
+            return await CallTinyPngService(imagesList);
         }
 
         /// <summary>
@@ -136,10 +137,11 @@ namespace Tinifier.Core.Controllers
             }
 
             if (nonOptimizedImages.Count == 0)           
-                return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AllImagesAlreadyOptimized);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, 
+                    new { Message = PackageConstants.AllImagesAlreadyOptimized, Error = ErrorTypes.Warning });
 
             _stateService.CreateState(nonOptimizedImages.Count);
-            return await CallTinyPngService(nonOptimizedImages, SourceTypes.Folder);
+            return await CallTinyPngService(nonOptimizedImages);
         }
 
         /// <summary>
@@ -150,13 +152,15 @@ namespace Tinifier.Core.Controllers
         private async Task<HttpResponseMessage> TinifyImage(int imageId)
         {            
             var imageById = _imageService.GetImage(imageId);
-            _validationService.CheckExtension(imageById.Name);
+            _validationService.ValidateExtension(imageById.Name);
             var notOptimizedImage = _historyService.GetImageHistory(imageById.Id);
 
             if (notOptimizedImage != null && notOptimizedImage.IsOptimized)
-                return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.AlreadyOptimized);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, 
+                    new { Message = PackageConstants.AlreadyOptimized, Error = ErrorTypes.Warning });
 
             var nonOptimizedImages = new List<TImage> {imageById};
+            _stateService.CreateState(nonOptimizedImages.Count);
             return await CallTinyPngService(nonOptimizedImages, SourceTypes.Image);
         }
 
@@ -166,8 +170,10 @@ namespace Tinifier.Core.Controllers
         /// <param name="imagesList">Images that needs to be tinifing</param>
         /// <param name="sourceType">Folder or Image</param>
         /// <returns>Response(StatusCode, message)</returns>
-        private async Task<HttpResponseMessage> CallTinyPngService(IEnumerable<TImage> imagesList, SourceTypes sourceType)
+        private async Task<HttpResponseMessage> CallTinyPngService(IEnumerable<TImage> imagesList, SourceTypes sourceType = SourceTypes.Folder)
         {
+            var nonOptimizedImagesCount = 0;
+
             foreach (var image in imagesList)
             {
                 var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(image.Url);
@@ -175,19 +181,22 @@ namespace Tinifier.Core.Controllers
                 if (tinyResponse.Output.Url == null)
                 {
                     _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
-
-                    if (sourceType == SourceTypes.Image)
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.NotSuccessfullRequest);
-
                     _stateService.UpdateState();
+                    nonOptimizedImagesCount++;
                     continue;
                 }
 
-                _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, image, sourceType);
+                _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, image);
                 _backendDevsConnectorService.SendStatistic(Request.RequestUri.GetLeftPart(UriPartial.Authority));
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, new { PackageConstants.SuccessOptimized, sourceType});
+            if (nonOptimizedImagesCount > 0)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, 
+                    new { Message = PackageConstants.NotAllImagesWereOptimized, Error = ErrorTypes.Error });
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, new { PackageConstants.SuccessOptimized, sourceType });
         }
     }
 }

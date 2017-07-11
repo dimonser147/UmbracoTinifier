@@ -3,7 +3,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Infrastructure;
-using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
@@ -45,7 +44,7 @@ namespace Tinifier.Core.Services.Media
             if (image == null)
                 throw new EntityNotFoundException(PackageConstants.ImageNotExists + id);
 
-            if (!_validationService.CheckExtension(image.Name))
+            if (!_validationService.ValidateExtension(image.Name))
                 throw new NotSupportedExtensionException(PackageConstants.NotSupported);
 
             var path = image.GetValue(PackageConstants.UmbracoFileAlias).ToString();
@@ -62,6 +61,7 @@ namespace Tinifier.Core.Services.Media
 
         public async void OptimizeImage(TImage image)
         {
+            _stateService.CreateState(1);
             var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(GetUrl(image.Url));
 
             if (tinyResponse.Output.Url == null)
@@ -70,7 +70,7 @@ namespace Tinifier.Core.Services.Media
                 return;
             }
 
-            UpdateImageAfterSuccessfullRequest(tinyResponse, image, SourceTypes.Image);
+            UpdateImageAfterSuccessfullRequest(tinyResponse, image);
         }
 
         public TImage GetImage(string path)
@@ -80,7 +80,7 @@ namespace Tinifier.Core.Services.Media
             if (image == null)
                 throw new EntityNotFoundException(PackageConstants.ImageWithPathNotExists + path);
 
-            if (!_validationService.CheckExtension(image.Name))
+            if (!_validationService.ValidateExtension(image.Name))
                 throw new NotSupportedExtensionException(PackageConstants.NotSupported);
 
             var umbracoFilepath = image.GetValue(PackageConstants.UmbracoFileAlias).ToString();
@@ -139,16 +139,14 @@ namespace Tinifier.Core.Services.Media
             return images;
         }
 
-        public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, SourceTypes sourceType)
+        public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image)
         {
             var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
 
             _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
             UpdateImage(image, tinyImageBytes);
             _statisticService.UpdateStatistic();
-
-            if (sourceType == SourceTypes.Folder)
-                _stateService.UpdateState();
+            _stateService.UpdateState();
         }
 
         private void UpdateImage(TImage image, byte[] bytesArray)

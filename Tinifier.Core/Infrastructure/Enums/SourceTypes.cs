@@ -1,11 +1,11 @@
 ﻿namespace Tinifier.Core.Infrastructure.Enums
 {
     /// <summary>
-    /// Check if this separate image or image in folder
+    /// This enum indicates we tinifing image or folder. If image after tinifing shows details page
     /// </summary>
     public enum SourceTypes
     {
-        Folder = 1,
-        Image = 2
+        Image,
+        Folder
     }
 }

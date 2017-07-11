@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Services.Settings;
 using Umbraco.Web.WebApi;
@@ -45,7 +46,8 @@ namespace Tinifier.Core.Controllers
                 return Request.CreateResponse(HttpStatusCode.Created, PackageConstants.ApiKeyMessage);
             }
 
-            return Request.CreateResponse(HttpStatusCode.BadRequest, PackageConstants.ApiKeyError);
+            return Request.CreateResponse(HttpStatusCode.BadRequest, 
+                new { Message = PackageConstants.ApiKeyError, Error = ErrorTypes.Error });
         }
     }
 }

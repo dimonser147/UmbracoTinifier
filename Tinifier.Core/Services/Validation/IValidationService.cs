@@ -5,14 +5,20 @@
         /// <summary>
         /// Check folder this or Image
         /// </summary>
-        /// <param name="mediaId"></param>
-        /// <returns></returns>
+        /// <param name="mediaId">Media Id</param>
+        /// <returns>If this folder or not</returns>
         bool IsFolder(int mediaId);
 
-        // Check concurrent folder optimizing
-        void CheckConcurrentOptimizing();
+        /// <summary>
+        /// Check concurrent folder optimizing
+        /// </summary>
+        void ValidateConcurrentOptimizing();
 
-        // Check Image Extension
-        bool CheckExtension(string source);
+        /// <summary>
+        /// Check Image Extension
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns>Supported exception or not</returns>
+        bool ValidateExtension(string source);
     }
 }

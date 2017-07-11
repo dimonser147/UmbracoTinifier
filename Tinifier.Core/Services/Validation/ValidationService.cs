@@ -18,14 +18,12 @@ namespace Tinifier.Core.Services.Validation
             _imageRepository = new TImageRepository();
         }
 
-        public void CheckConcurrentOptimizing()
+        public void ValidateConcurrentOptimizing()
         {
             var state = _stateRepository.GetByKey((int)Statuses.InProgress);
 
             if (state != null)
-            {
                 throw new ConcurrentOptimizingException(PackageConstants.ConcurrentOptimizing);
-            }
         }
 
         public bool IsFolder(int itemId)
@@ -35,7 +33,7 @@ namespace Tinifier.Core.Services.Validation
             return string.Equals(item.ContentType.Alias, PackageConstants.FolderAlias, StringComparison.OrdinalIgnoreCase);
         }
 
-        public bool CheckExtension(string source)
+        public bool ValidateExtension(string source)
         {
             var fileName = source.ToLower();
 

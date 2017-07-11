@@ -14,6 +14,7 @@ namespace Tinifier.Core.Repository.Image
         private readonly IContentTypeService _contentTypeService;
         private readonly IMediaService _mediaService;
         private readonly UmbracoDatabase _database;
+        private readonly List<Media> mediaList = new List<Media>();
 
         public TImageRepository()
         {
@@ -84,15 +85,25 @@ namespace Tinifier.Core.Repository.Image
         /// <returns>IEnumerable of Media</returns>
         public IEnumerable<Media> GetItemsFromFolder(int folderId)
         {
-            var mediaList = new List<Media>();
             var imagesFolder = _mediaService.GetById(folderId);
+            var items = imagesFolder.Children();
 
-            foreach(var media in imagesFolder.Children())
+            if (items.Any())
             {
-                if (media.ContentType.Alias == "Image")
+                foreach (var media in items)
                 {
-                    mediaList.Add(media as Media);
-                }
+                    if (media.ContentType.Alias == "Image")
+                    {
+                        mediaList.Add(media as Media);
+                    }
+                } 
+                foreach(var media in items)
+                {
+                    if (media.ContentType.Alias == "Folder")
+                    {
+                        GetItemsFromFolder(media.Id);
+                    }
+                }  
             }
 
             return mediaList;

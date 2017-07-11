@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
+using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Umbraco.Core.Logging;
 
@@ -17,13 +18,20 @@ namespace Tinifier.Core.Filters
             var ex = context.Exception;
 
             if (context.Exception is EntityNotFoundException)
-                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, 
+                    new { Message = ex.Message, Error = ErrorTypes.Error });
 
             if (context.Exception is NotSupportedExtensionException)
-                context.Response = context.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType, ex.Message);
+                context.Response = context.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType, 
+                    new { Message = ex.Message, Error = ErrorTypes.Error });
 
             if (context.Exception is ConcurrentOptimizingException)
-                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, 
+                    new { Message = ex.Message, Error = ErrorTypes.Error });
+
+            if(context.Exception is NotSuccessfullRequestException)
+                context.Response = context.Request.CreateResponse(HttpStatusCode.BadRequest,
+                    new { Message = ex.Message, Error = ErrorTypes.Error });
 
             LogHelper.Error(GetType(), ex.StackTrace, ex);
         }
