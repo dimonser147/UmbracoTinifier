@@ -1,4 +1,6 @@
-﻿namespace Tinifier.Core.Services.BackendDevs
+﻿using System.Threading.Tasks;
+
+namespace Tinifier.Core.Services.BackendDevs
 {
     public interface IBackendDevsConnector
     {
@@ -6,6 +8,6 @@
         /// Send statistic to http://backend-devs.com/
         /// </summary>
         /// <param name="domainName">user domainName</param>
-        void SendStatistic(string domainName);
+        Task SendStatistic(string domainName);
     }
 }

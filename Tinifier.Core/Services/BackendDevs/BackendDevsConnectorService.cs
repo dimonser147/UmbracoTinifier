@@ -17,7 +17,7 @@ namespace Tinifier.Core.Services.BackendDevs
             _serializer = new JavaScriptSerializer();
         }
 
-        public async void SendStatistic(string domainName)
+        public async Task SendStatistic(string domainName)
         {
             try
             {

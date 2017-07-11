@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
@@ -187,7 +187,7 @@ namespace Tinifier.Core.Controllers
                 }
 
                 _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, image);
-                _backendDevsConnectorService.SendStatistic(Request.RequestUri.GetLeftPart(UriPartial.Authority));
+                await _backendDevsConnectorService.SendStatistic(HttpContext.Current.Request.Url.Host);
             }
 
             if (nonOptimizedImagesCount > 0)

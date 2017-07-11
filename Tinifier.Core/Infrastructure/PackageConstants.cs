@@ -58,7 +58,7 @@
         public const string TinySettingsRoute = "/App_Plugins/Tinifier/BackOffice/timages/edit.html";
         public const string SettingsTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/settings.html";
         public const string StatisticTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/statistic.html";
-        public const string BackEndDevsPostStatistic = "/umbraco/api/Tinifier/PostStatistic";
+        public const string BackEndDevsPostStatistic = "/umbraco/api/Tinifier/Post";
         public const string PathToDashboard = "~/config/dashboard.config";
         public const string PathToSectionDashboard = "//section[@alias='TinifierSettings']";
 

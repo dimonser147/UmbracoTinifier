@@ -78,15 +78,15 @@ namespace Tinifier.Core.Application
                 {
                     if (settings != null && settings.EnableOptimizationOnUpload)
                     {
-                            try
-                            {
-                                OptimizeOnUpload(mediaItem.Id, eventArg);
-                            }
-                            catch(NotSupportedExtensionException)
-                            {
-                                _statisticService.UpdateStatistic();
-                                continue;
-                            }
+                        try
+                        {
+                            OptimizeOnUpload(mediaItem.Id, eventArg);
+                        }
+                        catch(Exception)
+                        {
+                            _statisticService.UpdateStatistic();
+                            continue;
+                        }
                     }
                     else
                     {
@@ -178,7 +178,16 @@ namespace Tinifier.Core.Application
             var imageHistory = _historyService.GetImageHistory(image.Id);
 
             if (imageHistory == null)
-                _imageService.OptimizeImage(image);
+            {
+                try
+                {
+                    _imageService.OptimizeImage(image);
+                }
+                catch(NotSuccessfullRequestException)
+                {
+                    throw;
+                }                
+            }                
         }
     }
 }

@@ -8,6 +8,7 @@ using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Services;
 using Tinifier.Core.Repository.Image;
+using Tinifier.Core.Services.BackendDevs;
 using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.State;
 using Tinifier.Core.Services.Statistic;
@@ -25,6 +26,7 @@ namespace Tinifier.Core.Services.Media
         private readonly IStatisticService _statisticService;
         private readonly IStateService _stateService;
         private readonly ITinyPNGConnector _tinyPngConnectorService;
+        private readonly IBackendDevsConnector _backendDevsConnectorService;
 
         public ImageService()
         {
@@ -35,6 +37,7 @@ namespace Tinifier.Core.Services.Media
             _statisticService = new StatisticService();
             _stateService = new StateService();
             _tinyPngConnectorService = new TinyPNGConnectorService();
+            _backendDevsConnectorService = new BackendDevsConnectorService();
         }
 
         public TImage GetImage(int id)
@@ -68,6 +71,15 @@ namespace Tinifier.Core.Services.Media
             {
                 _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
                 return;
+            }
+
+            try
+            {
+                await _backendDevsConnectorService.SendStatistic(HttpContext.Current.Request.Url.Host);
+            }
+            catch(NotSuccessfullRequestException ex)
+            {
+                throw ex;
             }
 
             UpdateImageAfterSuccessfullRequest(tinyResponse, image);
