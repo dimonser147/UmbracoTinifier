@@ -20,6 +20,9 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 - Total savings widget
 - API requests widget
 
+## More about project
+[Tinifier Developer`s site][ps]
+
 ## License
 Copyright © [Backend Devs][bd].
 
@@ -30,3 +33,4 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 [bd]: http://backend-devs.com/
 [tp]: https://tinypng.com
 [qs]: https://our.umbraco.org/FileDownload?id=17624
+[ps]: http://backend-devs.com/case-studies/umbraco-cms/tinifier/
