@@ -29,4 +29,4 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 [bd]: http://backend-devs.com/
 [tp]: https://tinypng.com
-[qs]: https://github.com/dimonser147/UmbracoTinifier/blob/master/QuickStart.pdf
+[qs]: https://our.umbraco.org/FileDownload?id=17624
