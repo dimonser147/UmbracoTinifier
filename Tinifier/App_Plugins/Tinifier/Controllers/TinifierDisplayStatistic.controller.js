@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").controller("Tinifier.DisplayStatistic.Controller", function ($scope, $http, $timeout) {
+﻿angular.module("umbraco").controller("Tinifier.TinifierDisplayStatistic.Controller", function ($scope, $http, $timeout) {
 
     $scope.currentRequests = 0;
     $scope.monthlyRequestsLimit = 0;
@@ -10,7 +10,7 @@
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-        $http.get("/umbraco/backoffice/api/Statistic/GetStatistic").then(function(response) {
+        $http.get("/umbraco/backoffice/api/TinifierImagesStatistic/GetStatistic").then(function (response) {
             if (response.data.tsetting != null) {
                 $scope.currentRequests = response.data.tsetting.CurrentMonthRequests;
             }
@@ -44,7 +44,7 @@
     }
 
     $scope.getData = function () {
-        $http.get("/umbraco/backoffice/api/State/GetCurrentTinifingState").then(function (response) {
+        $http.get("/umbraco/backoffice/api/TinifierState/GetCurrentTinifingState").then(function (response) {
             if (response.data == "null") {
                 document.getElementById("tinifierStatus").innerHTML = "Panda is sleeping now";
                 document.getElementById("statusPanda").src = "../../../../Media/Pictures/sleeping_panda_by_citruspop-d2v8hdd.jpg";

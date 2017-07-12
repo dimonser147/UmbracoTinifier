@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Formatting;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Services.Media;
+using Umbraco.Web;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Mvc;
 using Umbraco.Web.Trees;
@@ -37,7 +38,8 @@ namespace Tinifier.Core.Controllers
             {
                 foreach (var timage in _imageService.GetOptimizedImages())
                 {
-                    nodes.Add(CreateTreeNode(timage.Id + string.Empty, id, queryStrings, timage.Name, PackageConstants.TreeIcon));
+                    nodes.Add(CreateTreeNode(timage.Id + string.Empty, id, queryStrings, timage.Name, PackageConstants.TreeIcon, false,
+                        FormDataCollectionExtensions.GetValue<string>(queryStrings, PackageConstants.AppAlias) + PackageConstants.CustomTreeUrl + timage.Id));
                 }
             }
 

@@ -10,12 +10,12 @@ using Umbraco.Web.WebApi;
 namespace Tinifier.Core.Controllers
 {
     [ExceptionFilter]
-    public class StatisticController : UmbracoAuthorizedApiController
+    public class TinifierImagesStatisticController : UmbracoAuthorizedApiController
     {
         private readonly ISettingsService _settingsService;
         private readonly IStatisticService _statisticService;
 
-        public StatisticController()
+        public TinifierImagesStatisticController()
         {
             _settingsService = new SettingsService();
             _statisticService = new StatisticService();

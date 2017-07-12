@@ -47,19 +47,21 @@
         public const string ContentTypeHeader = "Content-Type";
         public const string ContentType = "application/json";
         public const string TinyPngHeader = "Compression-Count";
+        public const string AppAlias = "application";
 
         public const string DbSettingsTable = "TinifierUserSettings";
         public const string DbHistoryTable = "TinifierResponseHistory";
         public const string DbStatisticTable = "TinifierImagesStatistic";
         public const string DbStateTable = "TinifierState";
 
-        public const string TinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/tinifyDialog.html";
-        public const string TinySettingsRoute = "/App_Plugins/Tinifier/BackOffice/timages/edit.html";
-        public const string SettingsTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/settings.html";
-        public const string StatisticTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/statistic.html";
+        public const string TinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/TinifierTinifyDialog.html";
+        public const string TinySettingsRoute = "/App_Plugins/Tinifier/BackOffice/timages/TinifierEdit.html";
+        public const string SettingsTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/TinifierSettings.html";
+        public const string StatisticTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/TinifierStatistic.html";
         public const string BackEndDevsPostStatistic = "/umbraco/api/TinifierStatistic/Post";
         public const string PathToDashboard = "~/config/dashboard.config";
         public const string PathToSectionDashboard = "//section[@alias='TinifierSettings']";
+        public const string CustomTreeUrl = "/timages/TinifierEdit/";
 
         public const string BadRequest = "Bad request";
         public const string ApiKeyMessage = "ApiKey successfully added!";

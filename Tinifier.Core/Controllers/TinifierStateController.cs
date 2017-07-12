@@ -8,11 +8,11 @@ using Umbraco.Web.WebApi;
 namespace Tinifier.Core.Controllers
 {
     [ExceptionFilter]
-    public class StateController : UmbracoAuthorizedApiController
+    public class TinifierStateController : UmbracoAuthorizedApiController
     {
         private readonly IStateService _stateService;
 
-        public StateController()
+        public TinifierStateController()
         {
             _stateService = new StateService();
         }

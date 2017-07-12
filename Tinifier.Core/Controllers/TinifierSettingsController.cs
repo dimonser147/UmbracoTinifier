@@ -11,11 +11,11 @@ using Umbraco.Web.WebApi;
 namespace Tinifier.Core.Controllers
 {
     [ExceptionFilter]
-    public class SettingsController : UmbracoAuthorizedApiController
+    public class TinifierSettingsController : UmbracoAuthorizedApiController
     {
         private readonly ISettingsService _settingsService;
 
-        public SettingsController()
+        public TinifierSettingsController()
         {
             _settingsService = new SettingsService();
         }

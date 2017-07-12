@@ -61,6 +61,11 @@ namespace Tinifier.Core.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, 
                     new { Message = ex.Message, Error = ErrorTypes.Error });
             }
+            catch(EntityNotFoundException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound,
+                    new { Message = ex.Message, Error = ErrorTypes.Error });
+            }
 
             var history = _historyService.GetImageHistory(timageId);
             return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });

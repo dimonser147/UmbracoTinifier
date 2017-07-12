@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").controller("Tinifier.EditTSetting.Controller", function($scope, $http, $routeParams, notificationsService) {
+﻿angular.module("umbraco").controller("Tinifier.TinifierEditTSetting.Controller", function ($scope, $http, $routeParams, notificationsService) {
 
     // Get settings
     $scope.timage = {};
@@ -10,14 +10,14 @@
     ];
 
     // Fill form from web api
-    $http.get("/umbraco/backoffice/api/Settings/GetTSetting").success(function(response) {
+    $http.get("/umbraco/backoffice/api/TinifierSettings/GetTSetting").success(function (response) {
         $scope.timage = response;
     });
 
     // Submit form with settings
     $scope.submitForm = function() {
         timage = $scope.timage;
-        $http.post("/umbraco/backoffice/api/Settings/PostTSetting", JSON.stringify(timage))
+        $http.post("/umbraco/backoffice/api/TinifierSettings/PostTSetting", JSON.stringify(timage))
             .success(function(response) {
                 notificationsService.success("Success", response);
             }).error(function(response) {

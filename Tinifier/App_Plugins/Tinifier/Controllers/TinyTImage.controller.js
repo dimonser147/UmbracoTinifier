@@ -44,7 +44,7 @@
                 notificationsService.success("Success", response.SuccessOptimized);
                 if (response.sourceType === 0) {
                     dialogService.open({
-                        template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
+                        template: "/App_Plugins/Tinifier/BackOffice/timages/TinifierEdit.html"
                     });
                 }
             }).error(function (response) {

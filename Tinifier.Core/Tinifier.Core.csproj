@@ -270,9 +270,9 @@
   <ItemGroup>
     <Compile Include="Application\DbStartup.cs" />
     <Compile Include="Application\UmbracoStartup.cs" />
-    <Compile Include="Controllers\SettingsController.cs" />
-    <Compile Include="Controllers\StateController.cs" />
-    <Compile Include="Controllers\StatisticController.cs" />
+    <Compile Include="Controllers\TinifierSettingsController.cs" />
+    <Compile Include="Controllers\TinifierStateController.cs" />
+    <Compile Include="Controllers\TinifierImagesStatisticController.cs" />
     <Compile Include="Filters\ExceptionFilter.cs" />
     <Compile Include="Infrastructure\Enums\ErrorTypes.cs" />
     <Compile Include="Infrastructure\Enums\SourceTypes.cs" />

@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").controller("Tinifier.EditTImage.Controller", function($scope, $routeParams, $http, notificationsService) {
+﻿angular.module("umbraco").controller("Tinifier.TinifierEditTImage.Controller", function ($scope, $routeParams, $http, notificationsService) {
 
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
