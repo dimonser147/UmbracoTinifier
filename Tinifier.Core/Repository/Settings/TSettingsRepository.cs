@@ -22,9 +22,7 @@ namespace Tinifier.Core.Repository.Settings
         {
             var query = new Sql("SELECT * FROM TinifierUserSettings ORDER BY Id DESC");
 
-            var setting = _database.FirstOrDefault<TSetting>(query);
-
-            return setting;
+            return _database.FirstOrDefault<TSetting>(query);
         }
 
         /// <summary>

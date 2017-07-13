@@ -14,7 +14,7 @@
             if (response.data.tsetting != null) {
                 $scope.currentRequests = response.data.tsetting.CurrentMonthRequests;
             }
-            $scope.monthlyRequestsLimit = response.data.monthlyRequestsLimit;
+            $scope.monthlyRequestsLimit = response.data.MonthlyRequestsLimit;
             var data = createData(response);
             var options = createOptions();
             var chart = new google.visualization.PieChart(document.getElementById("chart"));
@@ -59,10 +59,17 @@
     $scope.intervalFunction = function () {
         $timeout(function () {
             $scope.getData();
-            drawChart();
             $scope.intervalFunction();
         }, 2000)
     };
 
+    $scope.intervalDrawChartFunction = function () {
+        $timeout(function () {
+            drawChart();
+            $scope.intervalDrawChartFunction();
+        }, 10000)
+    };
+
     $scope.intervalFunction();
+    $scope.intervalDrawChartFunction();
 });

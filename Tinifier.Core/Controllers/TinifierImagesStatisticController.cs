@@ -30,9 +30,8 @@ namespace Tinifier.Core.Controllers
         {
             var statistic = _statisticService.GetStatistic();
             var tsetting = _settingsService.GetSettings();
-            var monthlyRequestsLimit = PackageConstants.MonthlyRequestsLimit;
 
-            return Request.CreateResponse(HttpStatusCode.OK, new { statistic, tsetting, monthlyRequestsLimit });
+            return Request.CreateResponse(HttpStatusCode.OK, new { statistic, tsetting, PackageConstants.MonthlyRequestsLimit });
         }
     }
 }

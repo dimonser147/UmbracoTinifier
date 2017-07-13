@@ -116,7 +116,7 @@ namespace Tinifier.Core.Repository.Image
         public int AmounthOfItems()
         {
             var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id);
-            var numberOfItems = mediaItems.ToList().Count;
+            var numberOfItems = mediaItems.Count();
 
             return numberOfItems;
         }
@@ -134,9 +134,7 @@ namespace Tinifier.Core.Repository.Image
                              GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id).
                              Where(item => historyIds.Contains(item.Id));
 
-            var numberOfOptimizedItems = mediaItems.ToList().Count;
-
-            return numberOfOptimizedItems;
+            return mediaItems.Count();
         }
 
         /// <summary>

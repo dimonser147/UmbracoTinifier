@@ -29,13 +29,12 @@ namespace Tinifier.Core.Services.Statistic
 
         public TinifyImageStatistic GetStatistic()
         {
-            var optimizedImages = _imageRepository.AmounthOfOptimizedItems();
-            var totalImages = _imageRepository.AmounthOfItems();
+            var statistic = _statisticRepository.GetStatistic();
 
             var tImageStatistic = new TinifyImageStatistic
             {
-                TotalOptimizedImages = optimizedImages,
-                TotalOriginalImages = totalImages - optimizedImages
+                TotalOptimizedImages = statistic.NumberOfOptimizedImages,
+                TotalOriginalImages = statistic.TotalNumberOfImages - statistic.NumberOfOptimizedImages
             };
 
             return tImageStatistic;

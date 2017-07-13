@@ -30,10 +30,7 @@ namespace Tinifier.Core.Repository.Statistic
         public TImageStatistic GetStatistic()
         {
             var query = new Sql("SELECT * FROM TinifierImagesStatistic");
-
-            var statistic = _database.FirstOrDefault<TImageStatistic>(query);
-
-            return statistic;
+            return _database.FirstOrDefault<TImageStatistic>(query);
         }
 
         /// <summary>
