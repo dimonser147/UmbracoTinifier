@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Repository.Common;
 using Umbraco.Core;
 using Umbraco.Core.Models;
@@ -29,7 +30,7 @@ namespace Tinifier.Core.Repository.Image
         /// <returns>IEnumerable of Media</returns>
         public IEnumerable<Media> GetAll()
         {
-            var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id);
+            var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id);
 
             return mediaItems.Select(item => item as Media).ToList();
         }
@@ -72,7 +73,7 @@ namespace Tinifier.Core.Repository.Image
             var historyIds = _database.Fetch<int>(query);
 
             var mediaItems = _mediaService.
-                             GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id).
+                             GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
                              Where(item => historyIds.Contains(item.Id));
 
             return mediaItems.Select(item => item as Media).ToList();
@@ -92,14 +93,14 @@ namespace Tinifier.Core.Repository.Image
             {
                 foreach (var media in items)
                 {
-                    if (media.ContentType.Alias == "Image")
+                    if (media.ContentType.Alias.ToLower() == PackageConstants.ImageAlias)
                     {
                         mediaList.Add(media as Media);
                     }
                 } 
                 foreach(var media in items)
                 {
-                    if (media.ContentType.Alias == "Folder")
+                    if (media.ContentType.Alias.ToLower() == PackageConstants.FolderAlias)
                     {
                         GetItemsFromFolder(media.Id);
                     }
@@ -115,7 +116,7 @@ namespace Tinifier.Core.Repository.Image
         /// <returns>Number of Images</returns>
         public int AmounthOfItems()
         {
-            var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id);
+            var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id);
             var numberOfItems = mediaItems.Count();
 
             return numberOfItems;
@@ -131,7 +132,7 @@ namespace Tinifier.Core.Repository.Image
             var historyIds = _database.Fetch<int>(query);
 
             var mediaItems = _mediaService.
-                             GetMediaOfMediaType(_contentTypeService.GetMediaType("image").Id).
+                             GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
                              Where(item => historyIds.Contains(item.Id));
 
             return mediaItems.Count();

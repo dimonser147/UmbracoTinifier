@@ -27,9 +27,7 @@ namespace Tinifier.Core.Services.State
 
         public TState GetState()
         {
-            var state = _stateRepository.GetByKey((int)Statuses.InProgress);
-
-            return state;
+            return _stateRepository.GetByKey((int)Statuses.InProgress);
         }
 
         public void UpdateState()

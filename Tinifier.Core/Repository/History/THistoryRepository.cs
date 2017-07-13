@@ -22,9 +22,7 @@ namespace Tinifier.Core.Repository.History
         public IEnumerable<TinyPNGResponseHistory> GetAll()
         {
             var select = new Sql("SELECT * FROM TinifierResponseHistory");
-            var histories = _database.Fetch<TinyPNGResponseHistory>(select);
-
-            return histories;
+            return _database.Fetch<TinyPNGResponseHistory>(select);
         }
 
         /// <summary>
@@ -35,9 +33,7 @@ namespace Tinifier.Core.Repository.History
         public TinyPNGResponseHistory GetByKey(int id)
         {
             var query = new Sql($"SELECT * FROM TinifierResponseHistory WHERE ImageId = {id}");
-            var history = _database.FirstOrDefault<TinyPNGResponseHistory>(query);
-
-            return history;
+            return _database.FirstOrDefault<TinyPNGResponseHistory>(query);
         }
 
         /// <summary>

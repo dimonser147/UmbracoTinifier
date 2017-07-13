@@ -31,9 +31,7 @@ namespace Tinifier.Core.Repository.State
         public IEnumerable<TState> GetAll()
         {
             var query = new Sql("SELECT * FROM TinifierState");
-            var state = _database.Fetch<TState>(query);
-
-            return state;
+            return _database.Fetch<TState>(query);
         }
 
         /// <summary>
@@ -44,9 +42,7 @@ namespace Tinifier.Core.Repository.State
         public TState GetByKey(int status)
         {
             var query = new Sql($"SELECT * FROM TinifierState WHERE Status = {status}");
-            var state = _database.FirstOrDefault<TState>(query);
-
-            return state;
+            return _database.FirstOrDefault<TState>(query);
         }
 
         /// <summary>

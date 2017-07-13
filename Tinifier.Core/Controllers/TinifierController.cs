@@ -204,10 +204,8 @@ namespace Tinifier.Core.Controllers
             }
 
             if (nonOptimizedImagesCount > 0)
-            {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, 
                     new { Message = PackageConstants.NotAllImagesWereOptimized, Error = ErrorTypes.Error });
-            }
 
             return Request.CreateResponse(HttpStatusCode.OK, new { PackageConstants.SuccessOptimized, sourceType });
         }
