@@ -11,5 +11,10 @@
         /// Total of optimized images 
         /// </summary>
         public int TotalOptimizedImages { get; set; }
+
+        /// <summary>
+        /// Total saved bytes for user
+        /// </summary>
+        public int TotalSavedBytes { get; set; }
     }
 }

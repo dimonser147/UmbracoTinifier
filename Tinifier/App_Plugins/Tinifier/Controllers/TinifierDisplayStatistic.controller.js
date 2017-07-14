@@ -6,6 +6,7 @@
     $scope.amounthOfImages = 0;
     $scope.TotalImages = 0;
     $scope.TotalOptimizedImages = 0;
+    $scope.TotalSavedBytes = 0;
     google.charts.load("current", { packages: ["corechart"] });
     google.charts.setOnLoadCallback(drawChart);
 
@@ -30,14 +31,15 @@
         ]);
         $scope.TotalImages = response.data.statistic.TotalOriginalImages + response.data.statistic.TotalOptimizedImages;
         $scope.TotalOptimizedImages = response.data.statistic.TotalOptimizedImages;
+        $scope.TotalSavedBytes = response.data.statistic.TotalSavedBytes;
         return data;
     }
 
     function createOptions() {
         var options = {
             pieHole: 0.4,
-            width: 500,
             height: 350,
+            width: 760,
             legend: { position: "bottom", alignment: "center" }
         };
         return options;

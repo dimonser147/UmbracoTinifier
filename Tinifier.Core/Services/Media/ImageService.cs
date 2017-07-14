@@ -154,10 +154,11 @@ namespace Tinifier.Core.Services.Media
         public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image)
         {
             var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
+            var savedBytes = tinyResponse.Input.Size - tinyResponse.Output.Size;
 
             _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
             UpdateImage(image, tinyImageBytes);
-            _statisticService.UpdateStatistic();
+            _statisticService.UpdateStatistic(savedBytes);
             _stateService.UpdateState();
         }
 

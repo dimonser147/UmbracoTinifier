@@ -12,5 +12,7 @@ namespace Tinifier.Core.Models.Db
         public int TotalNumberOfImages { get; set; }
 
         public int NumberOfOptimizedImages { get; set; }
+
+        public int TotalSavedBytes { get; set; }
     }
 }

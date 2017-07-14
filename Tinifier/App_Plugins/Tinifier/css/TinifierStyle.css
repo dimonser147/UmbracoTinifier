@@ -52,8 +52,8 @@
     font-size: 85%;
 }
 .chart-block{
-    width: 505px; 
-    display:block; 
+    width: 760px; 
+    display:inline-block; 
     border:1px solid #e9e9eb;
     margin-top:5px;
 }

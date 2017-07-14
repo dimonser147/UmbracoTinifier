@@ -39,7 +39,8 @@ namespace Tinifier.Core.Repository.Statistic
         /// <param name="entity">TImageStatistic</param>
         public void Update(TImageStatistic entity)
         {
-            var query = new Sql($"UPDATE TinifierImagesStatistic SET NumberOfOptimizedImages = {entity.NumberOfOptimizedImages}, TotalNumberOfImages = {entity.TotalNumberOfImages}");
+            var query = new Sql($"UPDATE TinifierImagesStatistic SET NumberOfOptimizedImages = {entity.NumberOfOptimizedImages}," + 
+                $"TotalNumberOfImages = {entity.TotalNumberOfImages}, TotalSavedBytes = {entity.TotalSavedBytes}");
 
             _database.Execute(query);
         }
