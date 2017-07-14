@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.Settings;
 using Tinifier.Core.Services.Statistic;
 using Umbraco.Web.WebApi;
@@ -14,11 +15,13 @@ namespace Tinifier.Core.Controllers
     {
         private readonly ISettingsService _settingsService;
         private readonly IStatisticService _statisticService;
+        private readonly IHistoryService _historyService;
 
         public TinifierImagesStatisticController()
         {
             _settingsService = new SettingsService();
             _statisticService = new StatisticService();
+            _historyService = new HistoryService();
         }
 
         /// <summary>
@@ -30,8 +33,9 @@ namespace Tinifier.Core.Controllers
         {
             var statistic = _statisticService.GetStatistic();
             var tsetting = _settingsService.GetSettings();
+            var history = _historyService.GetHistoryByDay();
 
-            return Request.CreateResponse(HttpStatusCode.OK, new { statistic, tsetting, PackageConstants.MonthlyRequestsLimit });
+            return Request.CreateResponse(HttpStatusCode.OK, new { statistic, tsetting, history, PackageConstants.MonthlyRequestsLimit });
         }
     }
 }

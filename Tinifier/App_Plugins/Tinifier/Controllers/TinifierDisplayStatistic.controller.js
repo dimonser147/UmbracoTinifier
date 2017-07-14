@@ -20,7 +20,20 @@
             var options = createOptions();
             var chart = new google.visualization.PieChart(document.getElementById("chart"));
             chart.draw(data, options);
+
+            var columnChart = new google.visualization.ColumnChart(document.getElementById('daysChart'));
+            columnChart.draw(DataColumnChart(response), columnChartOptions());
         });
+    }
+
+    function DataColumnChart(response)
+    {
+        var dataArray = [['Date', 'Count']];
+        for (var n = 0; n < response.data.history.length; n++) {
+            dataArray.push([response.data.history[n].OccuredAt, parseInt(response.data.history[n].NumberOfOptimized)])
+        }
+        var data = new google.visualization.arrayToDataTable(dataArray);
+        return data;
     }
 
     function createData(response) {
@@ -39,8 +52,16 @@
         var options = {
             pieHole: 0.4,
             height: 350,
-            width: 760,
+            width: 550,
             legend: { position: "bottom", alignment: "center" }
+        };
+        return options;
+    }
+
+    function columnChartOptions() {
+        var options = {
+            width: 550,
+            height: 350
         };
         return options;
     }

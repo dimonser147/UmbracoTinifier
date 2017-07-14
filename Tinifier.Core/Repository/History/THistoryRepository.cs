@@ -21,7 +21,7 @@ namespace Tinifier.Core.Repository.History
         /// <returns>IEnumerable of TinyPNGResponseHistory</returns>
         public IEnumerable<TinyPNGResponseHistory> GetAll()
         {
-            var select = new Sql("SELECT * FROM TinifierResponseHistory");
+            var select = new Sql("SELECT * FROM TinifierResponseHistory WHERE OccuredAt >= DATEADD(month,-1,GETDATE())");
             return _database.Fetch<TinyPNGResponseHistory>(select);
         }
 

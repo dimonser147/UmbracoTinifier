@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Models.Services;
 
 namespace Tinifier.Core.Services.History
 {
@@ -26,5 +27,11 @@ namespace Tinifier.Core.Services.History
         /// <param name="images">List of Images that need to be sorted</param>
         /// <returns>List<TImage></returns>
         List<TImage> GetImagesWithoutHistory(IEnumerable<TImage> images);
+
+        /// <summary>
+        /// Get histories by day for chart
+        /// </summary>
+        /// <returns>IEnumerable<HistoriesStatisticModel></returns>
+        IEnumerable<HistoriesStatisticModel> GetHistoryByDay();
     }
 }

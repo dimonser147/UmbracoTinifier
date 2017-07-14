@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Models.Services;
 using Tinifier.Core.Repository.History;
 
 namespace Tinifier.Core.Services.History
@@ -34,6 +36,16 @@ namespace Tinifier.Core.Services.History
             }
 
             _historyRepository.Create(newItem);
+        }
+
+        public IEnumerable<HistoriesStatisticModel> GetHistoryByDay()
+        {
+            var histories = _historyRepository.GetAll();
+
+            var historiesByDays = histories.GroupBy(x => x.OccuredAt.Date).
+                Select(grp => new HistoriesStatisticModel() { OccuredAt = grp.Key, NumberOfOptimized = grp.Count(p => p.Id > 0) });
+
+            return historiesByDays;
         }
 
         public TinyPNGResponseHistory GetImageHistory(int timageId)

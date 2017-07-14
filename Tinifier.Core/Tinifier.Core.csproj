@@ -283,6 +283,7 @@
     <Compile Include="Infrastructure\Exceptions\NotSupportedExtensionException.cs" />
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TState.cs" />
+    <Compile Include="Models\Services\HistoriesStatisticModel.cs" />
     <Compile Include="Repository\State\TStateRepository.cs" />
     <Compile Include="Services\BackendDevs\IBackendDevsConnector.cs" />
     <Compile Include="Services\History\IHistoryService.cs" />

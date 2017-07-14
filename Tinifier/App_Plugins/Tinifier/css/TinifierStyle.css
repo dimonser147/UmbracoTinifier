@@ -13,7 +13,8 @@
      justify-content: center;
 }
 .stat-block{
-    width: 250px; 
+    width: 280px; 
+    min-width: 100px;
     display:inline-block; 
     border:1px solid #e9e9eb;
 }
@@ -52,7 +53,8 @@
     font-size: 85%;
 }
 .chart-block{
-    width: 760px; 
+    width: 565px; 
+    min-width:100px;
     display:inline-block; 
     border:1px solid #e9e9eb;
     margin-top:5px;
