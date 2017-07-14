@@ -19,6 +19,8 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 - Optimized image stats 
 - Total savings widget
 - API requests widget
+- Folders optimization
+- Image optimization on upload
 
 ## More about project
 [Tinifier Developer`s site][ps]
