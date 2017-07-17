@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
@@ -42,7 +44,7 @@ namespace Tinifier.Core.Services.Media
 
         public TImage GetImage(int id)
         {
-            var image = _imageRepository.GetByKey(id);
+            var image = _imageRepository.Get(id);
 
             if (image == null)
                 throw new EntityNotFoundException(PackageConstants.ImageNotExists + id);
@@ -64,12 +66,13 @@ namespace Tinifier.Core.Services.Media
 
         public async void OptimizeImage(TImage image)
         {
+            var userDomain = HttpContext.Current.Request.Url.Host;
             _stateService.CreateState(1);
             var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(GetUrl(image.Url));
 
             if (tinyResponse.Output.Url == null)
             {
-                _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
+                _historyService.CreateResponseHistory(image.Id, tinyResponse);
                 return;
             }
 
@@ -77,7 +80,7 @@ namespace Tinifier.Core.Services.Media
 
             try
             {
-                await _backendDevsConnectorService.SendStatistic(HttpContext.Current.Request.Url.Host);
+                HostingEnvironment.QueueBackgroundWorkItem(stat => _backendDevsConnectorService.SendStatistic(userDomain));
             }
             catch (NotSuccessfullRequestException)
             {
@@ -87,7 +90,7 @@ namespace Tinifier.Core.Services.Media
 
         public TImage GetImage(string path)
         {
-            var image = _imageRepository.GetByPath(path);
+            var image = _imageRepository.Get(path);
 
             if (image == null)
                 throw new EntityNotFoundException(PackageConstants.ImageWithPathNotExists + path);
@@ -156,7 +159,7 @@ namespace Tinifier.Core.Services.Media
             var tinyImageBytes = TinyImageService.Instance.GetTinyImage(tinyResponse.Output.Url);
             var savedBytes = tinyResponse.Input.Size - tinyResponse.Output.Size;
 
-            _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
+            _historyService.CreateResponseHistory(image.Id, tinyResponse);
             UpdateImage(image, tinyImageBytes);
             _statisticService.UpdateStatistic(savedBytes);
             _stateService.UpdateState();
@@ -164,9 +167,18 @@ namespace Tinifier.Core.Services.Media
 
         private void UpdateImage(TImage image, byte[] bytesArray)
         {
-            System.IO.File.Delete(HttpContext.Current.Server.MapPath($"~{image.Url}"));
-            System.IO.File.WriteAllBytes(HttpContext.Current.Server.MapPath($"~{image.Url}"), bytesArray);
-            _imageRepository.UpdateItem(image.Id);
+            var path = HttpContext.Current.Server.MapPath($"~{image.Url}");
+
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
+            {
+                stream.Dispose();
+            }
+
+            if (File.Exists(path))
+                File.Delete(path);
+
+            File.WriteAllBytes(path, bytesArray);
+            _imageRepository.Update(image.Id);
         }
 
         private string GetUrl(string path)

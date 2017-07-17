@@ -8,7 +8,7 @@ namespace Tinifier.Core.Repository.Image
     /// <typeparam name="Media">Media type</typeparam>
     public interface IImageRepository<Media>
     {
-        void UpdateItem(int imageId);
+        void Update(int imageId);
 
         IEnumerable<Media> GetOptimizedItems();
 
@@ -18,6 +18,6 @@ namespace Tinifier.Core.Repository.Image
 
         int AmounthOfOptimizedItems();
 
-        Media GetByPath(string path);
+        Media Get(string path);
     }
 }

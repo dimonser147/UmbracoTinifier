@@ -10,6 +10,6 @@ namespace Tinifier.Core.Repository.Common
     {
         IEnumerable<TEntity> GetAll();
 
-        TEntity GetByKey(int id);
+        TEntity Get(int id);
     }
 }

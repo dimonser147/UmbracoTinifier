@@ -20,7 +20,7 @@ namespace Tinifier.Core.Services.Validation
 
         public void ValidateConcurrentOptimizing()
         {
-            var state = _stateRepository.GetByKey((int)Statuses.InProgress);
+            var state = _stateRepository.Get((int)Statuses.InProgress);
 
             if (state != null)
                 throw new ConcurrentOptimizingException(PackageConstants.ConcurrentOptimizing);
@@ -28,7 +28,7 @@ namespace Tinifier.Core.Services.Validation
 
         public bool IsFolder(int itemId)
         {
-            var item = _imageRepository.GetByKey(itemId);
+            var item = _imageRepository.Get(itemId);
 
             return string.Equals(item.ContentType.Alias, PackageConstants.FolderAlias, StringComparison.OrdinalIgnoreCase);
         }

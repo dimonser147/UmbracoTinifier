@@ -28,9 +28,13 @@
 
     function DataColumnChart(response)
     {
-        var dataArray = [['Date', 'Count']];
+        var dataArray = [['Date', 'Number of optimized images']];
         for (var n = 0; n < response.data.history.length; n++) {
             dataArray.push([response.data.history[n].OccuredAt, parseInt(response.data.history[n].NumberOfOptimized)])
+        }
+
+        if (dataArray.length === 1){
+            dataArray.push(['',0]);
         }
         var data = new google.visualization.arrayToDataTable(dataArray);
         return data;
@@ -44,7 +48,7 @@
         ]);
         $scope.TotalImages = response.data.statistic.TotalOriginalImages + response.data.statistic.TotalOptimizedImages;
         $scope.TotalOptimizedImages = response.data.statistic.TotalOptimizedImages;
-        $scope.TotalSavedBytes = response.data.statistic.TotalSavedBytes;
+        $scope.TotalSavedBytes = formatBytes(response.data.statistic.TotalSavedBytes);
         return data;
     }
 
@@ -61,9 +65,18 @@
     function columnChartOptions() {
         var options = {
             width: 550,
-            height: 350
+            height: 350,
+            legend: { position: "bottom", alignment: "center" },
+            bar: { groupWidth: "15%" },
+            colors: ["red"]
         };
         return options;
+    }
+
+    function formatBytes(a, b) {
+        if (0 == a) return "0 Bytes";
+        var c = 1e3, d = b || 2, e = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"], f = Math.floor(Math.log(a) / Math.log(c));
+        return parseFloat((a / Math.pow(c, f)).toFixed(d)) + " " + e[f];
     }
 
     $scope.getData = function () {

@@ -40,18 +40,26 @@ namespace Tinifier.Core.Repository.Image
         /// </summary>
         /// <param name="id">Media Id</param>
         /// <returns>Media</returns>
-        public Media GetByKey(int id)
+        public Media Get(int id)
         {
-            var mediaItem = _mediaService.GetById(id) as Media;
+            return _mediaService.GetById(id) as Media;
+        }
 
-            return mediaItem;
+        /// <summary>
+        /// Get Media By path
+        /// </summary>
+        /// <param name="path">relative path</param>
+        /// <returns>Media</returns>
+        public Media Get(string path)
+        {
+            return _mediaService.GetMediaByPath(path) as Media;
         }
 
         /// <summary>
         /// Update Media
         /// </summary>
         /// <param name="id">Media Id</param>
-        public void UpdateItem(int id)
+        public void Update(int id)
         {
             var mediaItem = _mediaService.GetById(id) as Media;
 
@@ -136,18 +144,6 @@ namespace Tinifier.Core.Repository.Image
                              Where(item => historyIds.Contains(item.Id));
 
             return mediaItems.Count();
-        }
-
-        /// <summary>
-        /// Get Media By path
-        /// </summary>
-        /// <param name="path">relative path</param>
-        /// <returns>Media</returns>
-        public Media GetByPath(string path)
-        {
-            var mediaItem = _mediaService.GetMediaByPath(path) as Media;
-
-            return mediaItem;
         }
     }
 }

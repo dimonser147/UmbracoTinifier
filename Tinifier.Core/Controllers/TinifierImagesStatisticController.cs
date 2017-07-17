@@ -27,13 +27,13 @@ namespace Tinifier.Core.Controllers
         /// <summary>
         /// Get Images Statistic
         /// </summary>
-        /// <returns>Response(StatusCode, {statistic, tsettings, requestLimit})</returns>
+        /// <returns>Response(StatusCode, {statistic, tsettings, history, requestLimit})</returns>
         [HttpGet]
         public HttpResponseMessage GetStatistic()
         {
             var statistic = _statisticService.GetStatistic();
             var tsetting = _settingsService.GetSettings();
-            var history = _historyService.GetHistoryByDay();
+            var history = _historyService.GetStatisticByDays();
 
             return Request.CreateResponse(HttpStatusCode.OK, new { statistic, tsetting, history, PackageConstants.MonthlyRequestsLimit });
         }

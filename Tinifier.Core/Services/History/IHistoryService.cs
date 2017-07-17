@@ -12,7 +12,7 @@ namespace Tinifier.Core.Services.History
         /// </summary>
         /// <param name="timageId">Image Id</param>
         /// <param name="responseItem">Response from TinyPNG</param>
-        void CreateResponseHistoryItem(int timageId, TinyResponse responseItem);
+        void CreateResponseHistory(int timageId, TinyResponse responseItem);
 
         /// <summary>
         ///  Get History for Image
@@ -32,6 +32,12 @@ namespace Tinifier.Core.Services.History
         /// Get histories by day for chart
         /// </summary>
         /// <returns>IEnumerable<HistoriesStatisticModel></returns>
-        IEnumerable<HistoriesStatisticModel> GetHistoryByDay();
+        IEnumerable<HistoriesStatisticModel> GetStatisticByDays();
+
+        /// <summary>
+        /// Delete history for image
+        /// </summary>
+        /// <param name="imageId">Image Id</param>
+        void Delete(int imageId);
     }
 }

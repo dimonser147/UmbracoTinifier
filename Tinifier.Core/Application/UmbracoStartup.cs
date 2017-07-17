@@ -110,7 +110,8 @@ namespace Tinifier.Core.Application
                 if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) 
                     && string.Equals(mediaItem.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
                 {
-                    _statisticService.UpdateStatistic(0);
+                    _statisticService.UpdateStatistic();
+                    _historyService.Delete(mediaItem.Id);
                 }
             }
         }

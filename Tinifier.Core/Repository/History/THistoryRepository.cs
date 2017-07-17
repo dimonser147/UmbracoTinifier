@@ -6,7 +6,7 @@ using Umbraco.Core.Persistence;
 
 namespace Tinifier.Core.Repository.History
 {
-    public class THistoryRepository : IEntityReader<TinyPNGResponseHistory>, IEntityCreator<TinyPNGResponseHistory>
+    public class THistoryRepository : IEntityReader<TinyPNGResponseHistory>, IEntityCreator<TinyPNGResponseHistory>, IEntityRemover<TinyPNGResponseHistory>
     {
         private readonly UmbracoDatabase _database;
 
@@ -21,7 +21,7 @@ namespace Tinifier.Core.Repository.History
         /// <returns>IEnumerable of TinyPNGResponseHistory</returns>
         public IEnumerable<TinyPNGResponseHistory> GetAll()
         {
-            var select = new Sql("SELECT * FROM TinifierResponseHistory WHERE OccuredAt >= DATEADD(month,-1,GETDATE())");
+            var select = new Sql("SELECT * FROM TinifierResponseHistory WHERE OccuredAt >= DATEADD(month,-1,GETDATE()) AND IsOptimized = 'true'");
             return _database.Fetch<TinyPNGResponseHistory>(select);
         }
 
@@ -30,7 +30,7 @@ namespace Tinifier.Core.Repository.History
         /// </summary>
         /// <param name="id">history Id</param>
         /// <returns>TinyPNGResponseHistory</returns>
-        public TinyPNGResponseHistory GetByKey(int id)
+        public TinyPNGResponseHistory Get(int id)
         {
             var query = new Sql($"SELECT * FROM TinifierResponseHistory WHERE ImageId = {id}");
             return _database.FirstOrDefault<TinyPNGResponseHistory>(query);
@@ -43,6 +43,16 @@ namespace Tinifier.Core.Repository.History
         public void Create(TinyPNGResponseHistory newItem)
         {
             _database.Insert(newItem);
+        }
+
+        /// <summary>
+        /// Delete history for image
+        /// </summary>
+        /// <param name="imageId">Image Id</param>
+        public void Delete(int imageId)
+        {
+            var query = new Sql($"DELETE FROM TinifierResponseHistory WHERE ImageId = {imageId}");
+            _database.Execute(query);
         }
     }
 }

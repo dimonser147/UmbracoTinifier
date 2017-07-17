@@ -39,7 +39,7 @@ namespace Tinifier.Core.Repository.State
         /// </summary>
         /// <param name="status">status Id</param>
         /// <returns>TState</returns>
-        public TState GetByKey(int status)
+        public TState Get(int status)
         {
             var query = new Sql($"SELECT * FROM TinifierState WHERE Status = {status}");
             return _database.FirstOrDefault<TState>(query);

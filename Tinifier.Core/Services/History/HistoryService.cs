@@ -17,7 +17,7 @@ namespace Tinifier.Core.Services.History
             _historyRepository = new THistoryRepository();  
         }
 
-        public void CreateResponseHistoryItem(int timageId, TinyResponse responseItem)
+        public void CreateResponseHistory(int timageId, TinyResponse responseItem)
         {
             var newItem = new TinyPNGResponseHistory
             {
@@ -38,19 +38,22 @@ namespace Tinifier.Core.Services.History
             _historyRepository.Create(newItem);
         }
 
-        public IEnumerable<HistoriesStatisticModel> GetHistoryByDay()
+        public IEnumerable<HistoriesStatisticModel> GetStatisticByDays()
         {
             var histories = _historyRepository.GetAll();
 
             var historiesByDays = histories.GroupBy(x => x.OccuredAt.Date).
-                Select(grp => new HistoriesStatisticModel() { OccuredAt = grp.Key, NumberOfOptimized = grp.Count(p => p.Id > 0) });
+                Select(grp => new HistoriesStatisticModel() {
+                    OccuredAt = grp.Key.ToShortDateString(),
+                    NumberOfOptimized = grp.Count(p => p.Id > 0)
+                });
 
             return historiesByDays;
         }
 
         public TinyPNGResponseHistory GetImageHistory(int timageId)
         {
-            var history = _historyRepository.GetByKey(timageId);
+            var history = _historyRepository.Get(timageId);
 
             if(history != null)
             {
@@ -61,13 +64,18 @@ namespace Tinifier.Core.Services.History
             return history;
         }
 
+        public void Delete(int imageId)
+        {
+            _historyRepository.Delete(imageId);
+        }
+
         public List<TImage> GetImagesWithoutHistory(IEnumerable<TImage> images)
         {
             var imagesList = new List<TImage>();
 
             foreach (var image in images)
             {
-                var imageHistory = _historyRepository.GetByKey(image.Id);
+                var imageHistory = _historyRepository.Get(image.Id);
 
                 if (imageHistory == null || ( imageHistory != null && !imageHistory.IsOptimized))
                 {

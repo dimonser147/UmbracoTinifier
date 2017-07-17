@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
@@ -178,6 +179,7 @@ namespace Tinifier.Core.Controllers
         private async Task<HttpResponseMessage> CallTinyPngService(IEnumerable<TImage> imagesList, SourceTypes sourceType = SourceTypes.Folder)
         {
             var nonOptimizedImagesCount = 0;
+            var userDomain = HttpContext.Current.Request.Url.Host;
 
             foreach (var image in imagesList)
             {
@@ -185,7 +187,7 @@ namespace Tinifier.Core.Controllers
 
                 if (tinyResponse.Output.Url == null)
                 {
-                    _historyService.CreateResponseHistoryItem(image.Id, tinyResponse);
+                    _historyService.CreateResponseHistory(image.Id, tinyResponse);
                     _stateService.UpdateState();
                     nonOptimizedImagesCount++;
                     continue;
@@ -195,7 +197,7 @@ namespace Tinifier.Core.Controllers
 
                 try
                 {
-                    await _backendDevsConnectorService.SendStatistic(HttpContext.Current.Request.Url.Host);
+                    HostingEnvironment.QueueBackgroundWorkItem(stat => _backendDevsConnectorService.SendStatistic(userDomain));
                 }
                 catch(NotSuccessfullRequestException)
                 {
