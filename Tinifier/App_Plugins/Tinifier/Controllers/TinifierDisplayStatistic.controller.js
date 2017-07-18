@@ -6,6 +6,7 @@
     $scope.amounthOfImages = 0;
     $scope.TotalImages = 0;
     $scope.TotalOptimizedImages = 0;
+    $scope.UpdateSeconds = 10;
     $scope.TotalSavedBytes = 0;
     google.charts.load("current", { packages: ["corechart"] });
     google.charts.setOnLoadCallback(drawChart);
@@ -84,10 +85,12 @@
             if (response.data == "null") {
                 document.getElementById("tinifierStatus").innerHTML = "Panda is sleeping now";
                 document.getElementById("statusPanda").src = "../../../../Media/Pictures/sleeping_panda_by_citruspop-d2v8hdd.jpg";
+                document.getElementById("updateSeconds").style.display = "none";
             } else {
                 document.getElementById("statusPanda").src = "../../../../Media/Pictures/runPanda.jpg";
                 $scope.currentImage = response.data.CurrentImage;
                 $scope.amounthOfImages = response.data.AmounthOfImages;
+                document.getElementById("updateSeconds").style.display = "block";
             }
         });
     };
@@ -103,9 +106,26 @@
         $timeout(function () {
             drawChart();
             $scope.intervalDrawChartFunction();
-        }, 10000)
+        }, 10000);
     };
 
+    $scope.decrementTimer = function () {
+        if ($scope.UpdateSeconds > 0) {
+            $scope.UpdateSeconds--;
+        }
+        else {
+            $scope.UpdateSeconds = 10;
+        }
+    };
+
+    $scope.timer = function () {
+        $timeout(function () {
+            $scope.decrementTimer();
+            $scope.timer();
+        }, 900);
+    };
+
+    $scope.timer();
     $scope.intervalFunction();
     $scope.intervalDrawChartFunction();
 });

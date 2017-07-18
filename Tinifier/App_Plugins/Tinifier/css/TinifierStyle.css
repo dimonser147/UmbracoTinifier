@@ -69,3 +69,7 @@
     text-indent: 2em; 
     margin-top: 25px;
 }
+.update-seconds{
+    display:none;
+    margin-left:200px;
+}

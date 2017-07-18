@@ -44,7 +44,7 @@ namespace Tinifier.Core.Services.History
 
             var historiesByDays = histories.GroupBy(x => x.OccuredAt.Date).
                 Select(grp => new HistoriesStatisticModel() {
-                    OccuredAt = grp.Key.ToShortDateString(),
+                    OccuredAt = grp.Key.ToString("MM/dd"),
                     NumberOfOptimized = grp.Count(p => p.Id > 0)
                 });
 
