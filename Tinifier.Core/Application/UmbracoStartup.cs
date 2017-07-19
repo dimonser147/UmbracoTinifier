@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
@@ -9,7 +11,9 @@ using Tinifier.Core.Services.Statistic;
 using umbraco.cms.businesslogic.packager;
 using Umbraco.Core;
 using Umbraco.Core.Events;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
+using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
@@ -43,6 +47,12 @@ namespace Tinifier.Core.Application
             MediaService.Saved += MediaServiceSaving;
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
+            InstalledPackage.BeforeSave += InstalledPackage_BeforeSave;
+        }
+
+        public void InstalledPackage_BeforeSave(InstalledPackage sender, EventArgs e)
+        {
+            CheckFieldsDatabase();
         }
 
         /// <summary>
@@ -180,7 +190,40 @@ namespace Tinifier.Core.Application
 
             if (imageHistory == null)
                     _imageService.OptimizeImage(image);               
-            }                
-        }
+          } 
+        
+        private void CheckFieldsDatabase()
+        {
+            var logger = LoggerResolver.Current.Logger;
+            var dbContext = ApplicationContext.Current.DatabaseContext;
+            var dbHelper = new DatabaseSchemaHelper(dbContext.Database, logger, dbContext.SqlSyntax);
+
+            if(dbHelper.TableExist(PackageConstants.DbStateTable))
+            {
+                dbHelper.DropTable(PackageConstants.DbStateTable);
+                dbHelper.CreateTable(false, typeof(TState));
+            }
+
+            var tables = new Dictionary<string, Type>
+            {
+                { PackageConstants.DbStatisticTable, typeof(TImageStatistic) },
+            };
+
+            for (var i = 0; i < tables.Count; i++)
+            {
+                if (dbHelper.TableExist(tables.ElementAt(i).Key))
+                {
+                    var checkColumn = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierImagesStatistic' AND COLUMN_NAME = 'TotalSavedBytes'");
+                    int? exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
+
+                    if(exists == null || exists == -1)
+                    {
+                        var sql = new Sql("ALTER TABLE TinifierImagesStatistic ADD COLUMN TotalSavedBytes INTEGER NULL");
+                        ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
+                    }
+                }
+            }
+        }               
+     }
 }
 

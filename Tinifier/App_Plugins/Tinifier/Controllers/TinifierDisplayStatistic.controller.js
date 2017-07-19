@@ -88,6 +88,8 @@
                 document.getElementById("updateSeconds").style.display = "none";
             } else {
                 document.getElementById("statusPanda").src = "../../../../Media/Pictures/runPanda.jpg";
+                document.getElementById("tinifierStatus").innerHTML = "";
+                document.getElementById("tinifierStatus").innerHTML = "Processing: " + response.data.CurrentImage + " / " + response.data.AmounthOfImages;
                 $scope.currentImage = response.data.CurrentImage;
                 $scope.amounthOfImages = response.data.AmounthOfImages;
                 document.getElementById("updateSeconds").style.display = "block";
@@ -99,7 +101,7 @@
         $timeout(function () {
             $scope.getData();
             $scope.intervalFunction();
-        }, 2000)
+        }, 2000);
     };
 
     $scope.intervalDrawChartFunction = function () {
