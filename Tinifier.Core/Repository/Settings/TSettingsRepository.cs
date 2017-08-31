@@ -21,7 +21,6 @@ namespace Tinifier.Core.Repository.Settings
         public TSetting GetSettings()
         {
             var query = new Sql("SELECT * FROM TinifierUserSettings ORDER BY Id DESC");
-
             return _database.FirstOrDefault<TSetting>(query);
         }
 
@@ -40,8 +39,7 @@ namespace Tinifier.Core.Repository.Settings
         /// <param name="currentMonthRequests">currentMonthRequests</param>
         public void Update(int currentMonthRequests)
         {
-            var query = new Sql($"UPDATE TinifierUserSettings SET CurrentMonthRequests = {currentMonthRequests}");
-
+            var query = new Sql("UPDATE TinifierUserSettings SET CurrentMonthRequests = @0", currentMonthRequests);
             _database.Execute(query);
         }
     }

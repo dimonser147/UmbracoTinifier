@@ -34,13 +34,21 @@ namespace Tinifier.Core.Services.State
         {
             var state = _stateRepository.Get((int) Statuses.InProgress);
 
-            if (state.CurrentImage < state.AmounthOfImages)
-                state.CurrentImage++;
+            if(state != null)
+            {
+                if (state.CurrentImage < state.AmounthOfImages)
+                    state.CurrentImage++;
 
-            if (state.CurrentImage == state.AmounthOfImages)
-                state.StatusType = Statuses.Done;
+                if (state.CurrentImage == state.AmounthOfImages)
+                    state.StatusType = Statuses.Done;
 
-            _stateRepository.Update(state);
+                _stateRepository.Update(state);
+            }
+        }
+
+        public void Delete()
+        {
+            _stateRepository.Delete();
         }
     }
 }

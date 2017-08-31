@@ -84,10 +84,10 @@
         $http.get("/umbraco/backoffice/api/TinifierState/GetCurrentTinifingState").then(function (response) {
             if (response.data == "null") {
                 document.getElementById("tinifierStatus").innerHTML = "Panda is sleeping now";
-                document.getElementById("statusPanda").src = "../../../../Media/Pictures/sleeping_panda_by_citruspop-d2v8hdd.jpg";
+                document.getElementById("statusPanda").src = "/App_Plugins/Tinifier/media/sleeping_panda_by_citruspop-d2v8hdd.jpg";
                 document.getElementById("updateSeconds").style.display = "none";
             } else {
-                document.getElementById("statusPanda").src = "../../../../Media/Pictures/runPanda.jpg";
+                document.getElementById("statusPanda").src = "/App_Plugins/Tinifier/media/runPanda.jpg";
                 document.getElementById("tinifierStatus").innerHTML = "";
                 document.getElementById("tinifierStatus").innerHTML = "Processing: " + response.data.CurrentImage + " / " + response.data.AmounthOfImages;
                 $scope.currentImage = response.data.CurrentImage;
@@ -97,15 +97,16 @@
         });
     };
 
+    var intTimer, drawTimer, timert;
     $scope.intervalFunction = function () {
-        $timeout(function () {
+        intTimer = $timeout(function () {
             $scope.getData();
             $scope.intervalFunction();
         }, 2000);
     };
 
     $scope.intervalDrawChartFunction = function () {
-        $timeout(function () {
+        drawTimer = $timeout(function () {
             drawChart();
             $scope.intervalDrawChartFunction();
         }, 10000);
@@ -121,7 +122,7 @@
     };
 
     $scope.timer = function () {
-        $timeout(function () {
+        timert = $timeout(function () {
             $scope.decrementTimer();
             $scope.timer();
         }, 900);
@@ -130,4 +131,10 @@
     $scope.timer();
     $scope.intervalFunction();
     $scope.intervalDrawChartFunction();
+
+    $scope.$on('$locationChangeStart', function () {
+        $timeout.cancel(intTimer);
+        $timeout.cancel(drawTimer);
+        $timeout.cancel(timert);
+    });
 });

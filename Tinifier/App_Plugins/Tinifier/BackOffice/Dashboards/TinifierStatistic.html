@@ -2,7 +2,7 @@
     <div style="display:block">
         <div id="apiRequests" class="stat-block">
             <div class="stat-image">
-                <img src="../../../../Media/Pictures/photo.jpg" alt="Tinifier" />
+                <img src="/App_Plugins/Tinifier/media/photo.jpg" alt="Tinifier" />
             </div>
             <div class="stat-content">
                 <div class="stat-text">Your usage this month</div>
@@ -15,7 +15,7 @@
         </div>
         <div id="currentState" class="stat-block">
             <div class="stat-image">
-                <img src="../../../../Media/Pictures/sleeping_panda_by_citruspop-d2v8hdd.jpg" alt="Status" id="statusPanda" />
+                <img src="/App_Plugins/Tinifier/media/sleeping_panda_by_citruspop-d2v8hdd.jpg" alt="Status" id="statusPanda" />
             </div>
             <div class="stat-content">
                 <div class="stat-text">Tinifier Status</div>
@@ -28,7 +28,7 @@
         </div>
         <div id="currentState" class="stat-block">
             <div class="stat-image">
-                <img src="../../../../Media/Pictures/fat.jpg" alt="TotalSavedBytes" />
+                <img src="/App_Plugins/Tinifier/media/fat.jpg" alt="TotalSavedBytes" />
             </div>
             <div class="stat-content">
                 <div class="stat-text">Total saved bytes</div>
@@ -41,7 +41,7 @@
         </div>
         <div id="currentState" class="stat-block">
             <div class="stat-image">
-                <img src="../../../../Media/Pictures/support.jpg" alt="Support" />
+                <img src="/App_Plugins/Tinifier/media/support.jpg" alt="Support" />
             </div>
             <div class="stat-content">
                 <div class="stat-text">Support</div>
@@ -79,4 +79,6 @@
     </div>
     <p id="updateSeconds" class="update-seconds">Update in {{UpdateSeconds}} seconds</p>
 </div>
-
+<div ng-controller="Tinifier.TinifierEditTSetting.Controller">
+    <button class="resetButton" ng-click="stopTinifing()">Stop tinifing!</button>
+</div>

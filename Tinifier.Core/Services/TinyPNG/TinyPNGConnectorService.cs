@@ -28,34 +28,46 @@ namespace Tinifier.Core.Services.TinyPNG
 
         public async Task<TinyResponse> SendImageToTinyPngService(string imageUrl)
         {
-            var imageBytes = System.IO.File.ReadAllBytes(HttpContext.Current.Server.MapPath($"~{imageUrl}"));
+            var imageBytes = System.IO.File.ReadAllBytes(HttpContext.Current.Server.MapPath(string.Concat("~", imageUrl)));
             var tinyResponse = await TinifyByteArray(imageBytes);
-
             return tinyResponse;
         }
 
         private async Task<TinyResponse> TinifyByteArray(byte[] imageByteArray)
         {
             TinyResponse tinyResponse;
-            var byteContent = new ByteArrayContent(imageByteArray);
-
-            try
-            {
-                var responseResult = await CreateRequest(byteContent);
-                tinyResponse = _serializer.Deserialize<TinyResponse>(responseResult);
-                tinyResponse.Output.IsOptimized = true;
-            }
-            catch(HttpRequestException ex)
+            if(imageByteArray.Length > PackageConstants.MaxImageSize)
             {
                 tinyResponse = new TinyResponse
                 {
                     Output = new TinyOutput
                     {
-                        Error = ex.Message,
+                        Error = PackageConstants.TooBigImage,
                         IsOptimized = false
                     }
                 };
             }
+            else
+            {
+                var byteContent = new ByteArrayContent(imageByteArray);
+                try
+                {
+                    var responseResult = await CreateRequest(byteContent);
+                    tinyResponse = _serializer.Deserialize<TinyResponse>(responseResult);
+                    tinyResponse.Output.IsOptimized = true;
+                }
+                catch (HttpRequestException ex)
+                {
+                    tinyResponse = new TinyResponse
+                    {
+                        Output = new TinyOutput
+                        {
+                            Error = ex.Message,
+                            IsOptimized = false
+                        }
+                    };
+                }
+            }           
 
             return tinyResponse;
         }
@@ -106,7 +118,6 @@ namespace Tinifier.Core.Services.TinyPNG
             }
 
             var currentMonthRequests = int.Parse(compressionHeader);
-
             return currentMonthRequests;           
         }
     }

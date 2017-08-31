@@ -20,5 +20,10 @@ namespace Tinifier.Core.Services.State
         /// </summary>
         /// <param name="numberOfImages">Number of Images</param>
         void CreateState(int numberOfImages);
+
+        /// <summary>
+        /// Delete active state
+        /// </summary>
+        void Delete();
     }
 }

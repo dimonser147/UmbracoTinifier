@@ -29,4 +29,12 @@
                 }
             });
     };
+
+    $scope.stopTinifing = function () {
+        $http.delete("/umbraco/backoffice/api/TinifierState/DeleteActiveState").success(function (response) {
+            notificationsService.success("Success", "Tinifing successfully stoped!");
+        }).error(function (response) {
+            notificationsService.error("Error", "Tinifing can`t stop now!");
+        });
+    };
 });

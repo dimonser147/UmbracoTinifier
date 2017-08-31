@@ -25,8 +25,14 @@ namespace Tinifier.Core.Controllers
         public HttpResponseMessage GetCurrentTinifingState()
         {
             var state = _stateService.GetState();
-
             return Request.CreateResponse(HttpStatusCode.OK, state);
+        }
+
+        [HttpDelete]
+        public HttpResponseMessage DeleteActiveState()
+        {
+            _stateService.Delete();
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
     }
 }

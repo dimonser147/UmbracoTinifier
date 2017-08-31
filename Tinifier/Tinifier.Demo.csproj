@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -197,6 +198,7 @@
       <HintPath>..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.1, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Core.7.6.1\lib\net45\System.Data.SqlServerCe.dll</HintPath>
       <Private>True</Private>
@@ -220,16 +222,14 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="TidyNet, Version=1.0.0.0, Culture=neutral">
       <HintPath>..\packages\UmbracoCms.Core.7.6.1\lib\net45\TidyNet.dll</HintPath>
       <Private>True</Private>
@@ -315,6 +315,7 @@
     <Content Include="App_Plugins\Tinifier\Controllers\TinifierEditTimage.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinifierEditTSetting.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinyTImage.controller.js" />
+    <Content Include="App_Plugins\Tinifier\Lang\en-GB.xml" />
     <Content Include="App_Plugins\Tinifier\Lang\en-US.xml" />
     <Content Include="config\grid.editors.config.js" />
     <Content Include="config\Lang\cs-CZ.user.xml" />
@@ -342,12 +343,12 @@
     <Content Include="css\style.css" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="Media\1057\grass-png-4770.png" />
-    <Content Include="Media\1058\firefox_png16.png" />
-    <Content Include="Media\Pictures\photo.jpg" />
-    <Content Include="Media\Pictures\runPanda.jpg" />
-    <Content Include="Media\Pictures\sleeping_panda_by_citruspop-d2v8hdd.jpg" />
-    <Content Include="Media\Pictures\spinner.gif" />
+    <Content Include="App_Plugins\Tinifier\media\fat.jpg" />
+    <Content Include="App_Plugins\Tinifier\media\photo.jpg" />
+    <Content Include="App_Plugins\Tinifier\media\runPanda.jpg" />
+    <Content Include="App_Plugins\Tinifier\media\sleeping_panda_by_citruspop-d2v8hdd.jpg" />
+    <Content Include="App_Plugins\Tinifier\media\spinner.gif" />
+    <Content Include="App_Plugins\Tinifier\media\support.jpg" />
     <Content Include="scripts\fanoe.js" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -401,6 +402,8 @@
     <Content Include="Views\BlogPost.cshtml" />
     <Content Include="Views\Home.cshtml" />
     <Content Include="Views\Master.cshtml" />
+    <Content Include="Tinifier.Demo.nuspec" />
+    <Content Include="Tinifier.1.2.0.nupkg" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -3,6 +3,7 @@
     public class PackageConstants
     {
         public const int MonthlyRequestsLimit = 500;
+        public const int MaxImageSize = 14000000;
         public const string TinyPngUrl = "https://api.tinify.com";
         public const string BackEndDevsUrl = "http://backend-devs.com";
 

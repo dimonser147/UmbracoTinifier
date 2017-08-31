@@ -79,7 +79,7 @@ namespace Tinifier.Core.Controllers
         /// <param name="mediaId">Media item id</param>
         /// <returns>Response(StatusCode, message)</returns>
         [HttpGet]
-        public async Task<HttpResponseMessage> TinyTImage([FromUri]string[] imageRelativeUrls, int mediaId)
+        public async Task<HttpResponseMessage> TinyTImage([FromUri]string[] imageRelativeUrls, [FromUri]int mediaId)
         {
             HttpResponseMessage responseMessage;
             _settingsService.CheckIfSettingExists();

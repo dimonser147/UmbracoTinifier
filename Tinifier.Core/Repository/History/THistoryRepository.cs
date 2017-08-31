@@ -32,7 +32,7 @@ namespace Tinifier.Core.Repository.History
         /// <returns>TinyPNGResponseHistory</returns>
         public TinyPNGResponseHistory Get(int id)
         {
-            var query = new Sql($"SELECT * FROM TinifierResponseHistory WHERE ImageId = {id}");
+            var query = new Sql("SELECT * FROM TinifierResponseHistory WHERE ImageId = @0", id);
             return _database.FirstOrDefault<TinyPNGResponseHistory>(query);
         }
 
@@ -51,7 +51,7 @@ namespace Tinifier.Core.Repository.History
         /// <param name="imageId">Image Id</param>
         public void Delete(int imageId)
         {
-            var query = new Sql($"DELETE FROM TinifierResponseHistory WHERE ImageId = {imageId}");
+            var query = new Sql("DELETE FROM TinifierResponseHistory WHERE ImageId = @0", imageId);
             _database.Execute(query);
         }
     }

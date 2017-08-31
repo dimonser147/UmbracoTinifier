@@ -167,7 +167,7 @@ namespace Tinifier.Core.Services.Media
 
         private void UpdateImage(TImage image, byte[] bytesArray)
         {
-            var path = HttpContext.Current.Server.MapPath($"~{image.Url}");
+            var path = HttpContext.Current.Server.MapPath(string.Concat("~", image.Url));
 
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
             {

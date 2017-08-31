@@ -23,7 +23,7 @@ namespace Tinifier.Core.Infrastructure
                 new XElement(PackageConstants.TabAlias, new XAttribute(PackageConstants.CaptionAlias, PackageConstants.Statistic),
                     new XElement(PackageConstants.ControlAlias, PackageConstants.StatisticTabRoute))
             );
-            doc.Root?.Add(restaurant);
+            if (doc.Root != null) doc.Root.Add(restaurant);
             doc.Save(path);
         }
 
@@ -40,7 +40,7 @@ namespace Tinifier.Core.Infrastructure
             if (node != null)
             {
                 var parent = node.ParentNode;
-                parent?.RemoveChild(node);
+                if (parent != null) parent.RemoveChild(node);
                 doc.Save(path);
             }
         }
