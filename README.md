@@ -8,7 +8,7 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 ## Quick start [(download .pdf with screens)][qs]
 1. Install Tinifier package
 2. Register account in the [TinyPNG][tp] and get API key
-3. Go to the Tinifier settings and set API key 
+3. Go to the Tinifier settings and set API key. (If you don`t see Tinifier section, please, add it for your user in Users section).
 4. Tinify (compress) an appropriate image 
 5. Your visitors are happy with fast loading pages!
 
@@ -21,6 +21,7 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 - API requests widget
 - Total saved bytes widget
 - Image optimization on upload
+- Umbraco 7.7 support
 
 ## More about project
 [Tinifier Developer`s site][ps]
