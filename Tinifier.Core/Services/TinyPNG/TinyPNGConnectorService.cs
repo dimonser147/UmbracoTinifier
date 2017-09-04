@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using Tinifier.Core.Services.Settings;
+using System.IO;
 
 namespace Tinifier.Core.Services.TinyPNG
 {
@@ -28,8 +29,26 @@ namespace Tinifier.Core.Services.TinyPNG
 
         public async Task<TinyResponse> SendImageToTinyPngService(string imageUrl)
         {
-            var imageBytes = System.IO.File.ReadAllBytes(HttpContext.Current.Server.MapPath(string.Concat("~", imageUrl)));
-            var tinyResponse = await TinifyByteArray(imageBytes);
+            byte[] imageBytes;
+            TinyResponse tinyResponse;
+
+            try
+            {
+                imageBytes = File.ReadAllBytes(HttpContext.Current.Server.MapPath(string.Concat("~", imageUrl)));
+                tinyResponse = await TinifyByteArray(imageBytes);
+            }
+            catch (Exception)
+            {
+                tinyResponse = new TinyResponse
+                {
+                    Output = new TinyOutput
+                    {
+                        Error = PackageConstants.ImageDeleted,
+                        IsOptimized = false
+                    }
+                };
+            }
+
             return tinyResponse;
         }
 

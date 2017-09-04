@@ -78,5 +78,6 @@
         public const string ImageNotExists = "Image with such id doesn't exist. Id: ";
         public const string ImageWithPathNotExists = "Image with such path doesn't exist. Name: ";
         public const string NotAllImagesWereOptimized = "Not all images have been optimized";
+        public const string ImageDeleted = "Image has been deleted!";
     }
 }

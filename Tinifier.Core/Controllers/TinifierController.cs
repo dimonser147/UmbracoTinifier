@@ -105,6 +105,31 @@ namespace Tinifier.Core.Controllers
         }
 
         /// <summary>
+        /// Tinify full Media folder
+        /// </summary>
+        /// <returns>Response(StatusCode, message)</returns>
+        [HttpPut]
+        public async Task<HttpResponseMessage> TinifyEverything()
+        {
+            var nonOptimizedImages = new List<TImage>();
+
+            foreach (var image in _imageService.GetAllImages())
+            {
+                var imageHistory = _historyService.GetImageHistory(image.Id);
+                if (imageHistory != null && imageHistory.IsOptimized)
+                    continue;
+                nonOptimizedImages.Add(image);
+            }
+
+            if (nonOptimizedImages.Count == 0)
+                return Request.CreateResponse(HttpStatusCode.BadRequest,
+                    new { Message = PackageConstants.AllImagesAlreadyOptimized, Error = ErrorTypes.Warning });
+
+            _stateService.CreateState(nonOptimizedImages.Count);
+            return await CallTinyPngService(nonOptimizedImages);
+        }
+
+        /// <summary>
         /// Tinify folder By Id
         /// </summary>
         /// <param name="folderId">Folder Id</param>

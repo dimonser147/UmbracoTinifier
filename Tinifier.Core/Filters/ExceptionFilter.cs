@@ -33,6 +33,10 @@ namespace Tinifier.Core.Filters
                 context.Response = context.Request.CreateResponse(HttpStatusCode.BadRequest,
                     new { Message = ex.Message, Error = ErrorTypes.Error });
 
+            if (context.Exception is HttpRequestException)
+                context.Response = context.Request.CreateResponse(HttpStatusCode.BadRequest,
+                    new { Message = ex.Message, Error = ErrorTypes.Error });
+
             LogHelper.Error(GetType(), ex.StackTrace, ex);
         }
     }

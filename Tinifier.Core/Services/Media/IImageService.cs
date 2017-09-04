@@ -7,6 +7,12 @@ namespace Tinifier.Core.Services.Media
     public interface IImageService
     {
         /// <summary>
+        /// Get all images
+        /// </summary>
+        /// <returns>IEnumerable<TImage></returns>
+        IEnumerable<TImage> GetAllImages();
+
+        /// <summary>
         /// Get Image By Id from Umbraco Media
         /// </summary>
         /// <param name="id">Image Id</param>

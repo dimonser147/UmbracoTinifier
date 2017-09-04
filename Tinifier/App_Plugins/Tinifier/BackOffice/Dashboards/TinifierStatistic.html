@@ -82,3 +82,26 @@
 <div ng-controller="Tinifier.TinifierEditTSetting.Controller">
     <button class="resetButton" ng-click="stopTinifing()">Stop tinifing!</button>
 </div>
+<button type="button" class="resetButton" data-toggle="modal" data-target="#myModal">Tinify everything!</button>
+
+
+    <div class="modal fade" id="myModal" role="dialog" data-backdrop="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">The confirmation</h4>
+                </div>
+                <div class="modal-body">
+                    <p>All images on the site will be compressed. It could be time-consuming operation and could affect your server in case of thousands of images. Do you wish to continue?</p>
+                </div>
+                <div class="modal-footer">
+                    <div ng-controller="Tinifier.TinyTImage.Controller">
+                        <button type="button" class="btn btn-default" ng-click="tinifyAll()">Confirm</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

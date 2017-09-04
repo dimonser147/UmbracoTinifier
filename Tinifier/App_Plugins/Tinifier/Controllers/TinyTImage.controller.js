@@ -57,4 +57,13 @@
             });
         }
     };
+
+    $scope.tinifyAll = function () {
+        $http.put("/umbraco/backoffice/api/Tinifier/TinifyEverything")
+                .success(function (response) {
+                    notificationsService.success("Success", response.SuccessOptimized);
+                }).error(function (response) {
+                    notificationsService.error("Error", response.Message);
+                });
+    };
 });

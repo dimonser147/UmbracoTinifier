@@ -403,7 +403,7 @@
     <Content Include="Views\Home.cshtml" />
     <Content Include="Views\Master.cshtml" />
     <Content Include="Tinifier.Demo.nuspec" />
-    <Content Include="Tinifier.1.2.0.nupkg" />
+    <Content Include="Tinifier.1.2.1.nupkg" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -42,6 +42,27 @@ namespace Tinifier.Core.Services.Media
             _backendDevsConnectorService = new BackendDevsConnectorService();
         }
 
+        public IEnumerable<TImage> GetAllImages()
+        {
+            var images = new List<TImage>();
+
+            foreach (var item in _imageRepository.GetAll())
+            {
+                var path = item.GetValue(PackageConstants.UmbracoFileAlias).ToString();
+
+                var image = new TImage
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Url = GetUrl(path)
+                };
+
+                images.Add(image);
+            }
+
+            return images;
+        }
+
         public TImage GetImage(int id)
         {
             var image = _imageRepository.Get(id);
