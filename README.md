@@ -24,6 +24,9 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 - Image optimization on upload
 - Umbraco 7.7 support
 
+## Nuget package
+https://www.nuget.org/packages/Tinifier/
+
 ## More about project
 [Tinifier Developer`s site][ps]
 
