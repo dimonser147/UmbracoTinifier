@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
@@ -139,7 +140,10 @@ namespace Tinifier.Core.Application
                 context.Services.SectionService.MakeNew(PackageConstants.SectionName,
                     PackageConstants.SectionAlias,
                     PackageConstants.SectionIcon);
-                context.Services.UserService.AddSectionToAllUsers(PackageConstants.SectionAlias);
+
+              /*  var version = ConfigurationManager.AppSettings["umbracoConfigurationStatus"].ToString();
+                if(!version.Contains("7.7") && !string.IsNullOrEmpty(version))
+                    context.Services.UserService.AddSectionToAllUsers(PackageConstants.SectionAlias);*/
 
                 DashboardExtension.AddTabs();
             }
