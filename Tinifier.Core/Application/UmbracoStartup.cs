@@ -213,11 +213,19 @@ namespace Tinifier.Core.Application
                 if (dbHelper.TableExist(tables.ElementAt(i).Key))
                 {
                     var checkColumn = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierImagesStatistic' AND COLUMN_NAME = 'TotalSavedBytes'");
+                    var checkHidePanel = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
                     int? exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
+                    int? hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
 
-                    if(exists == null || exists == -1)
+                    if (exists == null || exists == -1)
                     {
                         var sql = new Sql("ALTER TABLE TinifierImagesStatistic ADD COLUMN TotalSavedBytes INTEGER NULL");
+                        ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
+                    }
+
+                    if (hidePanel == null || hidePanel == -1)
+                    {
+                        var sql = new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN HideLeftPanel BIT NOT NULL");
                         ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
                     }
                 }

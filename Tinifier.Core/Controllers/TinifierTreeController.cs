@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Formatting;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Services.Media;
+using Tinifier.Core.Services.Settings;
 using Umbraco.Web;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Mvc;
@@ -13,10 +14,12 @@ namespace Tinifier.Core.Controllers
     public class TinifierTreeController : TreeController
     {
         private readonly IImageService _imageService;
+        private readonly ISettingsService _settingsService;
 
         public TinifierTreeController()
         {
             _imageService = new ImageService();
+            _settingsService = new SettingsService();
         }
 
         protected override MenuItemCollection GetMenuForNode(string id, FormDataCollection queryStrings)
@@ -33,8 +36,9 @@ namespace Tinifier.Core.Controllers
         protected override TreeNodeCollection GetTreeNodes(string id, FormDataCollection queryStrings)
         {
             var nodes = new TreeNodeCollection();
+            var settings = _settingsService.GetSettings();
 
-            if (id == PackageConstants.FirstNodeId)
+            if (id == PackageConstants.FirstNodeId && settings != null && !settings.HideLeftPanel)
             {
                 foreach (var timage in _imageService.GetOptimizedImages())
                 {

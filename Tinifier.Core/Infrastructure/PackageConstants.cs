@@ -33,7 +33,7 @@
         public const string StatsDialogCaption = "Optimization Stats";
         public const string ErrorCategory = "Validation";
         public const string TreeAlias = "timages";
-        public const string TreeTitle = "Optimized Images";
+        public const string TreeTitle = "Top 50 the most optimized images";
         public const string TreeIcon = "icon-umb-media";
         public const string TinifierSettings = "TinifierSettings";
         public const string Settings = "Settings";
@@ -65,8 +65,8 @@
         public const string CustomTreeUrl = "/timages/TinifierEdit/";
 
         public const string BadRequest = "Bad request";
-        public const string ApiKeyMessage = "ApiKey successfully added!";
-        public const string ApiKeyError = "ApiKey not added! Please, fill ApiKey field with correct value";
+        public const string ApiKeyMessage = "Settings successfully saved!";
+        public const string ApiKeyError = "Settings not saved! Please, fill all required fields with correct values";
         public const string AlreadyOptimized = "Image is already optimized";
         public const string SuccessOptimized = "Image(s) succesfully optimized!";
         public const string NotSupported = "This extension not supported. You can tinify only PNG and JPG files";

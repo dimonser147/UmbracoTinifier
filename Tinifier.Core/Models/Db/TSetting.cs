@@ -21,6 +21,9 @@ namespace Tinifier.Core.Models.Db
         [Required]
         public bool EnableOptimizationOnUpload { get; set; }
 
+        [Required]
+        public bool HideLeftPanel { get; set; }
+
         public int CurrentMonthRequests { get; set; }
     }
 }

@@ -93,6 +93,7 @@
                 $scope.currentImage = response.data.CurrentImage;
                 $scope.amounthOfImages = response.data.AmounthOfImages;
                 document.getElementById("updateSeconds").style.display = "block";
+                document.getElementById("resetButton").style.display = "inline-block";
             }
         });
     };
@@ -137,4 +138,12 @@
         $timeout.cancel(drawTimer);
         $timeout.cancel(timert);
     });
+
+    $scope.stopTinifing = function () {
+        $http.delete("/umbraco/backoffice/api/TinifierState/DeleteActiveState").success(function (response) {
+            notificationsService.success("Success", "Tinifing successfully stoped!");
+        }).error(function (response) {
+            notificationsService.error("Error", "Tinifing can`t stop now!");
+        });
+    };
 });

@@ -62,7 +62,7 @@
 .loading-image{
     height: 50px;
     width:50px; 
-    background: url('../../../../Media/Pictures/spinner.gif') center center no-repeat;
+    background: url('../media/spinner.gif') center center no-repeat;
 }
 .dialog-message{
     font-size: 16px; 
@@ -74,13 +74,19 @@
     text-align: left;
 }
 .resetButton{
-    background-color: #4CAF50;
+    background-color: red;
     border: none;
     color: white;
-    padding: 15px 32px;
-    text-align: left;
+    text-decoration: none;
+    display: none;
+    font-size: 13px;
+}
+.pushButton{
+    background-color: #35c786;
+    border: none;
+    color: white;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
-    margin-top:5px;
+    font-size: 15px;
+    padding:5px 20px;
 }
