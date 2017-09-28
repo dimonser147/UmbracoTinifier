@@ -16,7 +16,6 @@
 
     // RecycleBinFolderId
     var recycleBinFolderId = -21;
-    var sourceTypeImageId = 2;
 
     // Get from the API
     $scope.timage = null;
@@ -34,25 +33,37 @@
             .info("Tinifing.... Optimization started ! If you tinifing more than one Image you can see progress in the Tinifier 'Statistic' section");
 
         if (arrOfNames.length !== 0) {
-            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?" + $.param({ imagesSrc: arrOfNames }))
+            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?" + $.param({ imageRelativeUrls: arrOfNames, mediaId: 0 }))
                 .success(function(response) {
                     notificationsService.success("Success", response.SuccessOptimized);
                 }).error(function(response) {
-                    notificationsService.error("Error", response);
+                    notificationsService.error("Error", response.Message);
                 });
         } else {
-            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?item=" + timageId).success(function(response) {
+            $http.get("/umbraco/backoffice/api/Tinifier/TinyTImage?mediaId=" + timageId).success(function (response) {
                 notificationsService.success("Success", response.SuccessOptimized);
-
-                if (response.sourceType === sourceTypeImageId) {
+                if (response.sourceType === 0) {
                     dialogService.open({
-                        template: "/App_Plugins/Tinifier/BackOffice/timages/edit.html"
+                        template: "/App_Plugins/Tinifier/BackOffice/timages/TinifierEdit.html"
                     });
                 }
-
-            }).error(function(response) {
-                notificationsService.error("Error", response);
+            }).error(function (response) {
+                if (response.Error === 1){
+                    notificationsService.warning("Warning", response.Message);
+                }
+                else {
+                    notificationsService.error("Error", response.Message);
+                }
             });
         }
+    };
+
+    $scope.tinifyAll = function () {
+        $http.put("/umbraco/backoffice/api/Tinifier/TinifyEverything")
+                .success(function (response) {
+                    notificationsService.success("Success", response.SuccessOptimized);
+                }).error(function (response) {
+                    notificationsService.error("Error", response.Message);
+                });
     };
 });

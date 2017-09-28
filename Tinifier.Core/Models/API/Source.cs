@@ -2,7 +2,9 @@
 {
     public class Source
     {
-        // Image Url for TinyPng Service
+        /// <summary>
+        /// Image Url for TinyPng Service
+        /// </summary>
         public string Url { get; set; }
     }
 }

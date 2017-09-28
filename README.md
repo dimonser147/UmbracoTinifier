@@ -8,17 +8,27 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 ## Quick start [(download .pdf with screens)][qs]
 1. Install Tinifier package
 2. Register account in the [TinyPNG][tp] and get API key
-3. Go to the Tinifier settings and set API key 
+3. Go to the Tinifier settings and set API key. (For Tinifier 1.2 add Tinifier section for your user in Users section 
+(see QuickStart.pdf)).
 4. Tinify (compress) an appropriate image 
 5. Your visitors are happy with fast loading pages!
 
 
 ## Features
 - Optimize individual images from the Media
+- Folders optimization
 - Supported image formats: PNG and JPEG
 - Optimized image stats 
-- Total savings widget
 - API requests widget
+- Total saved bytes widget
+- Image optimization on upload
+- Umbraco 7.7 support
+
+## Nuget package
+https://www.nuget.org/packages/Tinifier/
+
+## More about project
+[Tinifier Developer`s site][ps]
 
 ## License
 Copyright © [Backend Devs][bd].
@@ -29,4 +39,5 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 [bd]: http://backend-devs.com/
 [tp]: https://tinypng.com
-[qs]: https://github.com/dimonser147/UmbracoTinifier/blob/master/QuickStart.pdf
+[qs]: https://our.umbraco.org/FileDownload?id=17804
+[ps]: http://backend-devs.com/case-studies/umbraco-cms/tinifier/

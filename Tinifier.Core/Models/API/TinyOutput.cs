@@ -1,30 +1,48 @@
 ﻿namespace Tinifier.Core.Models.API
 {
-    // Response from TinyPng Service
+    /// <summary>
+    /// Response from TinyPng Service
+    /// </summary>
     public class TinyOutput
     {
-        // Compressed size of image
+        /// <summary>
+        /// Compressed size of image
+        /// </summary>
         public int Size { get; set; }
 
-        // Image type
+        /// <summary>
+        /// Image type
+        /// </summary>
         public string Type { get; set; }
 
-        // Image width
+        /// <summary>
+        /// Image width
+        /// </summary>
         public int Width { get; set; }
 
-        // Image height
+        /// <summary>
+        /// Image height
+        /// </summary>
         public int Height { get; set; }
 
-        // Compressing ratio
+        /// <summary>
+        /// Compressing ratio
+        /// </summary>
         public double Ratio { get; set; }
 
-        // Image url for downloading
+        /// <summary>
+        /// Image url for downloading
+        /// </summary>
         public string Url { get; set; }
 
-        // If tinyPng returns error
+        /// <summary>
+        /// If tinyPng returns error
+        /// </summary>
         public string Error { get; set; }
 
-        // If image was optimized
+        /// <summary>
+        /// If image was optimized
+        /// </summary>
         public bool IsOptimized { get; set; }
     }
 }

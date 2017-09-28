@@ -5,7 +5,9 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Tinifier.Core.Models.Db
 {
-    // User settings for database
+    /// <summary>
+    /// User settings for database
+    /// </summary>
     [TableName(PackageConstants.DbSettingsTable)]
     [PrimaryKey("Id", autoIncrement = true)]
     public class TSetting
@@ -18,6 +20,9 @@ namespace Tinifier.Core.Models.Db
 
         [Required]
         public bool EnableOptimizationOnUpload { get; set; }
+
+        [Required]
+        public bool HideLeftPanel { get; set; }
 
         public int CurrentMonthRequests { get; set; }
     }

@@ -1,12 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
-using Tinifier.Core.Services.Interfaces;
-using Tinifier.Core.Services.Services;
+using Tinifier.Core.Services.History;
+using Tinifier.Core.Services.Media;
+using Tinifier.Core.Services.Settings;
+using Tinifier.Core.Services.Statistic;
 using umbraco.cms.businesslogic.packager;
 using Umbraco.Core;
 using Umbraco.Core.Events;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
+using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
@@ -28,87 +35,101 @@ namespace Tinifier.Core.Application
             _historyService = new HistoryService();
         }
 
+        /// <summary>
+        /// Add custom section and event handlers 
+        /// </summary>
+        /// <param name="umbraco">UmbracoApplicationBase</param>
+        /// <param name="context">ApplicationContext</param>
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
-            // Set statistic before optimizing
-            _statisticService.CreateStatistic();
-
-            // Create a new section
             CreateTinifySection(context);
-
-            // Extend dropdownMenu with Tinify button
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
-
-            // Save image handler for updating number of Images in database and tinifing on upload
             MediaService.Saved += MediaServiceSaving;
-
-            // Delete image handler for updating number of Images in database
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
-
-            // Clear dashboard.config before deleting
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
+            InstalledPackage.BeforeSave += InstalledPackage_BeforeSave;
         }
 
-        // Remove section and clear tabs before deleting package
+        public void InstalledPackage_BeforeSave(InstalledPackage sender, EventArgs e)
+        {
+            CheckFieldsDatabase();
+        }
+
+        /// <summary>
+        /// Remove section and clear tabs in dashboard.config before deleting package
+        /// </summary>
+        /// <param name="sender">InstalledPackage</param>
+        /// <param name="e">EventArgs</param>
         private void InstalledPackage_BeforeDelete(InstalledPackage sender, EventArgs e)
         {
-            if (string.Equals(sender.Data.Name, "tinifier", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(sender.Data.Name, PackageConstants.SectionAlias, StringComparison.OrdinalIgnoreCase))
             {
-                ExtendDashboard.ClearTabs();
-
+                DashboardExtension.ClearTabs();
                 var section = ApplicationContext.Current.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
 
                 if (section != null)
-                {
                     ApplicationContext.Current.Services.SectionService.DeleteSection(section);
-                }
             }
         }
 
-        // Update statistic when image upload and optimize if flag is true
+        /// <summary>
+        /// Update statistic when image upload and image optimizing during upload
+        /// </summary>
+        /// <param name="sender">IMediaService</param>
+        /// <param name="eventArg">SaveEventArgs</param>
         private void MediaServiceSaving(IMediaService sender, SaveEventArgs<IMedia> eventArg)
         {
+            var settings = _settingsService.GetSettings();
+
             foreach (var mediaItem in eventArg.SavedEntities)
             {
-                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) 
+                    && string.Equals(mediaItem.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
                 {
-                    var settings = _settingsService.GetSettings();
-
-                    if (settings != null)
+                    if (settings != null && settings.EnableOptimizationOnUpload)
                     {
-                        if(settings.EnableOptimizationOnUpload)
+                        try
                         {
-                            try
-                            {
-                                OptimizeOnUpload(mediaItem.Id, eventArg);
-                            }
-                            catch(Infrastructure.Exceptions.NotSupportedException)
-                            {
-                                continue;
-                            }
-                        }                                       
+                            OptimizeOnUpload(mediaItem.Id, eventArg);
+                        }
+                        catch(NotSupportedExtensionException)
+                        {
+                            _statisticService.UpdateStatistic();
+                            continue;
+                        }
                     }
-
-                    _statisticService.UpdateStatistic();
+                    else
+                    {
+                        _statisticService.UpdateStatistic();
+                    }                                                          
                 }
             }
         }
 
-        // Update statistic when recycle bin is empty
+        /// <summary>
+        /// Update number of images in statistic before removing from recyclebin
+        /// </summary>
+        /// <param name="sender">IMediaService</param>
+        /// <param name="e">RecycleBinEventArgs</param>
         private void MediaService_EmptiedRecycleBin(IMediaService sender, RecycleBinEventArgs e)
         {
             var iMedias = ApplicationContext.Current.Services.MediaService.GetByIds(e.Ids);
 
             foreach (var mediaItem in iMedias)
             {
-                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) && string.Equals(mediaItem.ContentType.Alias, "image", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) 
+                    && string.Equals(mediaItem.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
                 {
                     _statisticService.UpdateStatistic();
+                    _historyService.Delete(mediaItem.Id);
                 }
             }
         }
 
-        // Create a new section
+        /// <summary>
+        /// Create a new section
+        /// </summary>
+        /// <param name="context">ApplicationContext</param>
         private void CreateTinifySection(ApplicationContext context)
         {
             var section = context.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
@@ -118,51 +139,98 @@ namespace Tinifier.Core.Application
                 context.Services.SectionService.MakeNew(PackageConstants.SectionName,
                     PackageConstants.SectionAlias,
                     PackageConstants.SectionIcon);
-                context.Services.UserService.AddSectionToAllUsers(PackageConstants.SectionAlias);
 
-                ExtendDashboard.AddTabs();
+                DashboardExtension.AddTabs();
             }
         }
 
-        // Add menuItems to menu
+        /// <summary>
+        /// Extend dropdownMenu with Tinify and Stats buttons
+        /// </summary>
+        /// <param name="sender">TreeControllerBase</param>
+        /// <param name="e">EventArgs</param>
         private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
         {
-            if (string.Equals(sender.TreeAlias, "media", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(sender.TreeAlias, PackageConstants.MediaAlias, StringComparison.OrdinalIgnoreCase))
             {
-                var menuItemTinifyButton = new MenuItem("Tinifier_Button", "Tinify");
-                menuItemTinifyButton.LaunchDialogView(PackageConstants.TinyTImageRoute, "Tinifier");
+                var menuItemTinifyButton = new MenuItem(PackageConstants.TinifierButton, PackageConstants.TinifierButtonCaption);
+                menuItemTinifyButton.LaunchDialogView(PackageConstants.TinyTImageRoute, PackageConstants.SectionName);
                 menuItemTinifyButton.Icon = PackageConstants.MenuIcon;
                 e.Menu.Items.Add(menuItemTinifyButton);
 
-                var menuItemSettingsButton = new MenuItem("Tinifier_Settings", "Stats");
-                menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, "Optimization Stats");
+                var menuItemSettingsButton = new MenuItem(PackageConstants.StatsButton, PackageConstants.StatsButtonCaption);
+                menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, PackageConstants.StatsDialogCaption);
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
             }
         }
 
-        // Call methods for tinifing when upload image
-        private void OptimizeOnUpload(int mediaItemId, SaveEventArgs<IMedia> e)
+        /// <summary>
+        /// Call methods for tinifing when upload image
+        /// </summary>
+        /// <param name="mediaItemId">Media Item Id</param>
+        /// <param name="e">CancellableEventArgs</param>
+        private void OptimizeOnUpload(int mediaItemId, CancellableEventArgs e)
         {
             TImage image;
 
             try
             {
-                image = _imageService.GetImageById(mediaItemId);
+                image = _imageService.GetImage(mediaItemId);
             }
-            catch (Infrastructure.Exceptions.NotSupportedException ex)
+            catch (NotSupportedExtensionException)
             {
-                e.Messages.Add(new EventMessage("Validation", PackageConstants.NotSupported, EventMessageType.Error));
-                throw ex;
+                e.Messages.Add(new EventMessage(PackageConstants.ErrorCategory, PackageConstants.NotSupported,
+                    EventMessageType.Error));
+                throw;
             }
 
-            var imageHistory = _historyService.GetHistoryForImage(image.Id);
+            var imageHistory = _historyService.GetImageHistory(image.Id);
 
             if (imageHistory == null)
+                    _imageService.OptimizeImage(image);               
+          } 
+        
+        private void CheckFieldsDatabase()
+        {
+            var logger = LoggerResolver.Current.Logger;
+            var dbContext = ApplicationContext.Current.DatabaseContext;
+            var dbHelper = new DatabaseSchemaHelper(dbContext.Database, logger, dbContext.SqlSyntax);
+
+            if(dbHelper.TableExist(PackageConstants.DbStateTable))
             {
-                _imageService.OptimizeImage(image);
+                dbHelper.DropTable(PackageConstants.DbStateTable);
+                dbHelper.CreateTable(false, typeof(TState));
             }
-        }
-    }
+
+            var tables = new Dictionary<string, Type>
+            {
+                { PackageConstants.DbStatisticTable, typeof(TImageStatistic) },
+            };
+
+            for (var i = 0; i < tables.Count; i++)
+            {
+                if (dbHelper.TableExist(tables.ElementAt(i).Key))
+                {
+                    var checkColumn = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierImagesStatistic' AND COLUMN_NAME = 'TotalSavedBytes'");
+                    var checkHidePanel = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
+                    int? exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
+                    int? hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
+
+                    if (exists == null || exists == -1)
+                    {
+                        var sql = new Sql("ALTER TABLE TinifierImagesStatistic ADD COLUMN TotalSavedBytes INTEGER NULL");
+                        ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
+                    }
+
+                    if (hidePanel == null || hidePanel == -1)
+                    {
+                        var sql = new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN HideLeftPanel BIT NOT NULL");
+                        ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
+                    }
+                }
+            }
+        }               
+     }
 }
 
