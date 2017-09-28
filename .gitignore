@@ -260,3 +260,4 @@ ModelManifest.xml
 
 # ImageProcessor DiskCache 
 **/App_Data/cache/
+/Tinifier/Media
