@@ -33,6 +33,12 @@ namespace Tinifier.Core.Services.Media
         IEnumerable<TImage> GetOptimizedImages();
 
         /// <summary>
+        /// Get top 50 optimized images
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<TImage> GetTopOptimizedImages();
+
+        /// <summary>
         /// Get all images from specific folder
         /// </summary>
         /// <param name="folderId">Folder Id</param>

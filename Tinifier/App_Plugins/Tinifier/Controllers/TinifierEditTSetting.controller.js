@@ -19,13 +19,13 @@
         timage = $scope.timage;
         $http.post("/umbraco/backoffice/api/TinifierSettings/PostTSetting", JSON.stringify(timage))
             .success(function(response) {
-                notificationsService.success("Success", response);
+                notificationsService.success("Success", response.message);
             }).error(function(response) {
                 if (response.Error === 1) {
-                    notificationsService.warning("Warning", response.Message);
+                    notificationsService.warning("Warning", response.message);
                 }
                 else {
-                    notificationsService.error("Error", response.Message);
+                    notificationsService.error("Error", response.message);
                 }
             });
     };

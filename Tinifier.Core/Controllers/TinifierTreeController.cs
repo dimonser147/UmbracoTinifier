@@ -40,7 +40,7 @@ namespace Tinifier.Core.Controllers
 
             if (id == PackageConstants.FirstNodeId && settings != null && !settings.HideLeftPanel)
             {
-                foreach (var timage in _imageService.GetOptimizedImages())
+                foreach (var timage in _imageService.GetTopOptimizedImages())
                 {
                     nodes.Add(CreateTreeNode(timage.Id + string.Empty, id, queryStrings, timage.Name, PackageConstants.TreeIcon, false,
                         FormDataCollectionExtensions.GetValue<string>(queryStrings, PackageConstants.AppAlias) + PackageConstants.CustomTreeUrl + timage.Id));

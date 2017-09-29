@@ -275,7 +275,6 @@
     <Compile Include="Controllers\TinifierStateController.cs" />
     <Compile Include="Controllers\TinifierImagesStatisticController.cs" />
     <Compile Include="Filters\ExceptionFilter.cs" />
-    <Compile Include="Infrastructure\Enums\ErrorTypes.cs" />
     <Compile Include="Infrastructure\Enums\SourceTypes.cs" />
     <Compile Include="Infrastructure\Enums\Statuses.cs" />
     <Compile Include="Infrastructure\Exceptions\ConcurrentOptimizingException.cs" />
@@ -285,6 +284,7 @@
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TState.cs" />
     <Compile Include="Models\Services\HistoriesStatisticModel.cs" />
+    <Compile Include="Models\Services\TopImagesModel.cs" />
     <Compile Include="Models\TNotification.cs" />
     <Compile Include="Repository\Common\IEntityRemover.cs" />
     <Compile Include="Repository\State\TStateRepository.cs" />

@@ -14,7 +14,7 @@ namespace Tinifier.Core.Infrastructure
             var path = HttpContext.Current.Server.MapPath(PackageConstants.PathToDashboard);
             var doc = XDocument.Load(path);
 
-            var restaurant = new XElement(PackageConstants.Section,
+            var xmlElement = new XElement(PackageConstants.Section,
                 new XAttribute(PackageConstants.Alias, PackageConstants.TinifierSettings),
                 new XElement(PackageConstants.AreasAlias,
                     new XElement(PackageConstants.AreaAlias, PackageConstants.SectionAlias)),
@@ -23,7 +23,7 @@ namespace Tinifier.Core.Infrastructure
                 new XElement(PackageConstants.TabAlias, new XAttribute(PackageConstants.CaptionAlias, PackageConstants.Statistic),
                     new XElement(PackageConstants.ControlAlias, PackageConstants.StatisticTabRoute))
             );
-            if (doc.Root != null) doc.Root.Add(restaurant);
+            if (doc.Root != null) doc.Root.Add(xmlElement);
             doc.Save(path);
         }
 

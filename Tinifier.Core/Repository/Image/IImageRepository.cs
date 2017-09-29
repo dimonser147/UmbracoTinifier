@@ -12,6 +12,8 @@ namespace Tinifier.Core.Repository.Image
 
         IEnumerable<Media> GetOptimizedItems();
 
+        IEnumerable<Media> GetTopOptimizedImages();
+
         IEnumerable<Media> GetItemsFromFolder(int folderId);
 
         int AmounthOfItems();

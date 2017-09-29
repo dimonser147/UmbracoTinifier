@@ -20,10 +20,9 @@ using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
 using Umbraco.Core.Events;
 using Umbraco.Core.IO;
-using Umbraco.Web.UI;
-using Umbraco.Web.UI.Pages;
 using Umbraco.Web.WebApi;
 using System.Linq;
+using System;
 
 namespace Tinifier.Core.Controllers
 {
@@ -63,15 +62,13 @@ namespace Tinifier.Core.Controllers
             {
                 timage = _imageService.GetImage(timageId);
             }
-            catch (NotSupportedExtensionException ex)
+            catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError,
-                    new { Message = ex.Message, Error = ErrorTypes.Error });
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.NotFound,
-                    new { Message = ex.Message, Error = ErrorTypes.Error });
+                return Request.CreateResponse(HttpStatusCode.BadRequest,
+                    new TNotification("Tinifier Oops", ex.Message, EventMessageType.Error)
+                    {
+                        sticky = true,
+                    });
             }
 
             var history = _historyService.GetImageHistory(timageId);
@@ -150,7 +147,6 @@ namespace Tinifier.Core.Controllers
 
             _stateService.CreateState(imagesList.Count);
             return await CallTinyPngService(imagesList);
-
         }       
 
         /// <summary>

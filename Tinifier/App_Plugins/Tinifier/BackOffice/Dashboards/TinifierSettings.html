@@ -27,17 +27,17 @@
                                 <div class="control-group umb-control-group">
                                     <div class="umb-el-wrap">
                                         <h3>Optimize on upload<small class="ng-binding"> (optional)</small></h3>
-                                        <p style="width: 85%;">You can get it on a <a href="http://goo.gl/gaaz8i" style="color:blue">TinyPNG website</a>. Available free requests could be checked on the "Statistic" tab.</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" style="width: 85%;"></select>
+                                        <p style="width: 85%;">You will never get non - optimized images but should wait more on each image upload.</p>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" style="width: 100%;"></select>
                                     </div>
                                 </div>
                             </div>
-                            <div class="umb-property" style="display:inline-block">
+                            <div class="umb-property" style="display:inline-block; margin-left: 7%;">
                                 <div class="control-group umb-control-group">
                                     <div class="umb-el-wrap">
                                         <h3>Hard reset</h3>
                                         <p style="width: 100%;">Click this button if your tinifing process stuck or you just want to stop tinifing.</p>
-                                        <button type="button" class="pushButton" ng-click="stopTinifing()">Stop tinifing!</button>
+                                        <button type="button" class="pushButtonStop" ng-click="stopTinifing()">Stop tinifing!</button>
                                     </div>
                                 </div>
                             </div>
@@ -46,7 +46,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>Hide left panel<small class="ng-binding"> (optional)</small></h3>
                                         <p style="width: 39%;">If you have a huge website with tons of images left panel could be messy. You can read more here (<a href="http://goo.gl/A5fHws" style="color:blue">http://goo.gl/A5fHws</a>)</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.HideLeftPanel" style="width: 39%;"></select>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.HideLeftPanel" style="width: 41%;"></select>
                                     </div>
                                 </div>
                             </div>

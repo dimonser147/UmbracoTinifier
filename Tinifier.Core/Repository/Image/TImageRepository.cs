@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Models.Services;
 using Tinifier.Core.Repository.Common;
 using Umbraco.Core;
 using Umbraco.Core.Models;
@@ -144,6 +145,19 @@ namespace Tinifier.Core.Repository.Image
                              Where(item => historyIds.Contains(item.Id));
 
             return mediaItems.Count();
+        }
+
+        public IEnumerable<Media> GetTopOptimizedImages()
+        {
+            var query = new Sql("SELECT ImageId, OriginSize, OptimizedSize FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
+            var optimizedImages = _database.Fetch<TopImagesModel>(query);
+            var historyIds = optimizedImages.OrderByDescending(x => (x.OriginSize - x.OptimizedSize)).Select(y => y.ImageId).Take(50);
+
+            var mediaItems = _mediaService.
+                             GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
+                             Where(item => historyIds.Contains(item.Id));
+
+            return mediaItems.Select(item => item as Media).ToList();
         }
     }
 }

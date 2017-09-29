@@ -8,7 +8,6 @@ using System.Web.Script.Serialization;
 using Tinifier.Core.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Web;
 using Tinifier.Core.Services.Settings;
 using System.IO;
 using Tinifier.Core.Models.Db;

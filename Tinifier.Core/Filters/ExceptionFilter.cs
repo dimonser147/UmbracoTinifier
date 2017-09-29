@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
-using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models;
 using Umbraco.Core.Logging;

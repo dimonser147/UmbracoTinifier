@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
@@ -14,7 +13,6 @@ using Tinifier.Core.Services.State;
 using Tinifier.Core.Services.Statistic;
 using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
-using Umbraco.Core.IO;
 
 namespace Tinifier.Core.Services.Media
 {
@@ -92,6 +90,11 @@ namespace Tinifier.Core.Services.Media
         public IEnumerable<TImage> GetOptimizedImages()
         {
             return Convert(_imageRepository.GetOptimizedItems().OrderByDescending(x => x.UpdateDate));
+        }
+
+        public IEnumerable<TImage> GetTopOptimizedImages()
+        {
+            return Convert(_imageRepository.GetTopOptimizedImages().OrderByDescending(x => x.UpdateDate));
         }
 
         public IEnumerable<TImage> GetFolderImages(int folderId)

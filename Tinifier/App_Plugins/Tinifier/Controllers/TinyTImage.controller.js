@@ -15,7 +15,7 @@
     }
 
     // RecycleBinFolderId
-    var recycleBinFolderId = -21;
+    var recycleBinFolderId = "-21";
 
     // Get from the API
     $scope.timage = null;
@@ -26,6 +26,11 @@
         // Check if user choose Image or recycle bin folder
         if (timageId === recycleBinFolderId) {
             notificationsService.error("Error", "You can`t tinify RecycleBin Folder!");
+            return;
+        }
+
+        if (timageId == null) {
+            notificationsService.error("Error", "If you wish to optimize full Media folder, please, go to Tinifier section and click Tinify everything");
             return;
         }
 
@@ -47,11 +52,6 @@
 
     };
 
-    // open custom window
-    //    dialogService.open({
-    //        template: "/App_Plugins/Tinifier/BackOffice/timages/TinifierEdit.html"
-    //    });
-
     $scope.tinifyAll = function () {
         $http.put("/umbraco/backoffice/api/Tinifier/TinifyEverything")
             .success(successHandler)
@@ -65,5 +65,4 @@
     function errorHandler(response) {
         notificationsService.add(response);
     }
-
 });
