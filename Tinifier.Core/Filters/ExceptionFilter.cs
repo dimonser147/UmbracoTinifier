@@ -1,8 +1,10 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
 using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
+using Tinifier.Core.Models;
 using Umbraco.Core.Logging;
 
 namespace Tinifier.Core.Filters
@@ -17,27 +19,32 @@ namespace Tinifier.Core.Filters
         {
             var ex = context.Exception;
 
-            if (context.Exception is EntityNotFoundException)
-                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, 
-                    new { Message = ex.Message, Error = ErrorTypes.Error });
-
-            if (context.Exception is NotSupportedExtensionException)
-                context.Response = context.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType, 
-                    new { Message = ex.Message, Error = ErrorTypes.Error });
-
-            if (context.Exception is ConcurrentOptimizingException)
-                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError, 
-                    new { Message = ex.Message, Error = ErrorTypes.Error });
-
-            if(context.Exception is NotSuccessfullRequestException)
+            if (ex is EntityNotFoundException || ex is NotSupportedExtensionException ||
+                ex is ConcurrentOptimizingException || ex is NotSuccessfullRequestException ||
+                ex is HttpRequestException)
+            {
                 context.Response = context.Request.CreateResponse(HttpStatusCode.BadRequest,
-                    new { Message = ex.Message, Error = ErrorTypes.Error });
-
-            if (context.Exception is HttpRequestException)
-                context.Response = context.Request.CreateResponse(HttpStatusCode.BadRequest,
-                    new { Message = ex.Message, Error = ErrorTypes.Error });
+                    new TNotification("Tinifier Oops", ex.Message, Umbraco.Core.Events.EventMessageType.Error)
+                    {
+                        sticky = true,
+                    });
+            }
+            else
+            {
+                context.Response = context.Request.CreateResponse(HttpStatusCode.InternalServerError,
+                    new TNotification("Tinifier unknown error", GetUnknownErrorMessage(ex), Umbraco.Core.Events.EventMessageType.Error)
+                    {
+                        sticky = true,
+                        url = "https://our.umbraco.org/projects/backoffice-extensions/tinifier/bugs/"
+                    });
+            }
 
             LogHelper.Error(GetType(), ex.StackTrace, ex);
+        }
+
+        private string GetUnknownErrorMessage(Exception ex)
+        {
+            return $"{ex.Message}. We logged the error, if you are a hero, please take it and post in the forum (just click on this message)";
         }
     }
 }

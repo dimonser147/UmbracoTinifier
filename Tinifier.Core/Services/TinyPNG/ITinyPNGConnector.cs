@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Tinifier.Core.Models.API;
+using Tinifier.Core.Models.Db;
+using Umbraco.Core.IO;
 
 namespace Tinifier.Core.Services.TinyPNG
 {
@@ -10,6 +12,6 @@ namespace Tinifier.Core.Services.TinyPNG
         /// </summary>
         /// <param name="imageUrl">Image url</param>
         /// <returns>Task<TinyResponse></returns>
-        Task<TinyResponse> SendImageToTinyPngService(string imageUrl);
+        Task<TinyResponse> SendImageToTinyPngService(TImage tImage, IFileSystem fs);
     }
 }

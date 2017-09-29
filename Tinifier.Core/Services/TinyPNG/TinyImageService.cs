@@ -18,7 +18,7 @@ namespace Tinifier.Core.Services.TinyPNG
             }
         }
 
-        public byte[] GetTinyImage(string url)
+        public byte[] DownloadImage(string url)
         {
             byte[] tinyImageBytes;
 

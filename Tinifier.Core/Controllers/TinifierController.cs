@@ -9,6 +9,7 @@ using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
+using Tinifier.Core.Models;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Services.BackendDevs;
 using Tinifier.Core.Services.History;
@@ -17,7 +18,12 @@ using Tinifier.Core.Services.Settings;
 using Tinifier.Core.Services.State;
 using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
+using Umbraco.Core.Events;
+using Umbraco.Core.IO;
+using Umbraco.Web.UI;
+using Umbraco.Web.UI.Pages;
 using Umbraco.Web.WebApi;
+using System.Linq;
 
 namespace Tinifier.Core.Controllers
 {
@@ -59,10 +65,10 @@ namespace Tinifier.Core.Controllers
             }
             catch (NotSupportedExtensionException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, 
+                return Request.CreateResponse(HttpStatusCode.InternalServerError,
                     new { Message = ex.Message, Error = ErrorTypes.Error });
             }
-            catch(EntityNotFoundException ex)
+            catch (EntityNotFoundException ex)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound,
                     new { Message = ex.Message, Error = ErrorTypes.Error });
@@ -123,7 +129,7 @@ namespace Tinifier.Core.Controllers
 
             if (nonOptimizedImages.Count == 0)
                 return Request.CreateResponse(HttpStatusCode.BadRequest,
-                    new { Message = PackageConstants.AllImagesAlreadyOptimized, Error = ErrorTypes.Warning });
+                    new { Message = PackageConstants.AllImagesAlreadyOptimized, Error = EventMessageType.Info });
 
             _stateService.CreateState(nonOptimizedImages.Count);
             return await CallTinyPngService(nonOptimizedImages);
@@ -139,13 +145,13 @@ namespace Tinifier.Core.Controllers
             var images = _imageService.GetFolderImages(folderId);
             var imagesList = _historyService.GetImagesWithoutHistory(images);
 
-            if (imagesList.Count == 0)           
-                return Request.CreateResponse(HttpStatusCode.BadRequest, 
-                    new { Message = PackageConstants.AllImagesAlreadyOptimized, Error = ErrorTypes.Warning });     
-                  
+            if (imagesList.Count == 0)
+                return GetImageOptimizedReponse(true);
+
             _stateService.CreateState(imagesList.Count);
             return await CallTinyPngService(imagesList);
-        }
+
+        }       
 
         /// <summary>
         /// Tinify Images by urls
@@ -167,9 +173,8 @@ namespace Tinifier.Core.Controllers
                 nonOptimizedImages.Add(image);
             }
 
-            if (nonOptimizedImages.Count == 0)           
-                return Request.CreateResponse(HttpStatusCode.BadRequest, 
-                    new { Message = PackageConstants.AllImagesAlreadyOptimized, Error = ErrorTypes.Warning });
+            if (nonOptimizedImages.Count == 0)
+                return GetImageOptimizedReponse(true);
 
             _stateService.CreateState(nonOptimizedImages.Count);
             return await CallTinyPngService(nonOptimizedImages);
@@ -181,16 +186,15 @@ namespace Tinifier.Core.Controllers
         /// <param name="imageId">Image Id</param>
         /// <returns>Response(StatusCode, message)</returns>
         private async Task<HttpResponseMessage> TinifyImage(int imageId)
-        {            
+        {
             var imageById = _imageService.GetImage(imageId);
             _validationService.ValidateExtension(imageById.Name);
             var notOptimizedImage = _historyService.GetImageHistory(imageById.Id);
 
             if (notOptimizedImage != null && notOptimizedImage.IsOptimized)
-                return Request.CreateResponse(HttpStatusCode.BadRequest, 
-                    new { Message = PackageConstants.AlreadyOptimized, Error = ErrorTypes.Warning });
+                return GetImageOptimizedReponse();
 
-            var nonOptimizedImages = new List<TImage> {imageById};
+            var nonOptimizedImages = new List<TImage> { imageById };
             _stateService.CreateState(nonOptimizedImages.Count);
             return await CallTinyPngService(nonOptimizedImages, SourceTypes.Image);
         }
@@ -205,36 +209,56 @@ namespace Tinifier.Core.Controllers
         {
             var nonOptimizedImagesCount = 0;
             var userDomain = HttpContext.Current.Request.Url.Host;
-
-            foreach (var image in imagesList)
+            var fs = FileSystemProviderManager.Current.GetFileSystemProvider<MediaFileSystem>();
+            foreach (TImage tImage in imagesList)
             {
-                var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(image.Url);
+                var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(tImage, fs);
 
                 if (tinyResponse.Output.Url == null)
                 {
-                    _historyService.CreateResponseHistory(image.Id, tinyResponse);
+                    _historyService.CreateResponseHistory(tImage.Id, tinyResponse);
                     _stateService.UpdateState();
                     nonOptimizedImagesCount++;
                     continue;
                 }
 
-                _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, image);
+                _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, tImage);
 
                 try
                 {
                     HostingEnvironment.QueueBackgroundWorkItem(stat => _backendDevsConnectorService.SendStatistic(userDomain));
                 }
-                catch(NotSuccessfullRequestException)
+                catch (NotSuccessfullRequestException)
                 {
                     continue;
                 }
             }
 
-            if (nonOptimizedImagesCount > 0)
-                return Request.CreateResponse(HttpStatusCode.BadRequest, 
-                    new { Message = PackageConstants.NotAllImagesWereOptimized, Error = ErrorTypes.Error });
+            int n = imagesList.Count();
+            int k = n - nonOptimizedImagesCount;
 
-            return Request.CreateResponse(HttpStatusCode.OK, new { PackageConstants.SuccessOptimized, sourceType });
+            return GetSuccessResponse(k, n, 
+                nonOptimizedImagesCount == 0 ? EventMessageType.Success : EventMessageType.Warning);
+        }
+
+        private HttpResponseMessage GetImageOptimizedReponse(bool isMultipleImages = false)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK,
+                   new TNotification(
+                       PackageConstants.TinifyingFinished,
+                       isMultipleImages ? PackageConstants.AllImagesAlreadyOptimized : PackageConstants.AlreadyOptimized,
+                       EventMessageType.Info)
+                       );
+        }
+
+        private HttpResponseMessage GetSuccessResponse(int optimized, int total, EventMessageType type)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK,
+                new TNotification(PackageConstants.TinifyingFinished,
+                    $"{optimized}/{total} images were optimized. Enjoy the package? Click the message and rate us!", type)
+                {
+                    url = "https://our.umbraco.org/projects/backoffice-extensions/tinifier/"
+                });
         }
     }
 }

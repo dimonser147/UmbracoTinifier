@@ -285,10 +285,12 @@
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TState.cs" />
     <Compile Include="Models\Services\HistoriesStatisticModel.cs" />
+    <Compile Include="Models\TNotification.cs" />
     <Compile Include="Repository\Common\IEntityRemover.cs" />
     <Compile Include="Repository\State\TStateRepository.cs" />
     <Compile Include="Services\BackendDevs\IBackendDevsConnector.cs" />
     <Compile Include="Services\History\IHistoryService.cs" />
+    <Compile Include="Services\Media\BaseImageService.cs" />
     <Compile Include="Services\Media\IImageService.cs" />
     <Compile Include="Services\Settings\ISettingsService.cs" />
     <Compile Include="Services\State\IStateService.cs" />

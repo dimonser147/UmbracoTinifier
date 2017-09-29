@@ -7,6 +7,6 @@
         /// </summary>
         /// <param name="url">Image url</param>
         /// <returns>byte[]</returns>
-        byte[] GetTinyImage(string url);
+        byte[] DownloadImage(string url);
     }
 }

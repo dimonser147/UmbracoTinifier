@@ -261,3 +261,5 @@ ModelManifest.xml
 # ImageProcessor DiskCache 
 **/App_Data/cache/
 /Tinifier/Media
+/Tinifier/App_Data
+/Tinifier/App_Data/Models

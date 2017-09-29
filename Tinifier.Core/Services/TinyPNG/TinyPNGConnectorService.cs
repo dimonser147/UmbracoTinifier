@@ -11,6 +11,8 @@ using System.Net;
 using System.Web;
 using Tinifier.Core.Services.Settings;
 using System.IO;
+using Tinifier.Core.Models.Db;
+using Umbraco.Core.IO;
 
 namespace Tinifier.Core.Services.TinyPNG
 {
@@ -27,14 +29,18 @@ namespace Tinifier.Core.Services.TinyPNG
             _serializer = new JavaScriptSerializer();
         }
 
-        public async Task<TinyResponse> SendImageToTinyPngService(string imageUrl)
+        public async Task<TinyResponse> SendImageToTinyPngService(TImage tImage, IFileSystem fs)
         {
             byte[] imageBytes;
             TinyResponse tinyResponse;
 
             try
             {
-                imageBytes = File.ReadAllBytes(HttpContext.Current.Server.MapPath(string.Concat("~", imageUrl)));
+                string path = fs.GetRelativePath(tImage.AbsoluteUrl);
+                using (Stream file = fs.OpenFile(path))
+                {
+                    imageBytes = ReadFully(file);
+                }
                 tinyResponse = await TinifyByteArray(imageBytes);
             }
             catch (Exception)
@@ -50,6 +56,20 @@ namespace Tinifier.Core.Services.TinyPNG
             }
 
             return tinyResponse;
+        }
+
+        private byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
 
         private async Task<TinyResponse> TinifyByteArray(byte[] imageByteArray)

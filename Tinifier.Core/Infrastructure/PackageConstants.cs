@@ -61,6 +61,7 @@
         public const string StatisticTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/TinifierStatistic.html";
         public const string BackEndDevsPostStatistic = "/umbraco/api/TinifierStatistic/Post";
         public const string PathToDashboard = "~/config/dashboard.config";
+        public const string PathToFileSystemConfig = "~/config/FileSystemProviders.config";
         public const string PathToSectionDashboard = "//section[@alias='TinifierSettings']";
         public const string CustomTreeUrl = "/timages/TinifierEdit/";
 
@@ -68,16 +69,16 @@
         public const string ApiKeyMessage = "Settings successfully saved!";
         public const string ApiKeyError = "Settings not saved! Please, fill all required fields with correct values";
         public const string AlreadyOptimized = "Image is already optimized";
-        public const string SuccessOptimized = "Image(s) succesfully optimized!";
         public const string NotSupported = "This extension not supported. You can tinify only PNG and JPG files";
         public const string ApiKeyNotFound = "You don`t have ApiKey in settings! Please, go to tinifier section and add ApiKey there!";
         public const string TooBigImage = "The request was timed out! Your image is too big!";
-        public const string AllImagesAlreadyOptimized = "All Images are already optimized";
+        public const string AllImagesAlreadyOptimized = "Images are already optimized";
         public const string ConcurrentOptimizing = "Sorry, but at the same time you can tinify only one Image";
         public const string NotSuccessfullRequest = "Request to TinyPNG was not successfull";
         public const string ImageNotExists = "Image with such id doesn't exist. Id: ";
         public const string ImageWithPathNotExists = "Image with such path doesn't exist. Name: ";
-        public const string NotAllImagesWereOptimized = "Not all images have been optimized";
         public const string ImageDeleted = "Image has been deleted!";
+
+        public const string TinifyingFinished = "Tinifying finished";
     }
 }
