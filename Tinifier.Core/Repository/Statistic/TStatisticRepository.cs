@@ -5,7 +5,8 @@ using Umbraco.Core.Persistence;
 
 namespace Tinifier.Core.Repository.Statistic
 {
-    public class TStatisticRepository : IEntityCreator<TImageStatistic>, IEntityUpdater<TImageStatistic>, IStatisticRepository<TImageStatistic>
+    public class TStatisticRepository 
+        : IEntityCreator<TImageStatistic>, IEntityUpdater<TImageStatistic>, IStatisticRepository<TImageStatistic>
     {
         private readonly UmbracoDatabase _database;
 
@@ -31,6 +32,12 @@ namespace Tinifier.Core.Repository.Statistic
         {
             var query = new Sql("SELECT * FROM TinifierImagesStatistic");
             return _database.FirstOrDefault<TImageStatistic>(query);
+        }
+
+        public long GetTotalSavedBytes()
+        {
+            var query = new Sql("select sum(originsize) - sum(optimizedsize) from [TinifierResponseHistory]");
+            return _database.ExecuteScalar<long>(query);
         }
 
         /// <summary>

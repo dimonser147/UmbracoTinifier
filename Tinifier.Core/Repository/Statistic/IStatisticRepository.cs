@@ -7,5 +7,8 @@
     public interface IStatisticRepository<TImageStatistic>
     {
         TImageStatistic GetStatistic();
+
+
+        long GetTotalSavedBytes();
     }
 }

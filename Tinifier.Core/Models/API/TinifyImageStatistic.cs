@@ -15,6 +15,6 @@
         /// <summary>
         /// Total saved bytes for user
         /// </summary>
-        public int TotalSavedBytes { get; set; }
+        public long TotalSavedBytes { get; set; }
     }
 }

@@ -114,7 +114,7 @@ namespace Tinifier.Core.Services.Media
             _imageRepository.Update(image.Id);
             // update statistic
             var savedBytes = tinyResponse.Input.Size - tinyResponse.Output.Size;
-            _statisticService.UpdateStatistic(savedBytes);
+            _statisticService.UpdateStatistic();
             // update tinifying state
             _stateService.UpdateState();
         }

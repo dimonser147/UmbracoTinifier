@@ -16,7 +16,7 @@ namespace Tinifier.Core.Services.Statistic
             _imageRepository = new TImageRepository();
         }
 
-        public void CreateStatistic()
+        private TImageStatistic CreateInitialStatistic()
         {
            var newStat = new TImageStatistic
            {
@@ -25,18 +25,13 @@ namespace Tinifier.Core.Services.Statistic
                TotalSavedBytes = 0
            };
 
-           _statisticRepository.Create(newStat);           
+           _statisticRepository.Create(newStat);
+            return newStat;
         }
 
         public TinifyImageStatistic GetStatistic()
         {
-            var statistic = _statisticRepository.GetStatistic();
-
-            if (statistic == null)
-            {
-                CreateStatistic();
-                statistic = _statisticRepository.GetStatistic();
-            }
+            var statistic = _statisticRepository.GetStatistic() ?? CreateInitialStatistic();
 
             var tImageStatistic = new TinifyImageStatistic
             {
@@ -48,20 +43,16 @@ namespace Tinifier.Core.Services.Statistic
             return tImageStatistic;
         }
 
-        public void UpdateStatistic(int savedBytes = 0)
+        public void UpdateStatistic()
         {
-            var statistic = _statisticRepository.GetStatistic();
-
-            if (statistic == null)
-            {
-                CreateStatistic();
-                statistic = _statisticRepository.GetStatistic();
-            }
+            var statistic = _statisticRepository.GetStatistic() ?? CreateInitialStatistic();
 
             statistic.TotalNumberOfImages = _imageRepository.AmounthOfItems();
             statistic.NumberOfOptimizedImages = _imageRepository.AmounthOfOptimizedItems();
-            statistic.TotalSavedBytes += savedBytes;
+            statistic.TotalSavedBytes += _statisticRepository.GetTotalSavedBytes();
+
             _statisticRepository.Update(statistic);
         }
+
     }
 }

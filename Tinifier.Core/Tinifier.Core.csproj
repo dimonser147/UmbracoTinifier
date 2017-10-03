@@ -270,6 +270,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\DbStartup.cs" />
+    <Compile Include="Application\Migrations\IMigration.cs" />
+    <Compile Include="Application\Migrations\Migration1.cs" />
+    <Compile Include="Application\Migrations\Migration2.cs" />
+    <Compile Include="Application\Migrations\MigrationsHelper.cs" />
     <Compile Include="Application\UmbracoStartup.cs" />
     <Compile Include="Controllers\TinifierSettingsController.cs" />
     <Compile Include="Controllers\TinifierStateController.cs" />

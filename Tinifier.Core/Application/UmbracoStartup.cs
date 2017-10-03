@@ -44,11 +44,77 @@ namespace Tinifier.Core.Application
         {
             CreateTinifySection(context);
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
-            MediaService.Saved += MediaServiceSaving;
+            MediaService.Saved += MediaService_Saved;
+            MediaService.Saving += MediaService_Saving;
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
             InstalledPackage.BeforeSave += InstalledPackage_BeforeSave;
         }
+
+        #region Media
+
+        private void MediaService_Saving(IMediaService sender, SaveEventArgs<IMedia> e)
+        {
+            // reupload image issue https://goo.gl/ad8pTs
+            HandleMedia(e.SavedEntities,
+                (m) => _historyService.Delete(m.Id),
+                (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
+        }
+
+        private void MediaService_Saved(IMediaService sender, SaveEventArgs<IMedia> e)
+        {
+            // optimize on upload
+            var settingService = _settingsService.GetSettings();
+            if (settingService == null || settingService.EnableOptimizationOnUpload == false)
+                return;
+            HandleMedia(e.SavedEntities,
+                (m) =>
+                {
+                    try
+                    { OptimizeOnUpload(m.Id, e); }
+                    catch (NotSupportedExtensionException)
+                    { }
+                });
+        }
+
+        /// <summary>
+        /// Update number of images in statistic before removing from recyclebin
+        /// </summary>
+        /// <param name="sender">IMediaService</param>
+        /// <param name="e">RecycleBinEventArgs</param>
+        private void MediaService_EmptiedRecycleBin(IMediaService sender, RecycleBinEventArgs e)
+        {            
+            foreach (var id in e.Ids)
+            {
+                _historyService.Delete(id);
+            }
+            if (e.Ids.Count() > 0)
+                _statisticService.UpdateStatistic();
+        }
+
+
+        private void HandleMedia(IEnumerable<IMedia> items, Action<IMedia> action, Func<IMedia, bool> predicate = null)
+        {
+            bool isChanged = false;
+            foreach (var item in items)
+            {
+                if (string.Equals(item.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (action != null && (predicate == null || predicate(item)))
+                    {
+                        //_historyService.Delete(item.Id);
+                        action(item);
+                        isChanged = true;
+                    }
+                }
+            }
+            if (isChanged)
+                _statisticService.UpdateStatistic();
+        }
+
+        #endregion
+
+        #region Package
 
         public void InstalledPackage_BeforeSave(InstalledPackage sender, EventArgs e)
         {
@@ -72,59 +138,9 @@ namespace Tinifier.Core.Application
             }
         }
 
-        /// <summary>
-        /// Update statistic when image upload and image optimizing during upload
-        /// </summary>
-        /// <param name="sender">IMediaService</param>
-        /// <param name="eventArg">SaveEventArgs</param>
-        private void MediaServiceSaving(IMediaService sender, SaveEventArgs<IMedia> eventArg)
-        {
-            var settings = _settingsService.GetSettings();
+        #endregion
 
-            foreach (var mediaItem in eventArg.SavedEntities)
-            {
-                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) 
-                    && string.Equals(mediaItem.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings != null && settings.EnableOptimizationOnUpload)
-                    {
-                        try
-                        {
-                            OptimizeOnUpload(mediaItem.Id, eventArg);
-                        }
-                        catch(NotSupportedExtensionException)
-                        {
-                            _statisticService.UpdateStatistic();
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        _statisticService.UpdateStatistic();
-                    }                                                          
-                }
-            }
-        }
 
-        /// <summary>
-        /// Update number of images in statistic before removing from recyclebin
-        /// </summary>
-        /// <param name="sender">IMediaService</param>
-        /// <param name="e">RecycleBinEventArgs</param>
-        private void MediaService_EmptiedRecycleBin(IMediaService sender, RecycleBinEventArgs e)
-        {
-            var iMedias = ApplicationContext.Current.Services.MediaService.GetByIds(e.Ids);
-
-            foreach (var mediaItem in iMedias)
-            {
-                if (!string.IsNullOrEmpty(mediaItem.ContentType.Alias) 
-                    && string.Equals(mediaItem.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
-                {
-                    _statisticService.UpdateStatistic();
-                    _historyService.Delete(mediaItem.Id);
-                }
-            }
-        }
 
         /// <summary>
         /// Create a new section
@@ -188,16 +204,16 @@ namespace Tinifier.Core.Application
             var imageHistory = _historyService.GetImageHistory(image.Id);
 
             if (imageHistory == null)
-                    _imageService.OptimizeImage(image);               
-          } 
-        
+                _imageService.OptimizeImage(image);
+        }
+
         private void CheckFieldsDatabase()
         {
             var logger = LoggerResolver.Current.Logger;
             var dbContext = ApplicationContext.Current.DatabaseContext;
             var dbHelper = new DatabaseSchemaHelper(dbContext.Database, logger, dbContext.SqlSyntax);
 
-            if(dbHelper.TableExist(PackageConstants.DbStateTable))
+            if (dbHelper.TableExist(PackageConstants.DbStateTable))
             {
                 dbHelper.DropTable(PackageConstants.DbStateTable);
                 dbHelper.CreateTable(false, typeof(TState));
@@ -230,7 +246,7 @@ namespace Tinifier.Core.Application
                     }
                 }
             }
-        }               
-     }
+        }
+    }
 }
 

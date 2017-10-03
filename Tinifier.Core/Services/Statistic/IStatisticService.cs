@@ -11,14 +11,9 @@ namespace Tinifier.Core.Services.Statistic
         TinifyImageStatistic GetStatistic();
 
         /// <summary>
-        /// Update statistic, increase savedBytes
+        /// Update statistic
         /// </summary>
         /// <param name="savedBytes">SavedBytes for each request</param>
-        void UpdateStatistic(int savedBytes = 0);
-
-        /// <summary>
-        /// Create Statistic in database
-        /// </summary>
-        void CreateStatistic();
+        void UpdateStatistic();
     }
 }
