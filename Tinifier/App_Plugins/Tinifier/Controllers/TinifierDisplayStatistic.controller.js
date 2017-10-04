@@ -8,8 +8,31 @@
     $scope.TotalOptimizedImages = 0;
     $scope.UpdateSeconds = 10;
     $scope.TotalSavedBytes = 0;
-    google.charts.load("current", { packages: ["corechart"] });
-    google.charts.setOnLoadCallback(drawChart);
+    if (typeof(google) == "undefined")
+        loadScript("https://www.gstatic.com/charts/loader.js", googleInit)
+    else
+        googleInit();
+
+    function googleInit() {
+        google.charts.load("current", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawChart);
+    }
+
+    function loadScript(url, callback) {
+        // Adding the script tag to the head as suggested before
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+
+        // Then bind the event to the callback function.
+        // There are several events for cross browser compatibility.
+        script.onreadystatechange = callback;
+        script.onload = callback;
+
+        // Fire the loading
+        head.appendChild(script);
+    }
 
     function drawChart() {
         $http.get("/umbraco/backoffice/api/TinifierImagesStatistic/GetStatistic").then(function (response) {
@@ -27,15 +50,14 @@
         });
     }
 
-    function DataColumnChart(response)
-    {
+    function DataColumnChart(response) {
         var dataArray = [['Date', 'Number of optimized images']];
         for (var n = 0; n < response.data.history.length; n++) {
             dataArray.push([response.data.history[n].OccuredAt, parseInt(response.data.history[n].NumberOfOptimized)])
         }
 
-        if (dataArray.length === 1){
-            dataArray.push(['',0]);
+        if (dataArray.length === 1) {
+            dataArray.push(['', 0]);
         }
         var data = new google.visualization.arrayToDataTable(dataArray);
         return data;

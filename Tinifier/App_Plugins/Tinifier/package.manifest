@@ -1,10 +1,10 @@
 ﻿﻿{
 "javascript": [
+"https://www.gstatic.com/charts/loader.js",
 "~/App_Plugins/Tinifier/Controllers/TinifierEditTimage.controller.js",
 "~/App_Plugins/Tinifier/Controllers/TinifierEditTSetting.controller.js",
 "~/App_Plugins/Tinifier/Controllers/TinyTImage.controller.js",
-"~/App_Plugins/Tinifier/Controllers/TinifierDisplayStatistic.controller.js",
-"https://www.gstatic.com/charts/loader.js"
+"~/App_Plugins/Tinifier/Controllers/TinifierDisplayStatistic.controller.js"
 ],
 "css": [
 "~/App_Plugins/Tinifier/css/TinifierStyle.css"
