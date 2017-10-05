@@ -67,8 +67,8 @@ namespace Tinifier.Core.Repository.Image
             if (mediaItem != null)
             {
                 mediaItem.UpdateDate = DateTime.UtcNow;
-
-                _mediaService.Save(mediaItem);
+                // raiseEvents: false - #2827
+                _mediaService.Save(mediaItem, raiseEvents: false);
             }
         }
 

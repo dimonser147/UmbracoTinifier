@@ -28,7 +28,7 @@ namespace Tinifier.Core.Services.TinyPNG
             _serializer = new JavaScriptSerializer();
         }
 
-        public async Task<TinyResponse> SendImageToTinyPngService(TImage tImage, IFileSystem fs)
+        public async Task<TinyResponse> TinifyAsync(TImage tImage, IFileSystem fs)
         {
             byte[] imageBytes;
             TinyResponse tinyResponse;
@@ -40,7 +40,7 @@ namespace Tinifier.Core.Services.TinyPNG
                 {
                     imageBytes = ReadFully(file);
                 }
-                tinyResponse = await TinifyByteArray(imageBytes);
+                tinyResponse = await TinifyByteArrayAsync(imageBytes).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -57,6 +57,9 @@ namespace Tinifier.Core.Services.TinyPNG
             return tinyResponse;
         }
 
+
+      
+
         private byte[] ReadFully(Stream input)
         {
             byte[] buffer = new byte[16 * 1024];
@@ -71,7 +74,7 @@ namespace Tinifier.Core.Services.TinyPNG
             }
         }
 
-        private async Task<TinyResponse> TinifyByteArray(byte[] imageByteArray)
+        private async Task<TinyResponse> TinifyByteArrayAsync(byte[] imageByteArray)
         {
             TinyResponse tinyResponse;
             if(imageByteArray.Length > PackageConstants.MaxImageSize)
@@ -90,7 +93,7 @@ namespace Tinifier.Core.Services.TinyPNG
                 var byteContent = new ByteArrayContent(imageByteArray);
                 try
                 {
-                    var responseResult = await CreateRequest(byteContent);
+                    var responseResult = await CreateRequestAsync(byteContent).ConfigureAwait(false);
                     tinyResponse = _serializer.Deserialize<TinyResponse>(responseResult);
                     tinyResponse.Output.IsOptimized = true;
                 }
@@ -110,7 +113,7 @@ namespace Tinifier.Core.Services.TinyPNG
             return tinyResponse;
         }
 
-        private async Task<string> CreateRequest<T>(T inputData)
+        private async Task<string> CreateRequestAsync<T>(T inputData)
         {
             HttpResponseMessage response;
             var apiKey = _settingsService.GetSettings().ApiKey;
@@ -124,7 +127,7 @@ namespace Tinifier.Core.Services.TinyPNG
 
                 try
                 {
-                    response = await client.PostAsync(PackageConstants.TinyPngUri, inputData as HttpContent);
+                    response = await client.PostAsync(PackageConstants.TinyPngUri, inputData as HttpContent).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
                 {
@@ -141,10 +144,11 @@ namespace Tinifier.Core.Services.TinyPNG
             var currentMonthRequests = GetHeaderValue(response);
             _settingsService.UpdateSettings(currentMonthRequests);
 
-            var responseResult = await response.Content.ReadAsStringAsync();
+            var responseResult = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return responseResult;
         }
 
+      
         private int GetHeaderValue(HttpResponseMessage response)
         {
             var headerValues = response.Headers.GetValues(PackageConstants.TinyPngHeader);

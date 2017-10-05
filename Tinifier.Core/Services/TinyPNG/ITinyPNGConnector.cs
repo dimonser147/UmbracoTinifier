@@ -12,6 +12,6 @@ namespace Tinifier.Core.Services.TinyPNG
         /// </summary>
         /// <param name="imageUrl">Image url</param>
         /// <returns>Task<TinyResponse></returns>
-        Task<TinyResponse> SendImageToTinyPngService(TImage tImage, IFileSystem fs);
+        Task<TinyResponse> TinifyAsync(TImage tImage, IFileSystem fs);
     }
 }

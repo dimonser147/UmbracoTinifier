@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 
@@ -49,7 +50,7 @@ namespace Tinifier.Core.Services.Media
         /// Optimize image and update history
         /// </summary>
         /// <param name="image">TImage</param>
-        void OptimizeImage(TImage image);
+        Task OptimizeImageAsync(TImage image);
 
         /// <summary>
         ///  Update image and state if its image from folder

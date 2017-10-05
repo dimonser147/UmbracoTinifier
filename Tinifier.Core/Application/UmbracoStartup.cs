@@ -17,6 +17,8 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
+using System.Threading.Tasks;
+using System.Web.Hosting;
 
 namespace Tinifier.Core.Application
 {
@@ -26,6 +28,9 @@ namespace Tinifier.Core.Application
         private readonly ISettingsService _settingsService;
         private readonly IImageService _imageService;
         private readonly IHistoryService _historyService;
+        private readonly IMediaService _mediaService;
+
+        private static readonly object padlock = new object();
 
         public UmbracoStartup()
         {
@@ -33,6 +38,7 @@ namespace Tinifier.Core.Application
             _settingsService = new SettingsService();
             _imageService = new ImageService();
             _historyService = new HistoryService();
+            _mediaService = ApplicationContext.Current.Services.MediaService;
         }
 
         /// <summary>
@@ -57,8 +63,8 @@ namespace Tinifier.Core.Application
         {
             // reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
-                (m) => _historyService.Delete(m.Id),
-                (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
+                    (m) => _historyService.Delete(m.Id),
+                    (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
         }
 
         private void MediaService_Saved(IMediaService sender, SaveEventArgs<IMedia> e)
@@ -67,14 +73,18 @@ namespace Tinifier.Core.Application
             var settingService = _settingsService.GetSettings();
             if (settingService == null || settingService.EnableOptimizationOnUpload == false)
                 return;
+
             HandleMedia(e.SavedEntities,
                 (m) =>
                 {
                     try
-                    { OptimizeOnUpload(m.Id, e); }
+                    {
+                        OptimizeOnUploadAsync(m.Id, e).GetAwaiter().GetResult();
+                    }
                     catch (NotSupportedExtensionException)
                     { }
                 });
+
         }
 
         /// <summary>
@@ -83,7 +93,7 @@ namespace Tinifier.Core.Application
         /// <param name="sender">IMediaService</param>
         /// <param name="e">RecycleBinEventArgs</param>
         private void MediaService_EmptiedRecycleBin(IMediaService sender, RecycleBinEventArgs e)
-        {            
+        {
             foreach (var id in e.Ids)
             {
                 _historyService.Delete(id);
@@ -102,7 +112,6 @@ namespace Tinifier.Core.Application
                 {
                     if (action != null && (predicate == null || predicate(item)))
                     {
-                        //_historyService.Delete(item.Id);
                         action(item);
                         isChanged = true;
                     }
@@ -110,6 +119,32 @@ namespace Tinifier.Core.Application
             }
             if (isChanged)
                 _statisticService.UpdateStatistic();
+        }
+
+        /// <summary>
+        /// Call methods for tinifing when upload image
+        /// </summary>
+        /// <param name="mediaItemId">Media Item Id</param>
+        /// <param name="e">CancellableEventArgs</param>
+        private async System.Threading.Tasks.Task OptimizeOnUploadAsync(int mediaItemId, CancellableEventArgs e)
+        {
+            TImage image;
+
+            try
+            {
+                image = _imageService.GetImage(mediaItemId);
+            }
+            catch (NotSupportedExtensionException)
+            {
+                e.Messages.Add(new EventMessage(PackageConstants.ErrorCategory, PackageConstants.NotSupported,
+                    EventMessageType.Error));
+                throw;
+            }
+
+            var imageHistory = _historyService.GetImageHistory(image.Id);
+
+            if (imageHistory == null)
+                await _imageService.OptimizeImageAsync(image).ConfigureAwait(false);
         }
 
         #endregion
@@ -136,75 +171,6 @@ namespace Tinifier.Core.Application
                 if (section != null)
                     ApplicationContext.Current.Services.SectionService.DeleteSection(section);
             }
-        }
-
-        #endregion
-
-
-
-        /// <summary>
-        /// Create a new section
-        /// </summary>
-        /// <param name="context">ApplicationContext</param>
-        private void CreateTinifySection(ApplicationContext context)
-        {
-            var section = context.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
-
-            if (section == null)
-            {
-                context.Services.SectionService.MakeNew(PackageConstants.SectionName,
-                    PackageConstants.SectionAlias,
-                    PackageConstants.SectionIcon);
-
-                DashboardExtension.AddTabs();
-            }
-        }
-
-        /// <summary>
-        /// Extend dropdownMenu with Tinify and Stats buttons
-        /// </summary>
-        /// <param name="sender">TreeControllerBase</param>
-        /// <param name="e">EventArgs</param>
-        private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
-        {
-            if (string.Equals(sender.TreeAlias, PackageConstants.MediaAlias, StringComparison.OrdinalIgnoreCase))
-            {
-                var menuItemTinifyButton = new MenuItem(PackageConstants.TinifierButton, PackageConstants.TinifierButtonCaption);
-                menuItemTinifyButton.LaunchDialogView(PackageConstants.TinyTImageRoute, PackageConstants.SectionName);
-                menuItemTinifyButton.Icon = PackageConstants.MenuIcon;
-                e.Menu.Items.Add(menuItemTinifyButton);
-
-                var menuItemSettingsButton = new MenuItem(PackageConstants.StatsButton, PackageConstants.StatsButtonCaption);
-                menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, PackageConstants.StatsDialogCaption);
-                menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
-                e.Menu.Items.Add(menuItemSettingsButton);
-            }
-        }
-
-        /// <summary>
-        /// Call methods for tinifing when upload image
-        /// </summary>
-        /// <param name="mediaItemId">Media Item Id</param>
-        /// <param name="e">CancellableEventArgs</param>
-        private void OptimizeOnUpload(int mediaItemId, CancellableEventArgs e)
-        {
-            TImage image;
-
-            try
-            {
-                image = _imageService.GetImage(mediaItemId);
-            }
-            catch (NotSupportedExtensionException)
-            {
-                e.Messages.Add(new EventMessage(PackageConstants.ErrorCategory, PackageConstants.NotSupported,
-                    EventMessageType.Error));
-                throw;
-            }
-
-            var imageHistory = _historyService.GetImageHistory(image.Id);
-
-            if (imageHistory == null)
-                _imageService.OptimizeImage(image);
         }
 
         private void CheckFieldsDatabase()
@@ -247,6 +213,47 @@ namespace Tinifier.Core.Application
                 }
             }
         }
+
+        /// <summary>
+        /// Create a new section
+        /// </summary>
+        /// <param name="context">ApplicationContext</param>
+        private void CreateTinifySection(ApplicationContext context)
+        {
+            var section = context.Services.SectionService.GetByAlias(PackageConstants.SectionAlias);
+
+            if (section == null)
+            {
+                context.Services.SectionService.MakeNew(PackageConstants.SectionName,
+                    PackageConstants.SectionAlias,
+                    PackageConstants.SectionIcon);
+
+                DashboardExtension.AddTabs();
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Extend dropdownMenu with Tinify and Stats buttons
+        /// </summary>
+        /// <param name="sender">TreeControllerBase</param>
+        /// <param name="e">EventArgs</param>
+        private void MenuRenderingHandler(TreeControllerBase sender, MenuRenderingEventArgs e)
+        {
+            if (string.Equals(sender.TreeAlias, PackageConstants.MediaAlias, StringComparison.OrdinalIgnoreCase))
+            {
+                var menuItemTinifyButton = new MenuItem(PackageConstants.TinifierButton, PackageConstants.TinifierButtonCaption);
+                menuItemTinifyButton.LaunchDialogView(PackageConstants.TinyTImageRoute, PackageConstants.SectionName);
+                menuItemTinifyButton.Icon = PackageConstants.MenuIcon;
+                e.Menu.Items.Add(menuItemTinifyButton);
+
+                var menuItemSettingsButton = new MenuItem(PackageConstants.StatsButton, PackageConstants.StatsButtonCaption);
+                menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, PackageConstants.StatsDialogCaption);
+                menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
+                e.Menu.Items.Add(menuItemSettingsButton);
+            }
+        }
+
     }
 }
 

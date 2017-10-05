@@ -49,7 +49,7 @@ namespace Tinifier.Core.Services.Statistic
 
             statistic.TotalNumberOfImages = _imageRepository.AmounthOfItems();
             statistic.NumberOfOptimizedImages = _imageRepository.AmounthOfOptimizedItems();
-            statistic.TotalSavedBytes += _statisticRepository.GetTotalSavedBytes();
+            statistic.TotalSavedBytes = _statisticRepository.GetTotalSavedBytes();
 
             _statisticRepository.Update(statistic);
         }
