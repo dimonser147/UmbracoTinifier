@@ -208,7 +208,7 @@ namespace Tinifier.Core.Controllers
             var fs = FileSystemProviderManager.Current.GetFileSystemProvider<MediaFileSystem>();
             foreach (TImage tImage in imagesList)
             {
-                var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(tImage, fs);
+                var tinyResponse = await _tinyPngConnectorService.TinifyAsync(tImage, fs);
 
                 if (tinyResponse.Output.Url == null)
                 {

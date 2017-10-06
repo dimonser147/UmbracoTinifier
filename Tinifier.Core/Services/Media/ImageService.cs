@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using Tinifier.Core.Infrastructure;
@@ -63,25 +65,33 @@ namespace Tinifier.Core.Services.Media
             return base.Convert(uMedia);
         }
 
-        public async void OptimizeImage(TImage image)
-        {
-            var userDomain = HttpContext.Current.Request.Url.Host;
+        public async Task OptimizeImageAsync(TImage image)
+        {            
             _stateService.CreateState(1);
-            var tinyResponse = await _tinyPngConnectorService.SendImageToTinyPngService(image, base.FileSystem);
-
+            var tinyResponse = await _tinyPngConnectorService.TinifyAsync(image, base.FileSystem).ConfigureAwait(false);
             if (tinyResponse.Output.Url == null)
             {
                 _historyService.CreateResponseHistory(image.Id, tinyResponse);
                 return;
             }
-
             UpdateImageAfterSuccessfullRequest(tinyResponse, image);
+            SendStatistic();
+        }
 
+        /// <summary>
+        /// License
+        /// Copyright © Backend Devs.
+        /// During installation, you agree that we store a total number of images optimized for you.
+        /// https://our.umbraco.org/projects/backoffice-extensions/tinifier/
+        /// </summary>
+        private void SendStatistic()
+        {
             try
             {
+                var userDomain = HttpContext.Current.Request.Url.Host;
                 HostingEnvironment.QueueBackgroundWorkItem(stat => _backendDevsConnectorService.SendStatistic(userDomain));
             }
-            catch (NotSuccessfullRequestException)
+            catch (Exception)
             {
                 return;
             }
@@ -118,5 +128,7 @@ namespace Tinifier.Core.Services.Media
             // update tinifying state
             _stateService.UpdateState();
         }
+
+
     }
 }
