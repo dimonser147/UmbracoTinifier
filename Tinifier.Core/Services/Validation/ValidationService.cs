@@ -4,6 +4,9 @@ using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Repository.Image;
 using Tinifier.Core.Repository.State;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Tinifier.Core.Services.Validation
 {
@@ -33,12 +36,17 @@ namespace Tinifier.Core.Services.Validation
             return string.Equals(item.ContentType.Alias, PackageConstants.FolderAlias, StringComparison.OrdinalIgnoreCase);
         }
 
-        public bool ValidateExtension(string source)
+        public void ValidateExtension(Umbraco.Core.Models.Media media)
         {
-            var fileName = source.ToLower();
-
-            return fileName.Contains(PackageConstants.PngExtension) || fileName.Contains(PackageConstants.JpgExtension) 
-                || fileName.Contains(PackageConstants.JpeExtension) || fileName.Contains(PackageConstants.JpegExtension);
+            if(media == null)
+                throw new EntityNotFoundException(); 
+            if (!media.HasProperty("umbracoExtension"))
+                throw new NotSupportedExtensionException();
+            string fileExt = media.GetValue<string>("umbracoExtension");
+            foreach (string supportedExt in PackageConstants.SupportedExtensions)
+                if (string.Equals(supportedExt, fileExt, StringComparison.OrdinalIgnoreCase))
+                    return;
+            throw new NotSupportedExtensionException(fileExt);
         }
     }
 }

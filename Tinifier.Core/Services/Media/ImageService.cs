@@ -56,12 +56,7 @@ namespace Tinifier.Core.Services.Media
 
         private TImage GetImage(Umbraco.Core.Models.Media uMedia)
         {
-            if (uMedia == null)
-                throw new EntityNotFoundException(PackageConstants.ImageNotExists);
-
-            if (!_validationService.ValidateExtension(uMedia.Name))
-                throw new NotSupportedExtensionException(PackageConstants.NotSupported);
-
+            _validationService.ValidateExtension(uMedia);
             return base.Convert(uMedia);
         }
 

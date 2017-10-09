@@ -134,9 +134,9 @@ namespace Tinifier.Core.Application
             {
                 image = _imageService.GetImage(mediaItemId);
             }
-            catch (NotSupportedExtensionException)
+            catch (NotSupportedExtensionException ex)
             {
-                e.Messages.Add(new EventMessage(PackageConstants.ErrorCategory, PackageConstants.NotSupported,
+                e.Messages.Add(new EventMessage(PackageConstants.ErrorCategory, ex.Message,
                     EventMessageType.Error));
                 throw;
             }

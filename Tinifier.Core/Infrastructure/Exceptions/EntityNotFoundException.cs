@@ -7,8 +7,12 @@ namespace Tinifier.Core.Infrastructure.Exceptions
     /// </summary>
     public class EntityNotFoundException : Exception
     {
-        public EntityNotFoundException(string message) : base(message)
-        {
-        }
+        public EntityNotFoundException()
+            : base(PackageConstants.ImageNotExists)
+        { }
+
+        public EntityNotFoundException(string message) 
+            : base(message)
+        { }
     }
 }
