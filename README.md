@@ -23,6 +23,8 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 - Total saved bytes widget
 - Image optimization on upload
 - Umbraco 7.7 support
+- Azure blob storage support
+- Top 50 tinified images
 
 ## Nuget package
 https://www.nuget.org/packages/Tinifier/
