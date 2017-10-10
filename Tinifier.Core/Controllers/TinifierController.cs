@@ -184,9 +184,8 @@ namespace Tinifier.Core.Controllers
         private async Task<HttpResponseMessage> TinifyImage(int imageId)
         {
             var imageById = _imageService.GetImage(imageId);
-            _validationService.ValidateExtension(imageById.Name);
-            var notOptimizedImage = _historyService.GetImageHistory(imageById.Id);
 
+            var notOptimizedImage = _historyService.GetImageHistory(imageById.Id);
             if (notOptimizedImage != null && notOptimizedImage.IsOptimized)
                 return GetImageOptimizedReponse();
 

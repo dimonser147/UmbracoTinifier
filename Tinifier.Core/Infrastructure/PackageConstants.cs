@@ -1,4 +1,7 @@
-﻿namespace Tinifier.Core.Infrastructure
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Tinifier.Core.Infrastructure
 {
     public class PackageConstants
     {
@@ -40,10 +43,6 @@
         public const string Statistic = "Statistic";
         public const string ApiKey = "api:";
         public const string UmbracoFileAlias = "umbracoFile";
-        public const string PngExtension = ".png";
-        public const string JpgExtension = ".jpg";
-        public const string JpeExtension = ".jpe";
-        public const string JpegExtension = ".jpeg";
         public const string BasicAuth = "Basic";
         public const string ContentTypeHeader = "Content-Type";
         public const string ContentType = "application/json";
@@ -69,7 +68,6 @@
         public const string ApiKeyMessage = "Settings successfully saved!";
         public const string ApiKeyError = "Settings not saved! Please, fill all required fields with correct values";
         public const string AlreadyOptimized = "Image is already optimized";
-        public const string NotSupported = "This extension not supported. You can tinify only PNG and JPG files";
         public const string ApiKeyNotFound = "You don`t have ApiKey in settings! Please, go to tinifier section and add ApiKey there!";
         public const string TooBigImage = "The request was timed out! Your image is too big!";
         public const string AllImagesAlreadyOptimized = "Images are already optimized";
@@ -80,5 +78,10 @@
         public const string ImageDeleted = "Image has been deleted!";
 
         public const string TinifyingFinished = "Tinifying finished";
+
+        public static IEnumerable<string> SupportedExtensions { get; } = new string[]
+        {
+            "PNG", "JPEG", "JPE", "JPG"
+        };
     }
 }

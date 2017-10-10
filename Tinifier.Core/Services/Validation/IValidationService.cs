@@ -19,6 +19,6 @@
         /// </summary>
         /// <param name="source"></param>
         /// <returns>Supported exception or not</returns>
-        bool ValidateExtension(string source);
+        void ValidateExtension(Umbraco.Core.Models.Media media);
     }
 }
