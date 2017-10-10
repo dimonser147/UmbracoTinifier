@@ -125,8 +125,7 @@ namespace Tinifier.Core.Controllers
             }
 
             if (nonOptimizedImages.Count == 0)
-                return Request.CreateResponse(HttpStatusCode.BadRequest,
-                    new { Message = PackageConstants.AllImagesAlreadyOptimized, Error = EventMessageType.Info });
+                return GetImageOptimizedReponse(true);
 
             _stateService.CreateState(nonOptimizedImages.Count);
             return await CallTinyPngService(nonOptimizedImages);

@@ -4,9 +4,6 @@ using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Repository.Image;
 using Tinifier.Core.Repository.State;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Tinifier.Core.Services.Validation
 {

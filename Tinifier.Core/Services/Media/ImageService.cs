@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
-using Tinifier.Core.Infrastructure;
-using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Image;
