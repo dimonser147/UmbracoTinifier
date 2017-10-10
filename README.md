@@ -41,5 +41,5 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 [bd]: http://backend-devs.com/
 [tp]: https://tinypng.com
-[qs]: https://our.umbraco.org/FileDownload?id=17804
+[qs]: https://our.umbraco.org/FileDownload?id=17908
 [ps]: http://backend-devs.com/case-studies/umbraco-cms/tinifier/
