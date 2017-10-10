@@ -17,8 +17,6 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
-using System.Threading.Tasks;
-using System.Web.Hosting;
 
 namespace Tinifier.Core.Application
 {
