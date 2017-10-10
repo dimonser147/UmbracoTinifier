@@ -8,7 +8,7 @@ using  Umbraco.Web;
 using  Umbraco.ModelsBuilder;
 using  Umbraco.ModelsBuilder.Umbraco;
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "c04f34eeb86e4b16")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "d2dc5cee45d3fc9e")]
 [assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
 
 
@@ -318,24 +318,6 @@ namespace Umbraco.Web.PublishedContentModels
 		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<Image, TValue>> selector)
 		{
 			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
-		}
-
-		///<summary>
-		/// Tinifier_IsOptimized
-		///</summary>
-		[ImplementPropertyType("tinifier_isoptimized")]
-		public bool Tinifier_isoptimized
-		{
-			get { return this.GetPropertyValue<bool>("tinifier_isoptimized"); }
-		}
-
-		///<summary>
-		/// Tinifier_Message
-		///</summary>
-		[ImplementPropertyType("tinifier_message")]
-		public string Tinifier_message
-		{
-			get { return this.GetPropertyValue<string>("tinifier_message"); }
 		}
 
 		///<summary>
