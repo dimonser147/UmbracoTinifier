@@ -228,6 +228,19 @@ namespace Tinifier.Core.Application
 
                 DashboardExtension.AddTabs();
             }
+            // add section to a user consider Umraco version
+            dynamic userService = context.Services.UserService;
+            try
+            {
+                userService.AddSectionToAllUsers(PackageConstants.SectionAlias);
+            }
+            catch(MissingMethodException)
+            {
+                foreach (dynamic group in userService.GetAllUserGroups())
+                {
+                    group.AddAllowedSection(PackageConstants.SectionAlias);
+                }
+            }
         }
         #endregion
 
