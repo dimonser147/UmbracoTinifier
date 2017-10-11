@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Repository.Section;
 using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.Media;
 using Tinifier.Core.Services.Settings;
@@ -28,6 +30,8 @@ namespace Tinifier.Core.Application
         private readonly IHistoryService _historyService;
         private readonly IMediaService _mediaService;
 
+        private readonly ITSectionRepo _sectionRepo;
+
         private static readonly object padlock = new object();
 
         public UmbracoStartup()
@@ -36,7 +40,8 @@ namespace Tinifier.Core.Application
             _settingsService = new SettingsService();
             _imageService = new ImageService();
             _historyService = new HistoryService();
-            _mediaService = ApplicationContext.Current.Services.MediaService;
+            _sectionRepo = new TSectionRepo();
+            _mediaService = ApplicationContext.Current.Services.MediaService;            
         }
 
         /// <summary>
@@ -228,20 +233,10 @@ namespace Tinifier.Core.Application
 
                 DashboardExtension.AddTabs();
             }
-            // add section to a user consider Umraco version
-            dynamic userService = context.Services.UserService;
-            try
-            {
-                userService.AddSectionToAllUsers(PackageConstants.SectionAlias);
-            }
-            catch(MissingMethodException)
-            {
-                foreach (dynamic group in userService.GetAllUserGroups())
-                {
-                    group.AddAllowedSection(PackageConstants.SectionAlias);
-                }
-            }
+
+            _sectionRepo.AssignTinifierToAdministrators();
         }
+
         #endregion
 
         /// <summary>
