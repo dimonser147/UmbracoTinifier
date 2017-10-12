@@ -56,7 +56,7 @@ namespace Tinifier.Core.Repository.Section
                 foreach (int userId in _dbContext.Database.Query<int>(sql, _adminAlias))
                 {
                     int rows = _dbContext.Database
-                        .ExecuteScalar<int>("select count(*) from UmbracoUser2app where user = @0 and app = @1",
+                        .ExecuteScalar<int>("select count(*) from UmbracoUser2app where [user] = @0 and app = @1",
                             userId, PackageConstants.SectionAlias);
                     if (rows == 0)
                     {

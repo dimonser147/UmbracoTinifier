@@ -386,7 +386,6 @@
     <Content Include="Views\Home.cshtml" />
     <Content Include="Views\Master.cshtml" />
     <Content Include="Tinifier.Demo.nuspec" />
-    <Content Include="Tinifier.1.2.1.nupkg" />
     <Content Include="config\FileSystemProviders-Sample.config" />
     <Content Include="Views\Partials\Grid\Editors\Rte.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
