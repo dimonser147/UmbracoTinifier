@@ -54,7 +54,7 @@ namespace Tinifier.Core.Services.Media
             using (Stream stream = new MemoryStream(optimizedImageBytes))
             {
                 FileSystem.AddFile(path, stream, true);
-            }                
+            }     
         }
     }
 }

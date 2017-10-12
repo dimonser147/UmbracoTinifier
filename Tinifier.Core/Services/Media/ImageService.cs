@@ -114,7 +114,7 @@ namespace Tinifier.Core.Services.Media
             // update history
             _historyService.CreateResponseHistory(image.Id, tinyResponse);
             // update umbraco media attributes
-            _imageRepository.Update(image.Id);
+            _imageRepository.Update(image.Id, tinyResponse.Output.Size);
             // update statistic
             var savedBytes = tinyResponse.Input.Size - tinyResponse.Output.Size;
             _statisticService.UpdateStatistic();

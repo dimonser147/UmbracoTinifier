@@ -60,12 +60,13 @@ namespace Tinifier.Core.Repository.Image
         /// Update Media
         /// </summary>
         /// <param name="id">Media Id</param>
-        public void Update(int id)
+        public void Update(int id, int actualSize)
         {
             var mediaItem = _mediaService.GetById(id) as Media;
 
             if (mediaItem != null)
             {
+                mediaItem.SetValue("umbracoBytes", actualSize);  
                 mediaItem.UpdateDate = DateTime.UtcNow;
                 // raiseEvents: false - #2827
                 _mediaService.Save(mediaItem, raiseEvents: false);
