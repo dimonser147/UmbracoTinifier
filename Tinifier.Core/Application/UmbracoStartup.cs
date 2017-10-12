@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
@@ -234,7 +235,7 @@ namespace Tinifier.Core.Application
             {
                 userService.AddSectionToAllUsers(PackageConstants.SectionAlias);
             }
-            catch(MissingMethodException)
+            catch(RuntimeBinderException)
             {
                 foreach (dynamic group in userService.GetAllUserGroups())
                 {
