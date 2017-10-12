@@ -291,6 +291,8 @@
     <Compile Include="Models\Services\TopImagesModel.cs" />
     <Compile Include="Models\TNotification.cs" />
     <Compile Include="Repository\Common\IEntityRemover.cs" />
+    <Compile Include="Repository\Section\ITSectionRepo.cs" />
+    <Compile Include="Repository\Section\TSectionRepo.cs" />
     <Compile Include="Repository\State\TStateRepository.cs" />
     <Compile Include="Services\BackendDevs\IBackendDevsConnector.cs" />
     <Compile Include="Services\History\IHistoryService.cs" />
