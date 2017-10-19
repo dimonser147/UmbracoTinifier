@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using Tinifier.Core.Infrastructure;
-using Tinifier.Core.Models.Services;
-using Tinifier.Core.Repository.Common;
-using Tinifier.Core.Repository.Section;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
-using Umbraco.Core.Services;
 
 namespace Tinifier.Core.Repository.Section
 {
@@ -53,7 +45,8 @@ namespace Tinifier.Core.Repository.Section
                 string sql = @"select u.id from umbracoUser as u
                                 inner join umbracoUserType as t on u.userType = t.id
                                     where t.userTypeAlias = @0";
-                foreach (int userId in _dbContext.Database.Query<int>(sql, _adminAlias))
+                var usersIds = _dbContext.Database.Query<int>(sql, _adminAlias).ToList();
+                foreach (int userId in usersIds)
                 {
                     int rows = _dbContext.Database
                         .ExecuteScalar<int>("select count(*) from UmbracoUser2app where [user] = @0 and app = @1",
@@ -64,7 +57,6 @@ namespace Tinifier.Core.Repository.Section
                             userId, PackageConstants.SectionAlias);
                     }
                 }
-
             }
         }
     }
