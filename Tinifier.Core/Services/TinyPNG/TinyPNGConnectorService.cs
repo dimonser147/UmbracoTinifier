@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Text;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -77,7 +78,15 @@ namespace Tinifier.Core.Services.TinyPNG
         private async Task<TinyResponse> TinifyByteArrayAsync(byte[] imageByteArray)
         {
             TinyResponse tinyResponse;
-            if(imageByteArray.Length > PackageConstants.MaxImageSize)
+
+            var maxImageSize = 0;
+
+            if (!int.TryParse(ConfigurationManager.AppSettings["Tinifier.MaxImageSize"], out maxImageSize) || maxImageSize == 0)
+            {
+                maxImageSize = PackageConstants.MaxImageSize;
+            }
+
+            if (imageByteArray.Length > maxImageSize)
             {
                 tinyResponse = new TinyResponse
                 {
