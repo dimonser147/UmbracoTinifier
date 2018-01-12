@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -9,6 +11,7 @@ using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Image;
 using Tinifier.Core.Services.BackendDevs;
 using Tinifier.Core.Services.History;
+using Tinifier.Core.Services.Settings;
 using Tinifier.Core.Services.State;
 using Tinifier.Core.Services.Statistic;
 using Tinifier.Core.Services.TinyPNG;
@@ -25,6 +28,7 @@ namespace Tinifier.Core.Services.Media
         private readonly IStateService _stateService;
         private readonly ITinyPNGConnector _tinyPngConnectorService;
         private readonly IBackendDevsConnector _backendDevsConnectorService;
+        private readonly ISettingsService _settingsService;
 
         public ImageService()
         {
@@ -35,6 +39,7 @@ namespace Tinifier.Core.Services.Media
             _stateService = new StateService();
             _tinyPngConnectorService = new TinyPNGConnectorService();
             _backendDevsConnectorService = new BackendDevsConnectorService();
+            _settingsService = new SettingsService();
         }
 
         public IEnumerable<TImage> GetAllImages()
@@ -108,7 +113,14 @@ namespace Tinifier.Core.Services.Media
         public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image)
         {
             // download optimized image
-            var tImageBytes = TinyImageService.Instance.DownloadImage(tinyResponse.Output.Url);                        
+            var tImageBytes = TinyImageService.Instance.DownloadImage(tinyResponse.Output.Url);
+            // preserve image metadata
+            if (_settingsService.GetSettings().PreserveMetadata)
+            {
+                var originImagePath = HttpContext.Current.Server.MapPath(image.AbsoluteUrl);
+                var originImageBytes = File.ReadAllBytes(originImagePath);
+                PreserveImageMetadata(originImageBytes, ref tImageBytes);
+            }
             // update physical file
             base.UpdateMedia(image, tImageBytes);
             // update history
@@ -122,6 +134,22 @@ namespace Tinifier.Core.Services.Media
             _stateService.UpdateState();
         }
 
+        protected void PreserveImageMetadata(byte[] originImage, ref byte[] optimizedImage)
+        {
+            var originImg = (Image)new ImageConverter().ConvertFrom(originImage);
+            var optimisedImg = (Image)new ImageConverter().ConvertFrom(optimizedImage);
+            var srcPropertyItems = originImg.PropertyItems;
+            foreach (var item in srcPropertyItems)
+            {
+                optimisedImg.SetPropertyItem(item);
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                optimisedImg.Save(ms, optimisedImg.RawFormat);
+                optimizedImage = ms.ToArray();
+            }
+        }
 
     }
 }
