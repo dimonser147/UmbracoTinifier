@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Tinifier.Core.Application.Migrations
 {
@@ -12,7 +8,7 @@ namespace Tinifier.Core.Application.Migrations
         {
             yield return new Migration1();
             yield return new Migration2();
-
+            yield return new Migration3();
         }
     }
 }
