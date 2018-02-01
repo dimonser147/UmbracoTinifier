@@ -16,6 +16,8 @@ using Tinifier.Core.Services.State;
 using Tinifier.Core.Services.Statistic;
 using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
+using Tinifier.Core.Infrastructure;
+using Umbraco.Core.IO;
 
 namespace Tinifier.Core.Services.Media
 {
@@ -66,13 +68,15 @@ namespace Tinifier.Core.Services.Media
         public async Task OptimizeImageAsync(TImage image)
         {            
             _stateService.CreateState(1);
-            var tinyResponse = await _tinyPngConnectorService.TinifyAsync(image, base.FileSystem).ConfigureAwait(false);
+            var tinyResponse = await _tinyPngConnectorService
+                .TinifyAsync(image, base.FileSystem)
+                .ConfigureAwait(false);
             if (tinyResponse.Output.Url == null)
             {
                 _historyService.CreateResponseHistory(image.Id, tinyResponse);
                 return;
             }
-            UpdateImageAfterSuccessfullRequest(tinyResponse, image);
+            UpdateImageAfterSuccessfullRequest(tinyResponse, image, base.FileSystem);
             SendStatistic();
         }
 
@@ -110,15 +114,14 @@ namespace Tinifier.Core.Services.Media
             return base.Convert(_imageRepository.GetItemsFromFolder(folderId));
         }
 
-        public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image)
+        public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, IFileSystem fs)
         {
             // download optimized image
             var tImageBytes = TinyImageService.Instance.DownloadImage(tinyResponse.Output.Url);
             // preserve image metadata
             if (_settingsService.GetSettings().PreserveMetadata)
-            {
-                var originImagePath = HttpContext.Current.Server.MapPath(image.AbsoluteUrl);
-                var originImageBytes = File.ReadAllBytes(originImagePath);
+            {                
+                byte[] originImageBytes = image.ToBytes(fs);
                 PreserveImageMetadata(originImageBytes, ref tImageBytes);
             }
             // update physical file

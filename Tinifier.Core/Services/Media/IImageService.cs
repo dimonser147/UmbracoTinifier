@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
+using Umbraco.Core.IO;
 
 namespace Tinifier.Core.Services.Media
 {
@@ -57,6 +58,6 @@ namespace Tinifier.Core.Services.Media
         /// </summary>
         /// <param name="tinyResponse">Response from TinyPNG</param>
         /// <param name="image">TImage</param>
-        void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image);
+        void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, IFileSystem fs);
     }
 }

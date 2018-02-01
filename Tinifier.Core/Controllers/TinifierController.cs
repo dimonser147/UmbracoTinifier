@@ -23,6 +23,9 @@ using Umbraco.Core.IO;
 using Umbraco.Web.WebApi;
 using System.Linq;
 using System;
+using Umbraco.Core.Models;
+using Umbraco.Web.Models;
+using Newtonsoft.Json;
 
 namespace Tinifier.Core.Controllers
 {
@@ -114,6 +117,12 @@ namespace Tinifier.Core.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> TinifyEverything()
         {
+
+            //var content = ApplicationContext.Services.ContentService.get(1224);
+            //var json = content.GetValue<string>("customCropper");
+            //var imageCrops = JsonConvert.DeserializeObject<ImageCropDataSet>(json);
+            //var src = imageCrops.Src;
+            //return null;
             var nonOptimizedImages = new List<TImage>();
 
             foreach (var image in _imageService.GetAllImages())
@@ -216,7 +225,7 @@ namespace Tinifier.Core.Controllers
                     continue;
                 }
 
-                _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, tImage);
+                _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, tImage, fs);
 
                 try
                 {
