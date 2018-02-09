@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Web;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Services;
 using Tinifier.Core.Repository.Common;
@@ -8,6 +10,7 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
+using Umbraco.Web;
 
 namespace Tinifier.Core.Repository.Image
 {
@@ -62,6 +65,12 @@ namespace Tinifier.Core.Repository.Image
         /// <param name="id">Media Id</param>
         public void Update(int id, int actualSize)
         {
+            // httpContext is null when optimization on upload
+            // https://our.umbraco.org/projects/backoffice-extensions/tinifier/bugs/90472-error-systemargumentnullexception-value-cannot-be-null
+            if (HttpContext.Current == null)
+                HttpContext.Current = HttpContextHelper.CreateHttpContext
+                    (new HttpRequest("", "http://localhost/", ""), new HttpResponse(new StringWriter()));
+
             var mediaItem = _mediaService.GetById(id) as Media;
 
             if (mediaItem != null)
