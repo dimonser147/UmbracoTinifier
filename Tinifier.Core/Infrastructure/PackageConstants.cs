@@ -6,7 +6,7 @@ namespace Tinifier.Core.Infrastructure
     {
         public const int MonthlyRequestsLimit = 500;
         public const string TinyPngUrl = "https://api.tinify.com";
-        public const string BackEndDevsUrl = "http://backend-devs.com";
+        public const string BackEndDevsUrl = "https://backend-devs.com";
 
         public const string TinyPngUri = "/shrink";
         public const string FirstNodeId = "-1";
