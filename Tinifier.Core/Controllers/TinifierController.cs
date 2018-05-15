@@ -42,6 +42,7 @@ namespace Tinifier.Core.Controllers
 
         public TinifierController()
         {
+            //test
             _imageService = new ImageService();
             _historyService = new HistoryService();
             _tinyPngConnectorService = new TinyPNGConnectorService();
