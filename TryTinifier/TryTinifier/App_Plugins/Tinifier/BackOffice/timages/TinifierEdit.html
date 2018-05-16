@@ -1,0 +1,80 @@
+﻿<div ng-controller="Tinifier.TinifierEditTImage.Controller">
+    <div class="umb-editor-container umb-panel-body umb-scrollable row-fluid">
+        <div class="umb-pane">
+            <div class="form-horizontal">
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <div class="umb-property-editor">
+                                <img src="{{timage.AbsoluteUrl}}" alt="Image" style="max-height: 150px; max-width: 150px"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <div class="umb-property-editor" style="font-size: 18px">{{notOptimized}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property" id="pandaDiv">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Panda just saved you</label>
+                            <div class="umb-property-editor">{{percent}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Id</label>
+                            <div class="umb-property-editor">{{timage.Id}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Name</label>
+                            <div class="umb-property-editor">{{timage.Name}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Origin Size Bytes</label>
+                            <div class="umb-property-editor">{{thistory.OriginSize}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Optimized Size Bytes</label>
+                            <div class="umb-property-editor">{{thistory.OptimizedSize}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">OccuredAt</label>
+                            <div class="umb-property-editor">{{thistory.OccuredAt}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group">
+                        <div class="umb-el-wrap">
+                            <label class="control-label">Ratio</label>
+                            <div class="umb-property-editor">{{thistory.Ratio}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

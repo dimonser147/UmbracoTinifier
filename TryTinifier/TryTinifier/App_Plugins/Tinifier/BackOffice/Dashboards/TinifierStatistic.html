@@ -1,0 +1,83 @@
+﻿<div ng-controller="Tinifier.TinifierDisplayStatistic.Controller">
+    <div style="display:block">
+        <div id="apiRequests" class="stat-block">
+            <div class="stat-image">
+                <img src="/App_Plugins/Tinifier/media/photo.jpg" alt="Tinifier" />
+            </div>
+            <div class="stat-content">
+                <div class="stat-text">Your usage this month</div>
+                <div class="stat-info">
+                    <small class="stat-numbers">
+                        <strong>TinyPNG API Requests: {{currentRequests}} / <b>{{monthlyRequestsLimit}}</b></strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div id="currentState" class="stat-block">
+            <div class="stat-image">
+                <img src="/App_Plugins/Tinifier/media/sleeping_panda_by_citruspop-d2v8hdd.jpg" alt="Status" id="statusPanda" />
+            </div>
+            <div class="stat-content">
+                <div class="stat-text">Tinifier Status</div>
+                <div class="stat-info">
+                    <small class="stat-numbers">
+                        <strong id="tinifierStatus">Processing: {{currentImage}} / <b>{{amounthOfImages}}</b></strong>
+                        <button class="resetButton" id="resetButton" ng-click="stopTinifing()">Stop tinifing!</button>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div id="currentState" class="stat-block">
+            <div class="stat-image">
+                <img src="/App_Plugins/Tinifier/media/fat.jpg" alt="TotalSavedBytes" />
+            </div>
+            <div class="stat-content">
+                <div class="stat-text">Total saved bytes</div>
+                <div class="stat-info">
+                    <small class="stat-numbers">
+                        <strong><b>{{TotalSavedBytes}}</b></strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div id="currentState" class="stat-block">
+            <div class="stat-image">
+                <img src="/App_Plugins/Tinifier/media/support.jpg" alt="Support" />
+            </div>
+            <div class="stat-content">
+                <div class="stat-text">Support</div>
+                <div class="stat-info">
+                    <small class="stat-numbers">
+                        <strong><b>tinifier@backend-devs.com</b></strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="chart-block">
+        <div class="stat-image" id="chart">
+            <div class="loading-image"></div>
+        </div>
+        <div class="stat-content">
+            <div class="stat-text">Optimization Statistics</div>
+            <div class="stat-info">
+                <small class="stat-numbers">
+                    <strong>Optimized images: {{TotalOptimizedImages}} / <b>{{TotalImages}}</b></strong>
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="chart-block">
+        <div class="stat-image" id="daysChart">
+            <div class="loading-image"></div>
+        </div>
+        <div class="stat-content">
+            <div class="stat-text">Optimized Images</div>
+            <div class="stat-info">
+                <small class="stat-numbers">For the last 10 days</small>
+            </div>
+        </div>
+    </div>
+    <p id="updateSeconds" class="update-seconds">Update in {{UpdateSeconds}} seconds</p>
+</div>
+
