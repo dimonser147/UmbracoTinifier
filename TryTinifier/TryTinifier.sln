@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryTinifier", "TryTinifier\TryTinifier.csproj", "{799280DC-8DE4-4162-AEB9-B53FF0BA5653}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryTinifier", "TryTinifier\TryTinifier.csproj", "{1E4E7164-1E1F-4E66-8AB2-2427276884C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{799280DC-8DE4-4162-AEB9-B53FF0BA5653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{799280DC-8DE4-4162-AEB9-B53FF0BA5653}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{799280DC-8DE4-4162-AEB9-B53FF0BA5653}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{799280DC-8DE4-4162-AEB9-B53FF0BA5653}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E4E7164-1E1F-4E66-8AB2-2427276884C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E4E7164-1E1F-4E66-8AB2-2427276884C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E4E7164-1E1F-4E66-8AB2-2427276884C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E4E7164-1E1F-4E66-8AB2-2427276884C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E4D7CB71-1746-47C9-BDC8-56A95C6C822D}
+		SolutionGuid = {9825D988-B4FC-4BC4-9910-CD7317E6C553}
 	EndGlobalSection
 EndGlobal
