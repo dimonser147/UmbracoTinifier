@@ -19,8 +19,8 @@ using Umbraco.ModelsBuilder;
 using Umbraco.ModelsBuilder.Umbraco;
 
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "e6712c14f7f2e5b")]
-[assembly:System.Reflection.AssemblyVersion("0.0.0.4")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "6dc881c508d9c2ea")]
+[assembly:System.Reflection.AssemblyVersion("0.0.0.3")]
 
 namespace Umbraco.Web.PublishedContentModels
 {
@@ -224,24 +224,6 @@ namespace Umbraco.Web.PublishedContentModels
 		public IPublishedContent HeroBackgroundImage
 		{
 			get { return this.GetPropertyValue<IPublishedContent>("HeroBackgroundImage"); }
-		}
-
-		///<summary>
-		/// Call To Action Caption: The caption on the button
-		///</summary>
-		[ImplementPropertyType("heroCTACaption")]
-		public string HeroCtacaption
-		{
-			get { return this.GetPropertyValue<string>("heroCTACaption"); }
-		}
-
-		///<summary>
-		/// Call To Action Link
-		///</summary>
-		[ImplementPropertyType("HeroCtalink")]
-		public IPublishedContent HeroCtalink
-		{
-			get { return this.GetPropertyValue<IPublishedContent>("HeroCtalink"); }
 		}
 
 		///<summary>

@@ -9,17 +9,14 @@
          style="background-image: url('@backgroundImage')">
     <div class="section__hero-content">
         <h1>@Model.Content.HeroHeader</h1>
+        <p class="section__description">@Model.Content.HeroDescription</p>
         @foreach (var item in Model.Content.GetPropertyValue<JArray>("test"))
         {
             var linkUrl = (item.Value<bool>("isInternal")) ? Umbraco.NiceUrl(item.Value<int>("internal")) : item.Value<string>("link");
             var linkTarget = item.Value<bool>("newWindow") ? "_blank" : null;
-            <a href="@linkUrl" target="@linkTarget">@(item.Value<string>("caption"))</a>
-        }
 
-        <p class="section__description">@Model.Content.HeroDescription</p>
-        <a class="button button--border--solid" href="@Model.Content.HeroCtalink.Url">
-            @Model.Content.HeroCtacaption
-        </a>
+        <a class="button button--border--solid" href="@linkUrl" target="@linkTarget">@(item.Value<string>("caption"))</a>
+        }
     </div>
 </section>
 
