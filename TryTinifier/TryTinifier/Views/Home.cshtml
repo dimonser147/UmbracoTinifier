@@ -16,24 +16,7 @@
             var linkTarget = item.Value<bool>("newWindow") ? "_blank" : null;
 
         <a class="button button--border--solid" href="@linkUrl" target="@linkTarget">@(item.Value<string>("caption"))</a>
+        @*<a class="button button--border--solid" href="http://trytinifier.backend-devs.com/umbraco"> Test Button</a>*@
         }
-    </div>
-</section>
-
-<section class="section section">
-    @*@Html.GetGridHtml(Model.Content, "bodyText", "bootstrap3-fluid")*@
-</section>
-
-<section class="section section--themed">
-    <div class="container">
-        <div class="row">
-            <div class="ta-center">
-                <h2>@Model.Content.FooterHeader</h2>
-                <p class="section__description mw-640 ma-h-auto">@Model.Content.FooterDescription</p>
-                <a class="button button--border--light_solid" href="@Model.Content.FooterCtalink.Url">
-                    @Model.Content.FooterCtacaption
-                </a>
-            </div>
-        </div>
     </div>
 </section>
