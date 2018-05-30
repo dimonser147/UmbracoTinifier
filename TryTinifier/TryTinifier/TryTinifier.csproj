@@ -307,7 +307,11 @@
     <Content Include="css\umbraco-starterkit-style.css" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="Media\1031\636444464574462187_tinifier_2-04png.png" />
+    <Content Include="Media\1031\636444464574462187_tinifier_2-04png_thumb.png" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
