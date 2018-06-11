@@ -8,8 +8,8 @@ using  Umbraco.Web;
 using  Umbraco.ModelsBuilder;
 using  Umbraco.ModelsBuilder.Umbraco;
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "1a0ded41339fe200")]
-[assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "6170df99caf07519")]
+[assembly:System.Reflection.AssemblyVersion("0.0.0.2")]
 
 
 // FILE: models.generated.cs
@@ -231,15 +231,6 @@ namespace Umbraco.Web.PublishedContentModels
 		public string Sitename
 		{
 			get { return this.GetPropertyValue<string>("sitename"); }
-		}
-
-		///<summary>
-		/// test
-		///</summary>
-		[ImplementPropertyType("test")]
-		public Umbraco.Web.Models.RelatedLinks Test
-		{
-			get { return this.GetPropertyValue<Umbraco.Web.Models.RelatedLinks>("test"); }
 		}
 	}
 
