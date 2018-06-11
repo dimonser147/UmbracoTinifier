@@ -334,6 +334,8 @@
     <Content Include="fonts\pe-icon-7-stroke\css\pe-icon-7-stroke.css" />
     <Content Include="fonts\pe-icon-7-stroke\fonts\Pe-icon-7-stroke.svg" />
     <Content Include="Global.asax" />
+    <Content Include="ico\favicon-16x16.png" />
+    <Content Include="ico\images.png" />
     <Content Include="img\bg1.jpg" />
     <Content Include="img\bg2.jpg" />
     <Content Include="img\bg3.jpg" />
@@ -364,6 +366,7 @@
     <Content Include="img\close.png" />
     <Content Include="img\device.png" />
     <Content Include="img\imac.png" />
+    <Content Include="img\images.png" />
     <Content Include="img\logo.png" />
     <Content Include="img\owl-controls.png" />
     <Content Include="img\owl-next.png" />
