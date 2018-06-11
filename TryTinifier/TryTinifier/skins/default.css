@@ -1,0 +1,128 @@
+/* ==============================================================
+
+Template name : Meminz download software landing page v1.0.2
+Categorie : Landing page
+Author : Nce18cex
+Version : v1.0.2
+Created : 01 November 2014
+Last update : 09 January 2015
+
+-----------------------------------------------------------------
+CSS structure
+-----------------------------------------------------------------
+
+01. Color
+02. Background color
+03. Border color
+04. Color on mobile
+
+-----------------------------------------------------------------
+Color change
+-----------------------------------------------------------------
+
+Replace all primary color hex (#f55e25) with your color hex
+
+============================================================== */
+
+/*
+Color
+=========================== */
+a,
+a:focus,
+a:hover,
+a:active,
+.navbar-default .navbar-nav li a:hover,
+.navbar-default .navbar-nav li a.selected,
+.navbar-default .navbar-nav .active a,
+.navbar-default .navbar-nav .dropdown.active a,
+.navbar-default .navbar-nav .active a:hover,
+.navbar-default .navbar-nav .dropdown.active a:hover,
+.navbar-default .navbar-nav .active a:focus,
+.navbar-default .navbar-nav .dropdown.active a:focus,
+.icon-counter:hover,
+.social-network a:hover,
+.social-network a:focus,
+.social-network a:active,
+.pe-feature,
+.accordion-heading a:hover i,
+.counter-number,
+.pricing-head.popular .pricing-price,
+.validation{
+	color: #f55e25;
+}
+
+/*
+Background color
+=========================== */
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary,
+.subscribe-button,
+.navbar-default .navbar-toggle:hover .icon-bar,
+.feature-box:hover .pe-feature,
+.accordion-heading a i,
+.accordion-heading a:hover,
+.flex-direction-nav .flex-next:hover,
+.flex-direction-nav .flex-prev:hover,
+.flex-control-paging li a:hover,
+.flex-control-paging li a.flex-active,
+.pricing-head.popular,
+.owl-theme .owl-controls .owl-buttons div.owl-prev:hover,
+.owl-theme .owl-controls .owl-buttons div.owl-next:hover,
+#toTopHover,
+.log-tabs li a,
+.log-tabs li a:hover,
+.log-tabs li a:focus,
+.log-tabs li a:active{
+	background-color: #f55e25;
+}
+
+/*
+Border color
+=========================== */
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary,
+.navbar-default .navbar-nav li a:hover,
+.navbar-default .navbar-nav li a.selected,
+.navbar-default .navbar-nav .active a,
+.navbar-default .navbar-nav .dropdown.active a,
+.navbar-default .navbar-nav .active a:hover,
+.navbar-default .navbar-nav .dropdown.active a:hover,
+.navbar-default .navbar-nav .active a:focus,
+.navbar-default .navbar-nav .dropdown.active a:focus,
+.subscribe-button,
+.testimoni-avatar:hover,
+.icon-counter:hover,
+.form-control:focus,
+ul.listForm li .form-control:focus,
+.navbar-default .navbar-toggle:hover,
+.pe-feature,
+.accordion-heading a i,
+.accordion-heading a:hover{
+	border-color: #f55e25;
+}
+
+/*
+Color on mobile
+=========================== */
+@media (max-width: 767px){
+	.navbar-default .navbar-nav li a:hover,
+	.navbar-default .navbar-nav li a.selected,
+	.navbar-default .navbar-nav .active a,
+	.navbar-default .navbar-nav .dropdown.active a,
+	.navbar-default .navbar-nav .active a:hover,
+	.navbar-default .navbar-nav .dropdown.active a:hover,
+	.navbar-default .navbar-nav .active a:focus,
+	.navbar-default .navbar-nav .dropdown.active a:focus{
+		background:#f55e25;
+		border:1px solid #f55e25;
+		color:#fff;
+	}
+}

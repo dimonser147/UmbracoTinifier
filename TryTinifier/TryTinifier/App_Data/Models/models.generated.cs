@@ -19,8 +19,8 @@ using Umbraco.ModelsBuilder;
 using Umbraco.ModelsBuilder.Umbraco;
 
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "6170df99caf07519")]
-[assembly:System.Reflection.AssemblyVersion("0.0.0.2")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "11c8b969d51468fc")]
+[assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
 
 namespace Umbraco.Web.PublishedContentModels
 {
@@ -170,6 +170,15 @@ namespace Umbraco.Web.PublishedContentModels
 		public int Font
 		{
 			get { return this.GetPropertyValue<int>("font"); }
+		}
+
+		///<summary>
+		/// FooterHeader
+		///</summary>
+		[ImplementPropertyType("footerHeader")]
+		public string FooterHeader
+		{
+			get { return this.GetPropertyValue<string>("footerHeader"); }
 		}
 
 		///<summary>
