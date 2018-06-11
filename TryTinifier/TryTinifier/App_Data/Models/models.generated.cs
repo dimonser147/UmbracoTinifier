@@ -19,8 +19,8 @@ using Umbraco.ModelsBuilder;
 using Umbraco.ModelsBuilder.Umbraco;
 
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "1a0ded41339fe200")]
-[assembly:System.Reflection.AssemblyVersion("0.0.0.3")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "11c8b969d51468fc")]
+[assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
 
 namespace Umbraco.Web.PublishedContentModels
 {
@@ -173,6 +173,15 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
+		/// FooterHeader
+		///</summary>
+		[ImplementPropertyType("footerHeader")]
+		public string FooterHeader
+		{
+			get { return this.GetPropertyValue<string>("footerHeader"); }
+		}
+
+		///<summary>
 		/// Hero Background: Spice up the homepage by adding a beautiful photo that relates to your business
 		///</summary>
 		[ImplementPropertyType("HeroBackgroundImage")]
@@ -215,15 +224,6 @@ namespace Umbraco.Web.PublishedContentModels
 		public string Sitename
 		{
 			get { return this.GetPropertyValue<string>("sitename"); }
-		}
-
-		///<summary>
-		/// test
-		///</summary>
-		[ImplementPropertyType("test")]
-		public Umbraco.Web.Models.RelatedLinks Test
-		{
-			get { return this.GetPropertyValue<Umbraco.Web.Models.RelatedLinks>("test"); }
 		}
 	}
 
