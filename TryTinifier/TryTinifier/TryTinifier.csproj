@@ -335,6 +335,7 @@
     <Content Include="fonts\pe-icon-7-stroke\fonts\Pe-icon-7-stroke.svg" />
     <Content Include="Global.asax" />
     <Content Include="ico\favicon-16x16.png" />
+    <Content Include="ico\favicon.png" />
     <Content Include="ico\images.png" />
     <Content Include="img\bg1.jpg" />
     <Content Include="img\bg2.jpg" />
@@ -473,8 +474,8 @@
     <Content Include="js\youtube-player\youTubeEmbed-jquery.js" />
     <Content Include="js\yt-player\jquery.mb.YTPlayer.js" />
     <Content Include="js\yt-player\setting.js" />
-    <Content Include="Media\1031\636444464574462187_tinifier_2-04png.png" />
-    <Content Include="Media\1031\636444464574462187_tinifier_2-04png_thumb.png" />
+    <Content Include="Media\1039\test-photo.png" />
+    <Content Include="Media\1039\test-photo_thumb.png" />
     <Content Include="skins\default.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

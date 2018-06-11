@@ -1,4 +1,8 @@
-﻿@*@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.Home>
+﻿@{ 
+    var AdministrationUrl = @HttpContext.Current.Request.Url + "umbraco";
+ }
+
+@*@inherits Umbraco.Web.Mvc.UmbracoTemplatePage<ContentModels.Home>
     @using ContentModels = Umbraco.Web.PublishedContentModels;
     @using Newtonsoft.Json.Linq
     @{
@@ -36,10 +40,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    @*<link rel="shortcut icon" href="ico/favicon-16x16.png" type="image/png">*@
-    <link rel="icon" type="image/png" sizes="16x16" href="~/ico/favicon-16x16.png">
+    @*<link rel="shortcut icon" href="~/ico/favicon.png" />*@
+    <link rel="shortcut icon" href="ico/favicon-16x16.png" type="image/png">
+    @*<link rel="icon" type="image/png" sizes="16x16" href="~/ico/favicon-16x16.png">*@
     @*<link rel="shortcut icon" type="image/png" href="https://tinifier.backend-devs.com/img/tinifier/Icons/favicon-16x16.png" />*@
-    
+
     @*<link rel="icon" type="image/gif/png" href="img/favicon-16x16.png">*@
     @*<link rel="shortcut icon" href="ico/favicon-16x16.png">*@
     @*<link rel="icon" type="image/png" sizes="16x16" href="ico/favicon-16x16.png">*@
@@ -126,9 +131,9 @@
             <div class="container">
                 <div class="row text-center wow fadeInUp" data-wow-delay="0.4s">
                     <div class="col-md-10 col-md-offset-1">
-                        <h3>Try Tinifier package now! <span>Username: test, Password: %%%</span></h3>
+                        <h3>Try Tinifier package now! <span>Username: tinifierDemo, Password: Demo123456</span></h3>
                         <p class="btn-inline">
-                            <a href="http://trytinifier.backend-devs.com/umbraco" class="btn btn-bordered btn-lg">Open Back-office</a>
+                            <a href="@AdministrationUrl" class="btn btn-bordered btn-lg">Open Back-office</a>
                             <a href="https://our.umbraco.org/projects/backoffice-extensions/tinifier/" class="btn btn-primary btn-lg">Download for free</a>
                         </p>
                         <div class="home-slider">
