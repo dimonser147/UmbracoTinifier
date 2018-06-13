@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
@@ -61,12 +62,24 @@ namespace Tinifier.Core.Application
 
         #region Media
 
+
         private void MediaService_Saving(IMediaService sender, SaveEventArgs<IMedia> e)
         {
-            // reupload image issue https://goo.gl/ad8pTs
+            //e.CancelOperation(new EventMessage("Stop", "Image limit exceeded! Please delete Media content to upload more images!", EventMessageType.Error));
+
+            //reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
                     (m) => _historyService.Delete(m.Id),
                     (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
+        }
+
+        private long GetMediaSize()
+        {
+            var pathToMediaFolder = System.Web.HttpContext.Current.Server.MapPath(@"~/media");
+
+            var foldersCount = Directory.GetFiles(pathToMediaFolder, "*", SearchOption.AllDirectories).Count();
+            long sizeOfMediaFolder = Directory.GetFiles(pathToMediaFolder, "*", SearchOption.AllDirectories).Sum(t => (new FileInfo(t).Length)) / (1024 * 1024);
+            return sizeOfMediaFolder;
         }
 
         private void MediaService_Saved(IMediaService sender, SaveEventArgs<IMedia> e)
