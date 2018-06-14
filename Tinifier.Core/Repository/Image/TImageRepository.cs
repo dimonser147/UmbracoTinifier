@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Web;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Services;
 using Tinifier.Core.Repository.Common;
@@ -10,7 +8,6 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
-using Umbraco.Web;
 
 namespace Tinifier.Core.Repository.Image
 {
@@ -40,6 +37,18 @@ namespace Tinifier.Core.Repository.Image
         }
 
         /// <summary>
+        /// Gets a collection of IMedia objects by ParentId
+        /// </summary>
+        /// <returns>IEnumerable of Media</returns>
+        public IEnumerable<Media> GetAllAt(int id)
+        {
+            var mediaItems = _mediaService.GetChildren(id)
+                .Where(m => m.ContentType.Equals(_contentTypeService.GetMediaType(PackageConstants.ImageAlias)));
+
+            return mediaItems.Cast<Media>().ToList();
+        }
+
+        /// <summary>
         /// Get Media by Id
         /// </summary>
         /// <param name="id">Media Id</param>
@@ -60,22 +69,26 @@ namespace Tinifier.Core.Repository.Image
         }
 
         /// <summary>
+        /// Moves an IMedia object to a new location
+        /// </summary>
+        /// <param name="media">media to move</param>
+        /// <param name="parentId">id of a new location</param>
+        public void Move(IMedia media, int parentId)
+        {
+            _mediaService.Move(media, parentId);
+        }
+
+        /// <summary>
         /// Update Media
         /// </summary>
         /// <param name="id">Media Id</param>
         public void Update(int id, int actualSize)
         {
-            // httpContext is null when optimization on upload
-            // https://our.umbraco.org/projects/backoffice-extensions/tinifier/bugs/90472-error-systemargumentnullexception-value-cannot-be-null
-            if (HttpContext.Current == null)
-                HttpContext.Current = HttpContextHelper.CreateHttpContext
-                    (new HttpRequest("", "http://localhost/", ""), new HttpResponse(new StringWriter()));
-
             var mediaItem = _mediaService.GetById(id) as Media;
 
             if (mediaItem != null)
             {
-                mediaItem.SetValue("umbracoBytes", actualSize);  
+                mediaItem.SetValue("umbracoBytes", actualSize);
                 mediaItem.UpdateDate = DateTime.UtcNow;
                 // raiseEvents: false - #2827
                 _mediaService.Save(mediaItem, raiseEvents: false);
@@ -116,14 +129,14 @@ namespace Tinifier.Core.Repository.Image
                     {
                         mediaList.Add(media as Media);
                     }
-                } 
-                foreach(var media in items)
+                }
+                foreach (var media in items)
                 {
                     if (media.ContentType.Alias.ToLower() == PackageConstants.FolderAlias)
                     {
                         GetItemsFromFolder(media.Id);
                     }
-                }  
+                }
             }
 
             return mediaList;

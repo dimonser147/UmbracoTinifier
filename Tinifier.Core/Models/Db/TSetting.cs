@@ -24,8 +24,6 @@ namespace Tinifier.Core.Models.Db
         [Required]
         public bool HideLeftPanel { get; set; }
 
-        public bool PreserveMetadata { get; set; }
-
         public int CurrentMonthRequests { get; set; }
     }
 }

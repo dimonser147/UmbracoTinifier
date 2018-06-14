@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
@@ -62,24 +62,12 @@ namespace Tinifier.Core.Application
 
         #region Media
 
-
         private void MediaService_Saving(IMediaService sender, SaveEventArgs<IMedia> e)
         {
-            //e.CancelOperation(new EventMessage("Stop", "Image limit exceeded! Please delete Media content to upload more images!", EventMessageType.Error));
-
-            //reupload image issue https://goo.gl/ad8pTs
+            // reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
                     (m) => _historyService.Delete(m.Id),
                     (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
-        }
-
-        private long GetMediaSize()
-        {
-            var pathToMediaFolder = System.Web.HttpContext.Current.Server.MapPath(@"~/media");
-
-            var foldersCount = Directory.GetFiles(pathToMediaFolder, "*", SearchOption.AllDirectories).Count();
-            long sizeOfMediaFolder = Directory.GetFiles(pathToMediaFolder, "*", SearchOption.AllDirectories).Sum(t => (new FileInfo(t).Length)) / (1024 * 1024);
-            return sizeOfMediaFolder;
         }
 
         private void MediaService_Saved(IMediaService sender, SaveEventArgs<IMedia> e)
@@ -209,27 +197,22 @@ namespace Tinifier.Core.Application
             {
                 if (dbHelper.TableExist(tables.ElementAt(i).Key))
                 {
-                    var checkColumn = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE 
-                                                TABLE_NAME = 'TinifierImagesStatistic' AND COLUMN_NAME = 'TotalSavedBytes'");
-                    var checkHidePanel = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE
-                                                TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
-                    var checkMetaData = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE 
-                                                TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'PreserveMetadata'");
+                    var checkColumn = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierImagesStatistic' AND COLUMN_NAME = 'TotalSavedBytes'");
+                    var checkHidePanel = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
                     int? exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
                     int? hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
-                    int? metaData = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkMetaData);
 
                     if (exists == null || exists == -1)
-                        ApplicationContext.Current.DatabaseContext.Database.Execute
-                            (new Sql("ALTER TABLE TinifierImagesStatistic ADD COLUMN TotalSavedBytes bigint"));
+                    {
+                        var sql = new Sql("ALTER TABLE TinifierImagesStatistic ADD COLUMN TotalSavedBytes INTEGER NULL");
+                        ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
+                    }
 
                     if (hidePanel == null || hidePanel == -1)
-                        ApplicationContext.Current.DatabaseContext.Database.Execute
-                            (new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN HideLeftPanel bit not null default(0)"));
-
-                    if(metaData == null || metaData == -1)
-                        ApplicationContext.Current.DatabaseContext.Database.Execute
-                            (new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN PreserveMetadata bit not null default(0)"));
+                    {
+                        var sql = new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN HideLeftPanel BIT NOT NULL");
+                        ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
+                    }
                 }
             }
         }

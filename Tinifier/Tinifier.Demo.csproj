@@ -313,10 +313,12 @@
     <Content Include="App_Plugins\Tinifier\BackOffice\Dashboards\TinifierSettings.html" />
     <Content Include="App_Plugins\Tinifier\BackOffice\Dashboards\TinifierStatistic.html" />
     <Content Include="App_Plugins\Tinifier\BackOffice\timages\TinifierEdit.html" />
+    <Content Include="App_Plugins\Tinifier\BackOffice\timages\TinifierOrganizeImages.html" />
     <Content Include="App_Plugins\Tinifier\BackOffice\timages\TinifierTinifyDialog.html" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinifierDisplayStatistic.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinifierEditTimage.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinifierEditTSetting.controller.js" />
+    <Content Include="App_Plugins\Tinifier\Controllers\TinifierOrganizeImages.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinyTImage.controller.js" />
     <Content Include="App_Plugins\Tinifier\Lang\en-GB.xml" />
     <Content Include="App_Plugins\Tinifier\Lang\en-US.xml" />
@@ -402,9 +404,7 @@
     <Content Include="config\ExamineSettings.config" />
     <Content Include="config\ExamineIndex.config" />
     <Content Include="config\EmbeddedMedia.config" />
-    <Content Include="config\ClientDependency.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="config\ClientDependency.config" />
     <Content Include="config\BaseRestExtensions.config" />
     <Content Include="config\404handlers.config" />
     <None Include="Web.Debug.config">

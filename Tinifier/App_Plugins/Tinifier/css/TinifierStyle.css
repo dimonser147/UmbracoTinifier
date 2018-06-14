@@ -64,10 +64,11 @@
     width:50px; 
     background: url('../media/spinner.gif') center center no-repeat;
 }
-.dialog-message{
-    font-size: 16px; 
-    text-indent: 2em; 
-    margin-top: 25px;
+.dialog-message {
+    font-size: 16px;
+    text-indent: 2em;
+    padding: 25px 14px 10px 14px;
+    text-align: justify;
 }
 .update-seconds{
     display:none;
