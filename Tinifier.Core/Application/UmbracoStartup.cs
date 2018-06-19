@@ -257,9 +257,11 @@ namespace Tinifier.Core.Application
                 menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, PackageConstants.StatsDialogCaption);
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
+
+                var menuItemOrganizeImagesButton = new MenuItem(PackageConstants.OrganizeImagesButton, PackageConstants.OrganizeImagesCaption);
+                menuItemOrganizeImagesButton.LaunchDialogView(PackageConstants.OrganizeImagesRoute, PackageConstants.OrganizeImagesCaption);
+                e.Menu.Items.Add(menuItemOrganizeImagesButton);
             }
         }
-
     }
 }
-

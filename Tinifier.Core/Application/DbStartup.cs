@@ -27,7 +27,8 @@ namespace Tinifier.Core.Application
                 { PackageConstants.DbSettingsTable, typeof(TSetting) },
                 { PackageConstants.DbHistoryTable, typeof(TinyPNGResponseHistory) },
                 { PackageConstants.DbStatisticTable, typeof(TImageStatistic) },
-                { PackageConstants.DbStateTable, typeof(TState) }
+                { PackageConstants.DbStateTable, typeof(TState) },
+                { PackageConstants.MediaHistoryTable, typeof(TinifierMediaHistory) }
             };
 
             for (var i = 0; i < tables.Count; i++)
@@ -41,7 +42,7 @@ namespace Tinifier.Core.Application
             // migrations
             foreach(var migration in Migrations.MigrationsHelper.GetAllMigrations())
             {
-                migration.Resolve(dbContext);
+                migration?.Resolve(dbContext);
             }
 
             base.ApplicationStarted(umbracoApplication, applicationContext);

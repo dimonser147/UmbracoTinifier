@@ -5,7 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 
 namespace Tinifier.Core.Models.Db
 {
-    [TableName(ProPackageConstants.MediaHistoryTable)]
+    [TableName(PackageConstants.MediaHistoryTable)]
     public class TinifierMediaHistory
     {
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = true)]

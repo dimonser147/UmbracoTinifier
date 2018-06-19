@@ -269,16 +269,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Application\DbStartingPro.cs" />
     <Compile Include="Application\DbStartup.cs" />
     <Compile Include="Application\Migrations\IMigration.cs" />
     <Compile Include="Application\Migrations\Migration1.cs" />
     <Compile Include="Application\Migrations\Migration2.cs" />
     <Compile Include="Application\Migrations\MigrationsHelper.cs" />
-    <Compile Include="Application\Migrations\ProMigrationHelper.cs" />
     <Compile Include="Application\UmbracoStartup.cs" />
-    <Compile Include="Application\UmbracoStartupPro.cs" />
-    <Compile Include="Controllers\ProTinifierController.cs" />
     <Compile Include="Controllers\TinifierSettingsController.cs" />
     <Compile Include="Controllers\TinifierStateController.cs" />
     <Compile Include="Controllers\TinifierImagesStatisticController.cs" />
@@ -289,7 +285,6 @@
     <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSuccessfullRequestException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSupportedExtensionException.cs" />
-    <Compile Include="Infrastructure\ProPackageConstants.cs" />
     <Compile Include="Models\API\OrganisedMediaModel.cs" />
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TinifierMediaHistory.cs" />

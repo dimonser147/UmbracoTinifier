@@ -23,6 +23,7 @@ using Umbraco.Core.IO;
 using Umbraco.Web.WebApi;
 using System.Linq;
 using System;
+using Tinifier.Core.Services.Media.Organizers;
 
 namespace Tinifier.Core.Controllers
 {
@@ -36,6 +37,7 @@ namespace Tinifier.Core.Controllers
         private readonly IStateService _stateService;
         private readonly IValidationService _validationService;
         private readonly IBackendDevsConnector _backendDevsConnectorService;
+        private readonly IMediaHistoryService _mediaHistoryService;
 
         public TinifierController()
         {
@@ -46,6 +48,7 @@ namespace Tinifier.Core.Controllers
             _stateService = new StateService();
             _validationService = new ValidationService();
             _backendDevsConnectorService = new BackendDevsConnectorService();
+            _mediaHistoryService = new ImageService();
         }
 
         /// <summary>
@@ -253,6 +256,44 @@ namespace Tinifier.Core.Controllers
                 {
                     url = "https://our.umbraco.org/projects/backoffice-extensions/tinifier/"
                 });
+        }
+
+
+        [HttpGet]
+        public HttpResponseMessage OrganizeImages(int folderId)
+        {
+            try
+            {
+                var organizer = new ByUploadedDateImageOrganizer(folderId);
+                organizer.Organize();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return GetErrorNotification(ex.Message, HttpStatusCode.InternalServerError, EventMessageType.Error);
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage DiscardOrganizing()
+        {
+            try
+            {
+                _mediaHistoryService.DiscardOrganizing();
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return GetErrorNotification(ex.Message, HttpStatusCode.InternalServerError, EventMessageType.Error);
+            }
+        }
+
+
+        private HttpResponseMessage GetErrorNotification(string message, HttpStatusCode httpStatusCode, EventMessageType eventMessageType)
+        {
+            return Request.CreateResponse(httpStatusCode,
+                    new TNotification("Tinifier Oops", message, eventMessageType) { sticky = true });
         }
     }
 }

@@ -41,7 +41,6 @@ namespace Tinifier.Core.Services.Media
             _tinyPngConnectorService = new TinyPNGConnectorService();
             _backendDevsConnectorService = new BackendDevsConnectorService();
             _mediaService = Umbraco.Core.ApplicationContext.Current.Services.MediaService;
-
         }
 
         public IEnumerable<TImage> GetAllImages()
