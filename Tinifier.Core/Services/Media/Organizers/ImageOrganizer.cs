@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.API;
+using umbraco;
 using Umbraco.Core.Services;
 using uMedia = Umbraco.Core.Models.Media;
 
@@ -41,28 +43,68 @@ namespace Tinifier.Core.Services.Media.Organizers
 
         private void ProcessPreviewModel()
         {
-            var createdDestinations = new Dictionary<string, int>();
-
             foreach (var media in _previewModel)
             {
                 int parentFolderId = _sourceFolderId;
-                string destinationPath = string.Join("/", media.DestinationPath);
+                string year = media.DestinationPath[0];
+                string month = media.DestinationPath[1];
 
-                if (createdDestinations.ContainsKey(destinationPath))
+                foreach (var folderName in media.DestinationPath)
                 {
-                    parentFolderId = createdDestinations[destinationPath];
-                }
-                else
-                {
-                    foreach (var folderName in media.DestinationPath)
+                    if (folderName == year)
                     {
-                        var folderMedia =
-                            _mediaService.CreateMediaWithIdentity(folderName, parentFolderId, PackageConstants.FolderAlias);
-                        parentFolderId = folderMedia.Id;
+                        //check if year folder exists
+                        var yearFolder = uQuery.GetMediaByName(folderName).FirstOrDefault();
+                        if (yearFolder == null)
+                        {
+                            var folderMedia = _mediaService.CreateMediaWithIdentity(folderName, parentFolderId, PackageConstants.FolderAlias);
+                            parentFolderId = folderMedia.Id;
+                        }
+                        else
+                        {
+                            parentFolderId = yearFolder.Id;
+                        }
                     }
-                    createdDestinations.Add(destinationPath, parentFolderId);
-                }
 
+                    if (folderName == month)
+                    {
+                        //check if month folder exists
+                        var monthFolder = uQuery.GetMediaByName(folderName).FirstOrDefault();
+                        var yearFolder = uQuery.GetMediaByName(year).FirstOrDefault();
+                        if (yearFolder != null)
+                        {
+                            if (monthFolder == null)
+                            {
+                                var folderMedia = _mediaService.CreateMediaWithIdentity(folderName, yearFolder.Id, PackageConstants.FolderAlias);
+                                parentFolderId = folderMedia.Id;
+                            }
+                            else
+                            {
+                                if (monthFolder.ParentId == yearFolder.Id)
+                                {
+                                    parentFolderId = monthFolder.Id;
+                                }
+                                else
+                                {
+                                    var folderMedia = _mediaService.CreateMediaWithIdentity(folderName, parentFolderId, PackageConstants.FolderAlias);
+                                    parentFolderId = folderMedia.Id;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (monthFolder == null)
+                            {
+                                var folderMedia = _mediaService.CreateMediaWithIdentity(folderName, parentFolderId, PackageConstants.FolderAlias);
+                                parentFolderId = folderMedia.Id;
+                            }
+                            else
+                            {
+                                parentFolderId = monthFolder.Id;
+                            }
+                        }
+                    }
+                }
                 _imageService.Move(media.Media, parentFolderId);
             }
         }

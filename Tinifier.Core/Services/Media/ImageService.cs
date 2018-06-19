@@ -14,6 +14,7 @@ using Tinifier.Core.Services.State;
 using Tinifier.Core.Services.Statistic;
 using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
+using Umbraco.Core.Services;
 using uMedia = Umbraco.Core.Models.Media;
 
 namespace Tinifier.Core.Services.Media
@@ -21,12 +22,14 @@ namespace Tinifier.Core.Services.Media
     public class ImageService : BaseImageService, IImageService, IMediaHistoryService
     {
         private readonly IValidationService _validationService;
-        private readonly TImageRepository _imageRepository;        
+        private readonly TImageRepository _imageRepository;
         private readonly IHistoryService _historyService;
         private readonly IStatisticService _statisticService;
         private readonly IStateService _stateService;
         private readonly ITinyPNGConnector _tinyPngConnectorService;
         private readonly IBackendDevsConnector _backendDevsConnectorService;
+        private readonly IMediaService _mediaService;
+
 
         public ImageService()
         {
@@ -37,6 +40,8 @@ namespace Tinifier.Core.Services.Media
             _stateService = new StateService();
             _tinyPngConnectorService = new TinyPNGConnectorService();
             _backendDevsConnectorService = new BackendDevsConnectorService();
+            _mediaService = Umbraco.Core.ApplicationContext.Current.Services.MediaService;
+
         }
 
         public IEnumerable<TImage> GetAllImages()
@@ -71,7 +76,7 @@ namespace Tinifier.Core.Services.Media
         }
 
         public async Task OptimizeImageAsync(TImage image)
-        {            
+        {
             _stateService.CreateState(1);
             var tinyResponse = await _tinyPngConnectorService.TinifyAsync(image, base.FileSystem).ConfigureAwait(false);
             if (tinyResponse.Output.Url == null)
@@ -120,7 +125,7 @@ namespace Tinifier.Core.Services.Media
         public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image)
         {
             // download optimized image
-            var tImageBytes = TinyImageService.Instance.DownloadImage(tinyResponse.Output.Url);                        
+            var tImageBytes = TinyImageService.Instance.DownloadImage(tinyResponse.Output.Url);
             // update physical file
             base.UpdateMedia(image, tImageBytes);
             // update history
@@ -151,10 +156,15 @@ namespace Tinifier.Core.Services.Media
 
         public void DiscardOrganizing()
         {
+            int folderId = 0;
             var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
             var media = mediaHistoryRepo.GetAll();
             foreach (var m in media)
             {
+                var monthFolder = _mediaService.GetParent(m.MediaId);
+                var yearFolder = _mediaService.GetParent(monthFolder);
+
+                folderId = yearFolder.Id;
                 // the path is stored as a string with comma separated IDs of media
                 // where the last value is ID of current media, penultimate value is ID of its root, etc.
                 // the first value is ID of the very root media
@@ -162,6 +172,16 @@ namespace Tinifier.Core.Services.Media
                 var formerParentId = Int32.Parse(path[path.Length - 2]);
                 var image = _imageRepository.Get(m.MediaId);
                 Move(image, formerParentId);
+
+                if (!_mediaService.HasChildren(monthFolder.Id))
+                {
+                    _mediaService.Delete(_mediaService.GetById(monthFolder.Id));
+                }
+
+                if (!_mediaService.HasChildren(yearFolder.Id))
+                {
+                    _mediaService.Delete(_mediaService.GetById(folderId));
+                }
             }
         }
     }
