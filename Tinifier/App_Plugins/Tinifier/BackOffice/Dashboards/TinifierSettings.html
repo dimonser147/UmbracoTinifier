@@ -11,7 +11,7 @@
                                         <h3>API Key<small class="ng-binding"> (required)</small></h3>
                                         <p style="width: 85%;">You can get it on a <a href="http://goo.gl/gaaz8i" style="color:blue">TinyPNG website</a>. Available free requests could be checked on the "Statistic" tab.</p>
                                         <input class="umb-property-editor ng-dirty ng-valid ng-valid-required" type="text" style="width: 85%;" ng-model="timage.ApiKey" required="">
-                                    </div>                                       
+                                    </div>
                                 </div>
                             </div>
                             <div class="umb-property" style="display:inline-block;">
@@ -27,7 +27,7 @@
                                 <div class="control-group umb-control-group">
                                     <div class="umb-el-wrap">
                                         <h3>Optimize on upload<small class="ng-binding"> (optional)</small></h3>
-                                        <p style="width: 85%;">You will never get non - optimized images but should wait more on each image upload.</p>
+                                        <p style="width: 85%;">You will never get non-optimized images but should wait more on each image upload.</p>
                                         <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" style="width: 100%;"></select>
                                     </div>
                                 </div>
@@ -50,6 +50,15 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="umb-property" style="display:inline-block">
+                                <div class="control-group umb-control-group">
+                                    <div class="umb-el-wrap">
+                                        <h3>Preserve image metadata<small class="ng-binding"> (optional)</small></h3>
+                                        <p style="width: 49%;">You can request that specific metadata is copied from the uploaded image to the compressed version. Keep in mind that preserving metadata adds to the compressed file size.</p>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.PreserveMetadata" style="width: 50%;"></select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -62,7 +71,7 @@
                     </umb-breadcrumbs>
                 </umb-editor-footer-content-left>
                 <umb-editor-footer-content-right>
-                    <button type="submit" class="btn btn-success">Save</button>                   
+                    <button type="submit" class="btn btn-success">Save</button>
                 </umb-editor-footer-content-right>
             </umb-editor-footer>
         </umb-editor-view>

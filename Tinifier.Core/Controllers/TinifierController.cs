@@ -219,7 +219,7 @@ namespace Tinifier.Core.Controllers
                     continue;
                 }
 
-                _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, tImage);
+                _imageService.UpdateImageAfterSuccessfullRequest(tinyResponse, tImage, fs);
 
                 try
                 {

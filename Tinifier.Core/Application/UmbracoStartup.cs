@@ -199,8 +199,12 @@ namespace Tinifier.Core.Application
                 {
                     var checkColumn = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierImagesStatistic' AND COLUMN_NAME = 'TotalSavedBytes'");
                     var checkHidePanel = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
+                    var checkMetaData = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE 
+                                                TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'PreserveMetadata'");
                     int? exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
                     int? hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
+                    int? metaData = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkMetaData);
+
 
                     if (exists == null || exists == -1)
                     {
@@ -213,6 +217,11 @@ namespace Tinifier.Core.Application
                         var sql = new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN HideLeftPanel BIT NOT NULL");
                         ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
                     }
+
+                    if (metaData == null || metaData == -1)
+                        ApplicationContext.Current.DatabaseContext.Database.Execute
+                            (new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN PreserveMetadata bit not null default(0)"));
+
                 }
             }
         }
