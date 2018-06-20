@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Common;
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Persistence;
 
 namespace Tinifier.Core.Repository.State
@@ -60,6 +64,39 @@ namespace Tinifier.Core.Repository.State
         {
             var query = new Sql("UPDATE TinifierState SET Status = @0 WHERE Status = @1", (int) Statuses.Done, (int) Statuses.InProgress);
             _database.Execute(query);
+            //CreateDB();
         }
+
+        #region Private
+        private void CreateDB()
+        {
+            var logger = LoggerResolver.Current.Logger;
+            var dbContext = ApplicationContext.Current.DatabaseContext;
+            var dbHelper = new DatabaseSchemaHelper(dbContext.Database, logger, dbContext.SqlSyntax);
+
+            var tables = new Dictionary<string, Type>
+            {
+                { PackageConstants.DbSettingsTable, typeof(TSetting) },
+                { PackageConstants.DbHistoryTable, typeof(TinyPNGResponseHistory) },
+                { PackageConstants.DbStatisticTable, typeof(TImageStatistic) },
+                { PackageConstants.DbStateTable, typeof(TState) },
+                { PackageConstants.MediaHistoryTable, typeof(TinifierMediaHistory) }
+            };
+
+            for (var i = 0; i < tables.Count; i++)
+            {
+                if (!dbHelper.TableExist(tables.ElementAt(i).Key))
+                {
+                    dbHelper.CreateTable(false, tables.ElementAt(i).Value);
+                }
+            }
+
+            // migrations
+            foreach (var migration in Application.Migrations.MigrationsHelper.GetAllMigrations())
+            {
+                migration?.Resolve(dbContext);
+            }
+        }
+        #endregion
     }
 }
