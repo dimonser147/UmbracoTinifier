@@ -3,7 +3,8 @@
     $scope.organizeImages = function () {
         var folderId = $routeParams.id > 0 ? $routeParams.id : -1;
         var url = `/umbraco/backoffice/api/Tinifier/OrganizeImages?folderId=${folderId}`;
-
+        navigationService.hideDialog();
+        notificationsService.success("Organizing is in progress...");
         $http.get(url)
             .success(successHandler)
             .error(errorHandler);
@@ -12,7 +13,7 @@
     $scope.discardOrganizing = function () {
         var url = "/umbraco/backoffice/api/Tinifier/DiscardOrganizing";
         notificationsService.success("Discarding is in progress...");
-
+        navigationService.hideDialog();
         $http.get(url)
             .success(successDiscardСhanges)
             .error(errorHandler);

@@ -46,8 +46,16 @@ namespace Tinifier.Core.Repository.State
         /// <returns>TState</returns>
         public TState Get(int status)
         {
-            var query = new Sql("SELECT * FROM TinifierState WHERE Status = @0", status);
-            return _database.FirstOrDefault<TState>(query);
+            try
+            {
+                var query = new Sql("SELECT * FROM TinifierState WHERE Status = @0", status);
+                return _database.FirstOrDefault<TState>(query);
+
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -62,13 +70,12 @@ namespace Tinifier.Core.Repository.State
 
         public void Delete()
         {
-            var query = new Sql("UPDATE TinifierState SET Status = @0 WHERE Status = @1", (int) Statuses.Done, (int) Statuses.InProgress);
-            _database.Execute(query);
-            //CreateDB();
+            DeleteTinifierTables();
+            CreateTinifierTables();
         }
 
         #region Private
-        private void CreateDB()
+        private void CreateTinifierTables()
         {
             var logger = LoggerResolver.Current.Logger;
             var dbContext = ApplicationContext.Current.DatabaseContext;
@@ -97,6 +104,31 @@ namespace Tinifier.Core.Repository.State
                 migration?.Resolve(dbContext);
             }
         }
+
+        private void DeleteTinifierTables()
+        {
+            var logger = LoggerResolver.Current.Logger;
+            var dbContext = ApplicationContext.Current.DatabaseContext;
+            var dbHelper = new DatabaseSchemaHelper(dbContext.Database, logger, dbContext.SqlSyntax);
+
+            var tables = new Dictionary<string, Type>
+            {
+                { PackageConstants.DbSettingsTable, typeof(TSetting) },
+                { PackageConstants.DbHistoryTable, typeof(TinyPNGResponseHistory) },
+                { PackageConstants.DbStatisticTable, typeof(TImageStatistic) },
+                { PackageConstants.DbStateTable, typeof(TState) },
+                { PackageConstants.MediaHistoryTable, typeof(TinifierMediaHistory) }
+            };
+
+            for (var i = 0; i < tables.Count; i++)
+            {
+                if (dbHelper.TableExist(tables.ElementAt(i).Key))
+                {
+                    dbHelper.DropTable(tables.ElementAt(i).Key);
+                }
+            }
+        }
+
         #endregion
     }
 }

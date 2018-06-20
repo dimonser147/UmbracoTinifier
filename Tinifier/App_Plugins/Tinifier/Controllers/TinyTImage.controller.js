@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").controller("Tinifier.TinyTImage.Controller", function ($scope, $routeParams, $http, notificationsService, dialogService) {
+﻿angular.module("umbraco").controller("Tinifier.TinyTImage.Controller", function ($scope, $routeParams, $http, notificationsService, dialogService, navigationService) {
 
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
@@ -22,7 +22,7 @@
 
     // Tinify Image and show notification
     $scope.tinify = function () {
-
+        navigationService.hideDialog();
         // Check if user choose Image or recycle bin folder
         if (timageId === recycleBinFolderId) {
             notificationsService.error("Error", "You can`t tinify RecycleBin Folder!");

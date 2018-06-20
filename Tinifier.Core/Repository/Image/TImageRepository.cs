@@ -160,14 +160,21 @@ namespace Tinifier.Core.Repository.Image
         /// <returns>Number of optimized Images</returns>
         public int AmounthOfOptimizedItems()
         {
-            var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
-            var historyIds = _database.Fetch<int>(query);
+            try
+            {
+                var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
+                var historyIds = _database.Fetch<int>(query);
 
-            var mediaItems = _mediaService.
-                             GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
-                             Where(item => historyIds.Contains(item.Id));
+                var mediaItems = _mediaService.
+                                 GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
+                                 Where(item => historyIds.Contains(item.Id));
 
-            return mediaItems.Count();
+                return mediaItems.Count();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public IEnumerable<Media> GetTopOptimizedImages()
