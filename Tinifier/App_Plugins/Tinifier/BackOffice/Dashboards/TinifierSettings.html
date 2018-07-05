@@ -1,4 +1,4 @@
-﻿<div ng-controller="Tinifier.TinifierEditTSetting.Controller">
+﻿<div ng-controller="Tinifier.TinifierEditTSetting.Controller" >
     <form name="settingsForm" ng-submit="submitForm()" val-form-manager>
         <umb-editor-view>
             <umb-editor-container>
@@ -10,7 +10,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>API Key<small class="ng-binding"> (required)</small></h3>
                                         <p style="width: 85%;">You can get it on a <a href="http://goo.gl/gaaz8i" style="color:blue">TinyPNG website</a>. Available free requests could be checked on the "Statistic" tab.</p>
-                                        <input class="umb-property-editor ng-dirty ng-valid ng-valid-required" type="text" style="width: 85%;" ng-model="timage.ApiKey" required="">
+                                        <input class="umb-property-editor ng-dirty ng-valid ng-valid-required" type="text" style="width: 85%;" ng-model="timage.ApiKey" required="" no-dirty-check>
                                     </div>
                                 </div>
                             </div>
@@ -28,7 +28,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>Optimize on upload<small class="ng-binding"> (optional)</small></h3>
                                         <p style="width: 85%;">You will never get non-optimized images but should wait more on each image upload.</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" style="width: 100%;"></select>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" style="width: 100%;" no-dirty-check></select>
                                     </div>
                                 </div>
                             </div>
@@ -46,7 +46,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>Hide left panel<small class="ng-binding"> (optional)</small></h3>
                                         <p style="width: 39%;">If you have a huge website with tons of images left panel could be messy. You can read more here (<a href="http://goo.gl/A5fHws" style="color:blue">http://goo.gl/A5fHws</a>)</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.HideLeftPanel" style="width: 41%;"></select>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.HideLeftPanel" style="width: 41%;" no-dirty-check></select>
                                     </div>
                                 </div>
                             </div>
@@ -55,7 +55,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>Preserve image metadata<small class="ng-binding"> (optional)</small></h3>
                                         <p style="width: 49%;">You can request that specific metadata is copied from the uploaded image to the compressed version. Keep in mind that preserving metadata adds to the compressed file size.</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.PreserveMetadata" style="width: 50%;"></select>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.PreserveMetadata" style="width: 50%;" no-dirty-check></select>
                                     </div>
                                 </div>
                             </div>
