@@ -76,20 +76,21 @@ namespace Tinifier.Core.Services.TinyPNG
 
         private async Task<TinyResponse> TinifyByteArrayAsync(byte[] imageByteArray)
         {
+            //removed image limitation Feature #3215 UPD: just remove any limitation on an image size
             TinyResponse tinyResponse;
-            if(imageByteArray.Length > PackageConstants.MaxImageSize)
-            {
-                tinyResponse = new TinyResponse
-                {
-                    Output = new TinyOutput
-                    {
-                        Error = PackageConstants.TooBigImage,
-                        IsOptimized = false
-                    }
-                };
-            }
-            else
-            {
+            //if(imageByteArray.Length > PackageConstants.MaxImageSize)
+            //{
+            //    tinyResponse = new TinyResponse
+            //    {
+            //        Output = new TinyOutput
+            //        {
+            //            Error = PackageConstants.TooBigImage,
+            //            IsOptimized = false
+            //        }
+            //    };
+            //}
+            //else
+            //{
                 var byteContent = new ByteArrayContent(imageByteArray);
                 try
                 {
@@ -108,7 +109,7 @@ namespace Tinifier.Core.Services.TinyPNG
                         }
                     };
                 }
-            }           
+            //}           
 
             return tinyResponse;
         }
