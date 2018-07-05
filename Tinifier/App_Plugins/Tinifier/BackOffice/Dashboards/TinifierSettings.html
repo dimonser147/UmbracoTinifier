@@ -36,8 +36,8 @@
                                 <div class="control-group umb-control-group">
                                     <div class="umb-el-wrap">
                                         <h3>Hard reset</h3>
-                                        <p style="width: 100%;">Click this button if your tinifing process stuck or you just want to stop tinifing.</p>
-                                        <button type="button" class="pushButtonStop" ng-click="stopTinifing()">Stop tinifing!</button>
+                                        <p style="width: 100%;">Drop and create Tinifier tables in the DB. Useful in case of issues after migrations.</p>
+                                        <button type="button" class="pushButton btn-danger"  data-toggle="modal" data-target="#hardResetModal" >Stop tinifing!</button>
                                     </div>
                                 </div>
                             </div>
@@ -92,6 +92,26 @@
                 <div ng-controller="Tinifier.TinyTImage.Controller">
                     <button type="button" class="btn btn-default" ng-click="tinifyAll()" data-dismiss="modal">Confirm</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="hardResetModal" role="dialog" data-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Please, confirm the action</h4>
+            </div>
+            <div class="modal-body">
+                <p>Current statistic, TinyPNG API key, and all settings will be lost. Do you wish to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <div ng-controller="Tinifier.TinifierEditTSetting.Controller">
+                    <button type="button" class="btn btn-default" ng-click="stopTinifing()" data-dismiss="modal">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
