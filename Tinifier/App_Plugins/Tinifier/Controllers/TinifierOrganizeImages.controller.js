@@ -7,7 +7,6 @@
         notificationsService.success("Organizing is in progress...");
         $http.get(url).then(
             function (response) {
-                console.log('get', response);
                 successHandler(response);
             },
             function (data) {
@@ -19,9 +18,13 @@
         var url = "/umbraco/backoffice/api/Tinifier/DiscardOrganizing";
         notificationsService.success("Discarding is in progress...");
         navigationService.hideDialog();
-        $http.get(url)
-            .success(successDiscardСhanges)
-            .error(errorHandler);
+        $http.get(url).then(
+            function (response) {
+                successDiscardСhanges(response);
+            },
+            function (data) {
+                errorHandler(data);
+            })
     };
 
     function successHandler(response) {
