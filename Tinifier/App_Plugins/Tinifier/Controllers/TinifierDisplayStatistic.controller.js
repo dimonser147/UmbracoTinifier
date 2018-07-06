@@ -108,6 +108,7 @@
                 document.getElementById("tinifierStatus").innerHTML = "Panda is sleeping now";
                 document.getElementById("statusPanda").src = "/App_Plugins/Tinifier/media/sleeping_panda_by_citruspop-d2v8hdd.jpg";
                 document.getElementById("updateSeconds").style.display = "none";
+
             } else {
                 document.getElementById("statusPanda").src = "/App_Plugins/Tinifier/media/runPanda.jpg";
                 document.getElementById("tinifierStatus").innerHTML = "";
@@ -115,7 +116,7 @@
                 $scope.currentImage = response.data.CurrentImage;
                 $scope.amounthOfImages = response.data.AmounthOfImages;
                 document.getElementById("updateSeconds").style.display = "block";
-                document.getElementById("resetButton").style.display = "inline-block";
+                //document.getElementById("resetButton").style.display = "inline-block";
             }
         });
     };
