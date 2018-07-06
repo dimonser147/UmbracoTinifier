@@ -5,9 +5,14 @@
         var url = `/umbraco/backoffice/api/Tinifier/OrganizeImages?folderId=${folderId}`;
         navigationService.hideDialog();
         notificationsService.success("Organizing is in progress...");
-        $http.get(url)
-            .success(successHandler)
-            .error(errorHandler);
+        $http.get(url).then(
+            function (response) {
+                console.log('get', response);
+                successHandler(response);
+            },
+            function (data) {
+                errorHandler(data);
+            })
     };
 
     $scope.discardOrganizing = function () {
@@ -32,6 +37,8 @@
     }
 
     function errorHandler(response) {
-
+        if (response.status == 409) {
+            notificationsService.error("Forbiden", "Please wait until image saving is completed. Then try again");
+        }
     }
 });

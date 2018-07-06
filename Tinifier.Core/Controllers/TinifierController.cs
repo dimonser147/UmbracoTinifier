@@ -262,6 +262,10 @@ namespace Tinifier.Core.Controllers
         [HttpGet]
         public HttpResponseMessage OrganizeImages(int folderId)
         {
+            if (folderId !=0)
+            {
+                return Request.CreateResponse(HttpStatusCode.Conflict);
+            }
             try
             {
                 var organizer = new ByUploadedDateImageOrganizer(folderId);
