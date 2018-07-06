@@ -38,7 +38,10 @@
 
     function errorHandler(response) {
         if (response.status == 409) {
-            notificationsService.error("Forbiden", "Please wait until image saving is completed. Then try again");
+            notificationsService.error("Forbidden", "Please wait until images saving are completed. Then try again");
+        }
+        else {
+            notificationsService.error("Error");
         }
     }
 });

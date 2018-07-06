@@ -302,6 +302,7 @@
     <Compile Include="Repository\State\TStateRepository.cs" />
     <Compile Include="Services\BackendDevs\IBackendDevsConnector.cs" />
     <Compile Include="Services\History\IHistoryService.cs" />
+    <Compile Include="Services\MediaSavingHelper.cs" />
     <Compile Include="Services\Media\BaseImageService.cs" />
     <Compile Include="Services\Media\IImageService.cs" />
     <Compile Include="Services\Media\Organizers\ByUploadedDateOrganizer.cs" />

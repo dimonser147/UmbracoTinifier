@@ -6,6 +6,7 @@ using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Section;
+using Tinifier.Core.Services;
 using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.Media;
 using Tinifier.Core.Services.Settings;
@@ -64,6 +65,7 @@ namespace Tinifier.Core.Application
 
         private void MediaService_Saving(IMediaService sender, SaveEventArgs<IMedia> e)
         {
+            MediaSavingHelper.IsSavingInProgress = true;
             // reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
                     (m) => _historyService.Delete(m.Id),
@@ -72,6 +74,7 @@ namespace Tinifier.Core.Application
 
         private void MediaService_Saved(IMediaService sender, SaveEventArgs<IMedia> e)
         {
+            MediaSavingHelper.IsSavingInProgress = false;
             // optimize on upload
             var settingService = _settingsService.GetSettings();
             if (settingService == null || settingService.EnableOptimizationOnUpload == false)

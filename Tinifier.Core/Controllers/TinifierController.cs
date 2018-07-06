@@ -24,6 +24,7 @@ using Umbraco.Web.WebApi;
 using System.Linq;
 using System;
 using Tinifier.Core.Services.Media.Organizers;
+using Tinifier.Core.Services;
 
 namespace Tinifier.Core.Controllers
 {
@@ -262,7 +263,7 @@ namespace Tinifier.Core.Controllers
         [HttpGet]
         public HttpResponseMessage OrganizeImages(int folderId)
         {
-            if (folderId !=0)
+            if (MediaSavingHelper.IsSavingInProgress)
             {
                 return Request.CreateResponse(HttpStatusCode.Conflict);
             }
