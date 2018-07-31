@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Models;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Image;
@@ -36,8 +37,6 @@ namespace Tinifier.Core.Services.Media
         private readonly IBackendDevsConnector _backendDevsConnectorService;
         private readonly IMediaService _mediaService;
         private readonly ISettingsService _settingsService;
-
-
 
         public ImageService()
         {
@@ -159,27 +158,40 @@ namespace Tinifier.Core.Services.Media
         public void BackupMediaPaths(IEnumerable<uMedia> media)
         {
             var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
-            mediaHistoryRepo.DeleteAll();
             foreach (var m in media)
             {
                 var mediaHistory = new TinifierMediaHistory
                 {
                     MediaId = m.Id,
-                    FormerPath = m.Path
+                    FormerPath = m.Path,
+                    OrganizationRootFolderId = m.ParentId
                 };
                 mediaHistoryRepo.Create(mediaHistory);
             }
         }
 
-        public void DiscardOrganizing()
+        public void DiscardOrganizing(int folderId)
         {
-            int folderId = 0;
+            if (!IsFolderOrganized(folderId))
+                throw new OrganizationConstraintsException("This folder is not an organization root.");
+
+            Discard(folderId);
+        }
+
+        private void Discard(int baseFolderId)
+        {
             var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
-            var media = mediaHistoryRepo.GetAll();
+            var media = mediaHistoryRepo.GetAll().Where(m => m.OrganizationRootFolderId == baseFolderId);
+
+            var folderId = 0;
             foreach (var m in media)
             {
                 var monthFolder = _mediaService.GetParent(m.MediaId);
+                if (monthFolder == null)
+                    continue;
                 var yearFolder = _mediaService.GetParent(monthFolder);
+                if (yearFolder == null)
+                    continue;
 
                 folderId = yearFolder.Id;
                 // the path is stored as a string with comma separated IDs of media
@@ -200,6 +212,8 @@ namespace Tinifier.Core.Services.Media
                     _mediaService.Delete(_mediaService.GetById(folderId));
                 }
             }
+
+            mediaHistoryRepo.DeleteAll(baseFolderId);
         }
 
         protected void PreserveImageMetadata(byte[] originImage, ref byte[] optimizedImage)
@@ -219,5 +233,30 @@ namespace Tinifier.Core.Services.Media
             }
         }
 
+        public bool IsFolderChildOfOrganizedFolder(int sourceFolderId)
+        {
+            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
+            var folder = _mediaService.GetById(sourceFolderId);
+
+            var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
+
+            while (folder != null)
+            {
+                if (organizedFoldersList.Contains(folder.Id))
+                    return true;
+
+                folder = _mediaService.GetById(folder.ParentId);
+
+            }
+            return false;
+        }
+
+        private bool IsFolderOrganized(int folderId)
+        {
+            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
+            var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
+
+            return organizedFoldersList.Contains(folderId);
+        }
     }
 }

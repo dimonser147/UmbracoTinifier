@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Common;
 using Umbraco.Core;
@@ -52,7 +53,7 @@ namespace Tinifier.Core.Repository.History
         /// <returns>TinifierMediaHistory</returns>
         public TinifierMediaHistory Get(int id)
         {
-            var query = new Sql($"SELECT MediaId, FormerPath FROM {_tableName} WHERE MediaId = {id}");
+            var query = new Sql($"SELECT MediaId, FormerPath, OrganizationRootFolderId FROM {_tableName} WHERE MediaId = {id}");
             return _database.FirstOrDefault<TinifierMediaHistory>(query);
         }
 
@@ -62,8 +63,24 @@ namespace Tinifier.Core.Repository.History
         /// <returns>IEnumerable of TinifierMediaHistory</returns>
         public IEnumerable<TinifierMediaHistory> GetAll()
         {
-            var query = new Sql($"SELECT MediaId, FormerPath FROM {_tableName}");
+            var query = new Sql($"SELECT MediaId, FormerPath, OrganizationRootFolderId FROM {_tableName}");
             return _database.Fetch<TinifierMediaHistory>(query);
+        }
+
+        /// <summary>
+        /// Gets list of currently optimized folder ids
+        /// </summary>
+        /// <returns>IEnumerable of int</returns>
+        internal IEnumerable<int> GetOrganazedFolders()
+        {
+            var query = new Sql($"SELECT DISTINCT OrganizationRootFolderId FROM {_tableName}");
+            return _database.Fetch<int>(query);
+        }
+
+        internal void DeleteAll(int baseFolderId)
+        {
+            var query = new Sql($"DELETE FROM {_tableName} WHERE OrganizationRootFolderId = {baseFolderId}");
+            _database.Execute(query);
         }
     }
 }

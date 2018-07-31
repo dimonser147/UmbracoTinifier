@@ -292,6 +292,7 @@
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TinifierMediaHistory.cs" />
     <Compile Include="Models\Db\TState.cs" />
+    <Compile Include="Models\OrganizationConstraintsException.cs" />
     <Compile Include="Models\Services\HistoriesStatisticModel.cs" />
     <Compile Include="Models\Services\TopImagesModel.cs" />
     <Compile Include="Models\TNotification.cs" />

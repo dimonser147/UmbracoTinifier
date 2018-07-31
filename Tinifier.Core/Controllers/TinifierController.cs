@@ -274,6 +274,10 @@ namespace Tinifier.Core.Controllers
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
+            catch (OrganizationConstraintsException c)
+            {
+                return GetErrorNotification(c.Message, HttpStatusCode.OK, EventMessageType.Warning);
+            }
             catch (Exception ex)
             {
                 return GetErrorNotification(ex.Message, HttpStatusCode.InternalServerError, EventMessageType.Error);
@@ -281,12 +285,16 @@ namespace Tinifier.Core.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage DiscardOrganizing()
+        public HttpResponseMessage DiscardOrganizing(int folderId)
         {
             try
             {
-                _mediaHistoryService.DiscardOrganizing();
+                _mediaHistoryService.DiscardOrganizing(folderId);
                 return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (OrganizationConstraintsException c)
+            {
+                return GetErrorNotification(c.Message, HttpStatusCode.OK, EventMessageType.Warning);
             }
             catch (Exception ex)
             {

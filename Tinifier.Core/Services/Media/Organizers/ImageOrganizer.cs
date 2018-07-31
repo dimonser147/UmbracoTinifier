@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.API;
@@ -12,9 +13,9 @@ namespace Tinifier.Core.Services.Media.Organizers
     public abstract class ImageOrganizer
     {
         protected readonly IImageService _imageService;
+        protected readonly IMediaHistoryService _mediaHistoryService;
         private readonly IMediaService _mediaService;
-        private readonly IMediaHistoryService _mediaHistoryService;
-        private readonly int _sourceFolderId;
+        protected readonly int _sourceFolderId;
         protected readonly IEnumerable<uMedia> _media;
         protected List<OrganisableMediaModel> _previewModel;
 
@@ -30,8 +31,11 @@ namespace Tinifier.Core.Services.Media.Organizers
 
         protected abstract void PreparePreviewModel();
 
+        protected abstract void CheckConstraints();
+
         public void Organize()
         {
+            CheckConstraints();
             PreparePreviewModel();
             SaveCurrentState();
             ProcessPreviewModel();

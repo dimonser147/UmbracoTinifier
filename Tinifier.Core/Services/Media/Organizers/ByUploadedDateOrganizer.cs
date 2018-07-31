@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using System.Runtime.Serialization;
+using Tinifier.Core.Models;
 using Tinifier.Core.Models.API;
 
 namespace Tinifier.Core.Services.Media.Organizers
@@ -23,6 +26,12 @@ namespace Tinifier.Core.Services.Media.Organizers
                     DestinationPath = new string[2] { year, month }
                 });
             };
+        }
+
+        protected override void CheckConstraints()
+        {
+            if (_mediaHistoryService.IsFolderChildOfOrganizedFolder(_sourceFolderId))
+                throw new OrganizationConstraintsException(@"You can not optimize child folder of already optimized one.");
         }
     }
 }

@@ -14,5 +14,9 @@ namespace Tinifier.Core.Models.Db
 
         [Required]
         public string FormerPath { get; set; }
+
+        [PrimaryKeyColumn(AutoIncrement = false, Clustered = true)]
+        [Required]
+        public int OrganizationRootFolderId { get; set; }
     }
 }

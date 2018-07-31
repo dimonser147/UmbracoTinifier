@@ -15,7 +15,9 @@
     };
 
     $scope.discardOrganizing = function () {
-        var url = "/umbraco/backoffice/api/Tinifier/DiscardOrganizing";
+        var folderId = $routeParams.id > 0 ? $routeParams.id : -1;
+        var url = `/umbraco/backoffice/api/Tinifier/DiscardOrganizing?folderId=${folderId}`;
+
         notificationsService.success("Discarding is in progress...");
         navigationService.hideDialog();
         $http.get(url).then(
@@ -28,12 +30,18 @@
     };
 
     function successHandler(response) {
-        notificationsService.success("Success", "The images organized successfully!");
+        if (response.data && response.data.message)
+            notificationsService.info("Info", response.data.message);
+        else 
+            notificationsService.success("Success", "The images organized successfully!");
         navigationService.syncTree({ tree: 'media', path: "/umbraco/backoffice/UmbracoTrees/MediaTree/GetMenu?id=-1&application=media&tree=&isDialog=false", forceReload: false, activate: true });
 
     }
 
     function successDiscardСhanges(response) {
+        if (response.data && response.data.message)
+            notificationsService.info("Info", response.data.message);
+        else 
         notificationsService.success("Success", "Changes are discarded!");
         navigationService.syncTree({ tree: 'media', path: "/umbraco/backoffice/UmbracoTrees/MediaTree/GetMenu?id=-1&application=media&tree=&isDialog=false", forceReload: false, activate: true });
 
