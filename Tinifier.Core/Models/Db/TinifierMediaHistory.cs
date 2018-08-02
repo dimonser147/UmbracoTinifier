@@ -8,14 +8,14 @@ namespace Tinifier.Core.Models.Db
     [TableName(PackageConstants.MediaHistoryTable)]
     public class TinifierMediaHistory
     {
-        [PrimaryKeyColumn(AutoIncrement = false, Clustered = true)]
+        [PrimaryKeyColumn(AutoIncrement = false, OnColumns = "MediaId,OrganizationRootFolderId")]
         [Required]
         public int MediaId { get; set; }
 
         [Required]
         public string FormerPath { get; set; }
 
-        [PrimaryKeyColumn(AutoIncrement = false, Clustered = true)]
+        [PrimaryKeyColumn(AutoIncrement = false, OnColumns = "MediaId,OrganizationRootFolderId")]
         [Required]
         public int OrganizationRootFolderId { get; set; }
     }
