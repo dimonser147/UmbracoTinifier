@@ -1,8 +1,8 @@
-﻿angular.module("umbraco").controller("Tinifier.TinifierOrganizeImages.Controller", function ($scope, $routeParams, $http, notificationsService, dialogService, navigationService) {
-
+﻿angular.module("umbraco").controller("Tinifier.TinifierOrganizeImages.Controller", function ($scope, $routeParams, $http, notificationsService,
+    dialogService, navigationService, tinifierApiUrlsResource) {
     $scope.organizeImages = function () {
         var folderId = $routeParams.id > 0 ? $routeParams.id : -1;
-        var url = `/umbraco/backoffice/api/Tinifier/OrganizeImages?folderId=${folderId}`;
+        var url = `${tinifierApiUrlsResource.tinifier}/OrganizeImages?folderId=${folderId}`;
         navigationService.hideDialog();
         notificationsService.success("Organizing is in progress...");
         $http.get(url).then(
@@ -16,7 +16,7 @@
 
     $scope.discardOrganizing = function () {
         var folderId = $routeParams.id > 0 ? $routeParams.id : -1;
-        var url = `/umbraco/backoffice/api/Tinifier/DiscardOrganizing?folderId=${folderId}`;
+        var url = `${tinifierApiUrlsResource.tinifier}/DiscardOrganizing?folderId=${folderId}`;
 
         notificationsService.success("Discarding is in progress...");
         navigationService.hideDialog();
@@ -32,19 +32,17 @@
     function successHandler(response) {
         if (response.data && response.data.message)
             notificationsService.info("Info", response.data.message);
-        else 
+        else
             notificationsService.success("Success", "The images organized successfully!");
-        navigationService.syncTree({ tree: 'media', path: "/umbraco/backoffice/UmbracoTrees/MediaTree/GetMenu?id=-1&application=media&tree=&isDialog=false", forceReload: false, activate: true });
-
+        navigationService.syncTree({ tree: 'media', path: `${tinifierApiUrlsResource.mediaTree}?id=-1&application=media&tree=&isDialog=false`, forceReload: false, activate: true });
     }
 
     function successDiscardСhanges(response) {
         if (response.data && response.data.message)
             notificationsService.info("Info", response.data.message);
-        else 
-        notificationsService.success("Success", "Changes are discarded!");
-        navigationService.syncTree({ tree: 'media', path: "/umbraco/backoffice/UmbracoTrees/MediaTree/GetMenu?id=-1&application=media&tree=&isDialog=false", forceReload: false, activate: true });
-
+        else
+            notificationsService.success("Success", "Changes are discarded!");
+        navigationService.syncTree({ tree: 'media', path: `${tinifierApiUrlsResource.mediaTree}?id=-1&application=media&tree=&isDialog=false`, forceReload: false, activate: true });
     }
 
     function errorHandler(response) {

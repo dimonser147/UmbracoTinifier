@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Configuration;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
@@ -20,6 +21,7 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
+using Umbraco.Web.UI.JavaScript;
 
 namespace Tinifier.Core.Application
 {
@@ -42,7 +44,7 @@ namespace Tinifier.Core.Application
             _imageService = new ImageService();
             _historyService = new HistoryService();
             _sectionRepo = new TSectionRepo();
-            _mediaService = ApplicationContext.Current.Services.MediaService;            
+            _mediaService = ApplicationContext.Current.Services.MediaService;
         }
 
         /// <summary>
@@ -59,6 +61,7 @@ namespace Tinifier.Core.Application
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
             InstalledPackage.BeforeSave += InstalledPackage_BeforeSave;
+            ServerVariablesParser.Parsing += Parsing;
         }
 
         #region Media
@@ -274,6 +277,16 @@ namespace Tinifier.Core.Application
                 menuItemOrganizeImagesButton.LaunchDialogView(PackageConstants.OrganizeImagesRoute, PackageConstants.OrganizeImagesCaption);
                 e.Menu.Items.Add(menuItemOrganizeImagesButton);
             }
+        }
+
+        private void Parsing(object sender, Dictionary<string, object> dictionary)
+        {
+            var umbracoPath = WebConfigurationManager.AppSettings["umbracoPath"];
+
+            var apiRoot =$"{umbracoPath.Substring(1)}/backoffice/api/";
+
+            var urls = dictionary["umbracoUrls"] as Dictionary<string, object>;
+            urls["tinifierApiRoot"] = apiRoot;
         }
     }
 }

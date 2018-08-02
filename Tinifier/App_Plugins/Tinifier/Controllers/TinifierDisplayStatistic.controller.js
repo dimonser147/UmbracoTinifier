@@ -1,5 +1,4 @@
-﻿angular.module("umbraco").controller("Tinifier.TinifierDisplayStatistic.Controller", function ($scope, $http, $timeout) {
-
+﻿angular.module("umbraco").controller("Tinifier.TinifierDisplayStatistic.Controller", function ($scope, $http, $timeout, $location, tinifierApiUrlsResource) {
     $scope.currentRequests = 0;
     $scope.monthlyRequestsLimit = 0;
     $scope.currentImage = 0;
@@ -8,7 +7,8 @@
     $scope.TotalOptimizedImages = 0;
     $scope.UpdateSeconds = 10;
     $scope.TotalSavedBytes = 0;
-    if (typeof(google) == "undefined")
+
+    if (typeof (google) == "undefined")
         loadScript("https://www.gstatic.com/charts/loader.js", googleInit)
     else
         googleInit();
@@ -35,7 +35,7 @@
     }
 
     function drawChart() {
-        $http.get("/umbraco/backoffice/api/TinifierImagesStatistic/GetStatistic").then(function (response) {
+        $http.get(`${tinifierApiUrlsResource.statistic}/GetStatistic`).then(function (response) {
             if (response.data.tsetting != null) {
                 $scope.currentRequests = response.data.tsetting.CurrentMonthRequests;
             }
@@ -103,12 +103,11 @@
     }
 
     $scope.getData = function () {
-        $http.get("/umbraco/backoffice/api/TinifierState/GetCurrentTinifingState").then(function (response) {
+        $http.get(`${tinifierApiUrlsResource.state}/GetCurrentTinifingState`).then(function (response) {
             if (response.data == "null") {
                 document.getElementById("tinifierStatus").innerHTML = "Panda is sleeping now";
                 document.getElementById("statusPanda").src = "/App_Plugins/Tinifier/media/sleeping_panda_by_citruspop-d2v8hdd.jpg";
                 document.getElementById("updateSeconds").style.display = "none";
-
             } else {
                 document.getElementById("statusPanda").src = "/App_Plugins/Tinifier/media/runPanda.jpg";
                 document.getElementById("tinifierStatus").innerHTML = "";
@@ -163,7 +162,7 @@
     });
 
     $scope.stopTinifing = function () {
-        $http.delete("/umbraco/backoffice/api/TinifierState/DeleteActiveState").success(function (response) {
+        $http.delete(`${tinifierApiUrlsResource.state}/DeleteActiveState`).success(function (response) {
             notificationsService.success("Success", "Tinifing successfully stoped!");
         }).error(function (response) {
             notificationsService.error("Error", "Tinifing can`t stop now!");

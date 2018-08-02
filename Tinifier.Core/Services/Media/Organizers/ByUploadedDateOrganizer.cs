@@ -31,7 +31,7 @@ namespace Tinifier.Core.Services.Media.Organizers
         protected override void CheckConstraints()
         {
             if (_mediaHistoryService.IsFolderChildOfOrganizedFolder(_sourceFolderId))
-                throw new OrganizationConstraintsException(@"You can not optimize child folder of already optimized one.");
+                throw new OrganizationConstraintsException(@"This folder is already organized.");
         }
     }
 }

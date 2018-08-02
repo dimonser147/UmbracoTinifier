@@ -6,8 +6,8 @@ using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Services.Settings;
-using Umbraco.Web.WebApi;
 using Umbraco.Core.Events;
+using Umbraco.Web.WebApi;
 
 namespace Tinifier.Core.Controllers
 {

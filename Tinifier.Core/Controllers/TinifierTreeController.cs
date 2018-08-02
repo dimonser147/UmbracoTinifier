@@ -48,6 +48,6 @@ namespace Tinifier.Core.Controllers
             }
 
             return nodes;
-        }      
+        }
     }
 }

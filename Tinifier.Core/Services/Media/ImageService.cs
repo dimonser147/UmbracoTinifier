@@ -21,7 +21,6 @@ using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
 using Umbraco.Core.IO;
 using Umbraco.Core.Services;
-using Drawing = System.Drawing;
 using uMedia = Umbraco.Core.Models.Media;
 
 namespace Tinifier.Core.Services.Media
@@ -49,7 +48,6 @@ namespace Tinifier.Core.Services.Media
             _backendDevsConnectorService = new BackendDevsConnectorService();
             _mediaService = Umbraco.Core.ApplicationContext.Current.Services.MediaService;
             _settingsService = new SettingsService();
-
         }
 
         public IEnumerable<TImage> GetAllImages()
@@ -236,19 +234,19 @@ namespace Tinifier.Core.Services.Media
         public bool IsFolderChildOfOrganizedFolder(int sourceFolderId)
         {
             var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
-            var folder = _mediaService.GetById(sourceFolderId);
-
             var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
 
-            while (folder != null)
+            while(sourceFolderId != -1 && organizedFoldersList.Any())
             {
-                if (organizedFoldersList.Contains(folder.Id))
+                var isOrganized = organizedFoldersList.Contains(sourceFolderId);
+
+                if (isOrganized)
                     return true;
 
-                folder = _mediaService.GetById(folder.ParentId);
-
+                sourceFolderId = _mediaService.GetById(sourceFolderId).ParentId;
             }
-            return false;
+
+            return organizedFoldersList.Contains(-1);
         }
 
         private bool IsFolderOrganized(int folderId)

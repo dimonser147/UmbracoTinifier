@@ -40,7 +40,7 @@ namespace Tinifier.Core.Application
             }
 
             // migrations
-            foreach(var migration in Migrations.MigrationsHelper.GetAllMigrations())
+            foreach (var migration in Migrations.MigrationsHelper.GetAllMigrations())
             {
                 migration?.Resolve(dbContext);
             }
