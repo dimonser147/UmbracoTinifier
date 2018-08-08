@@ -1,4 +1,4 @@
-﻿<div ng-controller="Tinifier.TinifierEditTSetting.Controller">
+﻿<div ng-controller="Tinifier.TinifierEditTSetting.Controller" >
     <form name="settingsForm" ng-submit="submitForm()" val-form-manager>
         <umb-editor-view>
             <umb-editor-container>
@@ -10,7 +10,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>API Key<small class="ng-binding"> (required)</small></h3>
                                         <p style="width: 85%;">You can get it on a <a href="http://goo.gl/gaaz8i" style="color:blue">TinyPNG website</a>. Available free requests could be checked on the "Statistic" tab.</p>
-                                        <input class="umb-property-editor ng-dirty ng-valid ng-valid-required" type="text" style="width: 85%;" ng-model="timage.ApiKey" required="">
+                                        <input class="umb-property-editor ng-dirty ng-valid ng-valid-required" type="text" style="width: 85%;" ng-model="timage.ApiKey" required="" no-dirty-check>
                                     </div>
                                 </div>
                             </div>
@@ -28,7 +28,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>Optimize on upload<small class="ng-binding"> (optional)</small></h3>
                                         <p style="width: 85%;">You will never get non-optimized images but should wait more on each image upload.</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" style="width: 100%;"></select>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" style="width: 100%;" no-dirty-check></select>
                                     </div>
                                 </div>
                             </div>
@@ -36,8 +36,8 @@
                                 <div class="control-group umb-control-group">
                                     <div class="umb-el-wrap">
                                         <h3>Hard reset</h3>
-                                        <p style="width: 100%;">Click this button if your tinifing process stuck or you just want to stop tinifing.</p>
-                                        <button type="button" class="pushButtonStop" ng-click="stopTinifing()">Stop tinifing!</button>
+                                        <p style="width: 100%;">Drop and create Tinifier tables in the DB. Useful in case of issues after migrations.</p>
+                                        <button type="button" class="pushButton btn-danger"  data-toggle="modal" data-target="#hardResetModal" >Stop tinifing!</button>
                                     </div>
                                 </div>
                             </div>
@@ -46,7 +46,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>Hide left panel<small class="ng-binding"> (optional)</small></h3>
                                         <p style="width: 39%;">If you have a huge website with tons of images left panel could be messy. You can read more here (<a href="http://goo.gl/A5fHws" style="color:blue">http://goo.gl/A5fHws</a>)</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.HideLeftPanel" style="width: 41%;"></select>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.HideLeftPanel" style="width: 41%;" no-dirty-check></select>
                                     </div>
                                 </div>
                             </div>
@@ -55,7 +55,7 @@
                                     <div class="umb-el-wrap">
                                         <h3>Preserve image metadata<small class="ng-binding"> (optional)</small></h3>
                                         <p style="width: 49%;">You can request that specific metadata is copied from the uploaded image to the compressed version. Keep in mind that preserving metadata adds to the compressed file size.</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.PreserveMetadata" style="width: 50%;"></select>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.PreserveMetadata" style="width: 50%;" no-dirty-check></select>
                                     </div>
                                 </div>
                             </div>
@@ -80,7 +80,7 @@
                     </umb-breadcrumbs>
                 </umb-editor-footer-content-left>
                 <umb-editor-footer-content-right>
-                    <button type="submit" class="btn btn-success">Save</button>                   
+                    <button type="submit" class="btn btn-success">Save</button>
                 </umb-editor-footer-content-right>
             </umb-editor-footer>
         </umb-editor-view>
@@ -101,6 +101,26 @@
                 <div ng-controller="Tinifier.TinyTImage.Controller">
                     <button type="button" class="btn btn-default" ng-click="tinifyAll()" data-dismiss="modal">Confirm</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="hardResetModal" role="dialog" data-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Please, confirm the action</h4>
+            </div>
+            <div class="modal-body">
+                <p>Current statistic, TinyPNG API key, and all settings will be lost. Do you wish to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <div ng-controller="Tinifier.TinifierEditTSetting.Controller">
+                    <button type="button" class="btn btn-default" ng-click="stopTinifing()" data-dismiss="modal">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>

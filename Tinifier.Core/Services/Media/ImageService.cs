@@ -6,31 +6,36 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
+using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Models;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Image;
 using Tinifier.Core.Services.BackendDevs;
 using Tinifier.Core.Services.History;
+using Tinifier.Core.Services.Media.Organizers;
 using Tinifier.Core.Services.Settings;
 using Tinifier.Core.Services.State;
 using Tinifier.Core.Services.Statistic;
 using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
-using Tinifier.Core.Infrastructure;
 using Umbraco.Core.IO;
 using Tinifier.Core.Infrastructure.Exceptions;
+using Umbraco.Core.Services;
+using uMedia = Umbraco.Core.Models.Media;
 
 namespace Tinifier.Core.Services.Media
 {
-    public class ImageService : BaseImageService, IImageService
+    public class ImageService : BaseImageService, IImageService, IMediaHistoryService
     {
         private readonly IValidationService _validationService;
-        private readonly TImageRepository _imageRepository;        
+        private readonly TImageRepository _imageRepository;
         private readonly IHistoryService _historyService;
         private readonly IStatisticService _statisticService;
         private readonly IStateService _stateService;
         private readonly ITinyPNGConnector _tinyPngConnectorService;
         private readonly IBackendDevsConnector _backendDevsConnectorService;
+        private readonly IMediaService _mediaService;
         private readonly ISettingsService _settingsService;
 
         public ImageService()
@@ -42,12 +47,18 @@ namespace Tinifier.Core.Services.Media
             _stateService = new StateService();
             _tinyPngConnectorService = new TinyPNGConnectorService();
             _backendDevsConnectorService = new BackendDevsConnectorService();
+            _mediaService = Umbraco.Core.ApplicationContext.Current.Services.MediaService;
             _settingsService = new SettingsService();
         }
 
         public IEnumerable<TImage> GetAllImages()
         {
             return Convert(_imageRepository.GetAll());
+        }
+
+        public IEnumerable<uMedia> GetAllImagesAt(int folderId)
+        {
+            return _imageRepository.GetAllAt(folderId);
         }
 
         public TImage GetImage(int id)
@@ -82,15 +93,18 @@ namespace Tinifier.Core.Services.Media
         private TImage GetImage(Umbraco.Core.Models.Media uMedia)
         {
             _validationService.ValidateExtension(uMedia);
-            return base.Convert(uMedia);
+            return Convert(uMedia);
+        }
+
+        public void Move(uMedia image, int parentId)
+        {
+            _imageRepository.Move(image, parentId);
         }
 
         public async Task OptimizeImageAsync(TImage image)
         {
             _stateService.CreateState(1);
-            var tinyResponse = await _tinyPngConnectorService
-                .TinifyAsync(image, base.FileSystem)
-                .ConfigureAwait(false);
+            var tinyResponse = await _tinyPngConnectorService.TinifyAsync(image, base.FileSystem).ConfigureAwait(false);
             if (tinyResponse.Output.Url == null)
             {
                 _historyService.CreateResponseHistory(image.Id.ToString(), tinyResponse);
@@ -145,12 +159,14 @@ namespace Tinifier.Core.Services.Media
 
             // download optimized image
             var tImageBytes = TinyImageService.Instance.DownloadImage(tinyResponse.Output.Url);
+
             // preserve image metadata
             if (_settingsService.GetSettings().PreserveMetadata)
-            {                
+            {
                 byte[] originImageBytes = image.ToBytes(fs);
                 PreserveImageMetadata(originImageBytes, ref tImageBytes);
             }
+
             // update physical file
             base.UpdateMedia(image, tImageBytes);
             // update history
@@ -162,6 +178,67 @@ namespace Tinifier.Core.Services.Media
             _statisticService.UpdateStatistic();
             // update tinifying state
             _stateService.UpdateState();
+        }
+
+        public void BackupMediaPaths(IEnumerable<uMedia> media)
+        {
+            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
+            foreach (var m in media)
+            {
+                var mediaHistory = new TinifierMediaHistory
+                {
+                    MediaId = m.Id,
+                    FormerPath = m.Path,
+                    OrganizationRootFolderId = m.ParentId
+                };
+                mediaHistoryRepo.Create(mediaHistory);
+            }
+        }
+
+        public void DiscardOrganizing(int folderId)
+        {
+            if (!IsFolderOrganized(folderId))
+                throw new OrganizationConstraintsException("This folder is not an organization root.");
+
+            Discard(folderId);
+        }
+
+        private void Discard(int baseFolderId)
+        {
+            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
+            var media = mediaHistoryRepo.GetAll().Where(m => m.OrganizationRootFolderId == baseFolderId);
+
+            var folderId = 0;
+            foreach (var m in media)
+            {
+                var monthFolder = _mediaService.GetParent(m.MediaId);
+                if (monthFolder == null)
+                    continue;
+                var yearFolder = _mediaService.GetParent(monthFolder);
+                if (yearFolder == null)
+                    continue;
+
+                folderId = yearFolder.Id;
+                // the path is stored as a string with comma separated IDs of media
+                // where the last value is ID of current media, penultimate value is ID of its root, etc.
+                // the first value is ID of the very root media
+                var path = m.FormerPath.Split(',');
+                var formerParentId = Int32.Parse(path[path.Length - 2]);
+                var image = _imageRepository.Get(m.MediaId);
+                Move(image, formerParentId);
+
+                if (!_mediaService.HasChildren(monthFolder.Id))
+                {
+                    _mediaService.Delete(_mediaService.GetById(monthFolder.Id));
+                }
+
+                if (!_mediaService.HasChildren(yearFolder.Id))
+                {
+                    _mediaService.Delete(_mediaService.GetById(folderId));
+                }
+            }
+
+            mediaHistoryRepo.DeleteAll(baseFolderId);
         }
 
         protected void PreserveImageMetadata(byte[] originImage, ref byte[] optimizedImage)
@@ -179,6 +256,32 @@ namespace Tinifier.Core.Services.Media
                 optimisedImg.Save(ms, optimisedImg.RawFormat);
                 optimizedImage = ms.ToArray();
             }
+        }
+
+        public bool IsFolderChildOfOrganizedFolder(int sourceFolderId)
+        {
+            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
+            var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
+
+            while(sourceFolderId != -1 && organizedFoldersList.Any())
+            {
+                var isOrganized = organizedFoldersList.Contains(sourceFolderId);
+
+                if (isOrganized)
+                    return true;
+
+                sourceFolderId = _mediaService.GetById(sourceFolderId).ParentId;
+            }
+
+            return organizedFoldersList.Contains(-1);
+        }
+
+        private bool IsFolderOrganized(int folderId)
+        {
+            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
+            var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
+
+            return organizedFoldersList.Contains(folderId);
         }
     }
 }

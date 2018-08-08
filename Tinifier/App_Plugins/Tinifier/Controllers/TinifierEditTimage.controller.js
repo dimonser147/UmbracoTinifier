@@ -1,5 +1,4 @@
-﻿angular.module("umbraco").controller("Tinifier.TinifierEditTImage.Controller", function ($scope, $routeParams, $http, notificationsService) {
-
+﻿angular.module("umbraco").controller("Tinifier.TinifierEditTImage.Controller", function ($scope, $routeParams, $http, notificationsService, tinifierApiUrlsResource) {
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
 
@@ -25,8 +24,7 @@
     }
 
     // Get Image information
-    $http.get("/umbraco/backoffice/api/Tinifier/GetTImage?timageId=" + timageId).success(function(response) {
-
+    $http.get(`${tinifierApiUrlsResource.tinifier}/GetTImage?timageId=${timageId}`).success(function (response) {
         if (response.history != null && response.history.IsOptimized) {
             $scope.date = response.history.OccuredAt.replace("T", " ");
             response.history.OccuredAt = $scope.date;
@@ -40,8 +38,7 @@
         }
 
         $scope.timage = response.timage;
-
-    }).error(function(response) {
+    }).error(function (response) {
         if (response.Error === 1) {
             notificationsService.warning("Warning", response.message);
         }

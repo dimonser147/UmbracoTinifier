@@ -1,4 +1,4 @@
-﻿﻿using Umbraco.Core;
+﻿using Umbraco.Core;
 
 namespace Tinifier.Core.Application.Migrations
 {
@@ -13,5 +13,5 @@ namespace Tinifier.Core.Application.Migrations
                 dbContext.Database.Execute(" ALTER TABLE[TinifierUserSettings] ADD PreserveMetadata bit not null default(0)");
             }
         }
-    }	
+    }
 }

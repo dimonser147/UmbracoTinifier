@@ -5,8 +5,9 @@ namespace Tinifier.Core.Infrastructure
     public class PackageConstants
     {
         public const int MonthlyRequestsLimit = 500;
+        public const int MaxImageSize = 14000000;
         public const string TinyPngUrl = "https://api.tinify.com";
-        public const string BackEndDevsUrl = "https://backend-devs.com";
+        public const string BackEndDevsUrl = "http://backend-devs.com";
 
         public const string TinyPngUri = "/shrink";
         public const string FirstNodeId = "-1";
@@ -68,6 +69,7 @@ namespace Tinifier.Core.Infrastructure
         public const string ApiKeyError = "Settings not saved! Please, fill all required fields with correct values";
         public const string AlreadyOptimized = "Image is already optimized";
         public const string ApiKeyNotFound = "You don`t have ApiKey in settings! Please, go to tinifier section and add ApiKey there!";
+        public const string TooBigImage = "The request was timed out! Your image is too big!";
         public const string AllImagesAlreadyOptimized = "Images are already optimized";
         public const string ConcurrentOptimizing = "Sorry, but at the same time you can tinify only one Image";
         public const string NotSuccessfullRequest = "Request to TinyPNG was not successfull";
@@ -81,5 +83,10 @@ namespace Tinifier.Core.Infrastructure
         {
             "PNG", "JPEG", "JPE", "JPG"
         };
+
+        public const string OrganizeImagesButton = "Tinifier_Organize_Images";
+        public const string OrganizeImagesCaption = "Organize by date";
+        public const string OrganizeImagesRoute = "/App_Plugins/Tinifier/BackOffice/timages/TinifierOrganizeImages.html";
+        public const string MediaHistoryTable = "TinifierMediaHistories";
     }
 }

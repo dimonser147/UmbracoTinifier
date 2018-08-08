@@ -1,5 +1,4 @@
-﻿angular.module("umbraco").controller("Tinifier.TinifierEditTSetting.Controller", function ($scope, $http, $routeParams, notificationsService) {
-
+﻿angular.module("umbraco").controller("Tinifier.TinifierEditTSetting.Controller", function ($scope, $http, $routeParams, notificationsService, tinifierApiUrlsResource) {
     // Get settings
     $scope.timage = {};
 
@@ -10,17 +9,17 @@
     ];
 
     // Fill form from web api
-    $http.get("/umbraco/backoffice/api/TinifierSettings/GetTSetting").success(function (response) {
+    $http.get(`${tinifierApiUrlsResource.settings}/GetTSetting`).success(function (response) {
         $scope.timage = response;
     });
 
     // Submit form with settings
-    $scope.submitForm = function() {
+    $scope.submitForm = function () {
         timage = $scope.timage;
-        $http.post("/umbraco/backoffice/api/TinifierSettings/PostTSetting", JSON.stringify(timage))
-            .success(function(response) {
+        $http.post(`${tinifierApiUrlsResource.settings}/PostTSetting`, JSON.stringify(timage))
+            .success(function (response) {
                 notificationsService.success("Success", response.message);
-            }).error(function(response) {
+            }).error(function (response) {
                 if (response.Error === 1) {
                     notificationsService.warning("Warning", response.message);
                 }
@@ -31,7 +30,7 @@
     };
 
     $scope.stopTinifing = function () {
-        $http.delete("/umbraco/backoffice/api/TinifierState/DeleteActiveState").success(function (response) {
+        $http.delete(`${tinifierApiUrlsResource.state}/DeleteActiveState`).success(function (response) {
             notificationsService.success("Success", "Tinifing successfully stoped!");
         }).error(function (response) {
             notificationsService.error("Error", "Tinifing can`t stop now!");

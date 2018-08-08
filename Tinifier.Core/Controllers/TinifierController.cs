@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,9 +13,11 @@ using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Services;
 using Tinifier.Core.Services.BackendDevs;
 using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.Media;
+using Tinifier.Core.Services.Media.Organizers;
 using Tinifier.Core.Services.Settings;
 using Tinifier.Core.Services.State;
 using Tinifier.Core.Services.TinyPNG;
@@ -40,6 +44,7 @@ namespace Tinifier.Core.Controllers
         private readonly IStateService _stateService;
         private readonly IValidationService _validationService;
         private readonly IBackendDevsConnector _backendDevsConnectorService;
+        private readonly IMediaHistoryService _mediaHistoryService;
 
         public TinifierController()
         {
@@ -50,6 +55,7 @@ namespace Tinifier.Core.Controllers
             _stateService = new StateService();
             _validationService = new ValidationService();
             _backendDevsConnectorService = new BackendDevsConnectorService();
+            _mediaHistoryService = new ImageService();
         }
 
         /// <summary>
@@ -127,11 +133,6 @@ namespace Tinifier.Core.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> TinifyEverything()
         {
-            //var content = ApplicationContext.Services.ContentService.get(1224);
-            //var json = content.GetValue<string>("customCropper");
-            //var imageCrops = JsonConvert.DeserializeObject<ImageCropDataSet>(json);
-            //var src = imageCrops.Src;
-            //return null;
             var nonOptimizedImages = new List<TImage>();
 
             foreach (var image in _imageService.GetAllImages())
@@ -215,7 +216,7 @@ namespace Tinifier.Core.Controllers
 
             _stateService.CreateState(imagesList.Count);
             return await CallTinyPngService(imagesList);
-        }       
+        }
 
         /// <summary>
         /// Tinify Images by urls
@@ -300,7 +301,7 @@ namespace Tinifier.Core.Controllers
             int n = imagesList.Count();
             int k = n - nonOptimizedImagesCount;
 
-            return GetSuccessResponse(k, n, 
+            return GetSuccessResponse(k, n,
                 nonOptimizedImagesCount == 0 ? EventMessageType.Success : EventMessageType.Warning);
         }
 
@@ -322,6 +323,54 @@ namespace Tinifier.Core.Controllers
                 {
                     url = "https://our.umbraco.org/projects/backoffice-extensions/tinifier/"
                 });
+        }
+
+        [HttpGet]
+        public HttpResponseMessage OrganizeImages(int folderId)
+        {
+            if (MediaSavingHelper.IsSavingInProgress)
+            {
+                return Request.CreateResponse(HttpStatusCode.Conflict);
+            }
+            try
+            {
+                var organizer = new ByUploadedDateImageOrganizer(folderId);
+                organizer.Organize();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (OrganizationConstraintsException c)
+            {
+                return GetErrorNotification(c.Message, HttpStatusCode.OK, EventMessageType.Warning);
+            }
+            catch (Exception ex)
+            {
+                return GetErrorNotification(ex.Message, HttpStatusCode.InternalServerError, EventMessageType.Error);
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage DiscardOrganizing(int folderId)
+        {
+            try
+            {
+                _mediaHistoryService.DiscardOrganizing(folderId);
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (OrganizationConstraintsException c)
+            {
+                return GetErrorNotification(c.Message, HttpStatusCode.OK, EventMessageType.Warning);
+            }
+            catch (Exception ex)
+            {
+                return GetErrorNotification(ex.Message, HttpStatusCode.InternalServerError, EventMessageType.Error);
+            }
+        }
+
+        private HttpResponseMessage GetErrorNotification(string message, HttpStatusCode httpStatusCode, EventMessageType eventMessageType)
+        {
+            return Request.CreateResponse(httpStatusCode,
+                    new TNotification("Tinifier Oops", message, eventMessageType) { sticky = true });
         }
     }
 }

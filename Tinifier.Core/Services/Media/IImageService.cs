@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Tinifier.Core.Models.API;
 using Tinifier.Core.Models.Db;
 using Umbraco.Core.IO;
+using uMedia = Umbraco.Core.Models.Media;
 
 namespace Tinifier.Core.Services.Media
 {
@@ -13,6 +14,12 @@ namespace Tinifier.Core.Services.Media
         /// </summary>
         /// <returns>IEnumerable<TImage></returns>
         IEnumerable<TImage> GetAllImages();
+
+        /// <summary>
+        /// Get all images at the first/root level
+        /// </summary>
+        /// <returns>IEnumerable<TImage></returns>
+        IEnumerable<uMedia> GetAllImagesAt(int folderId);
 
         /// <summary>
         /// Get Image By Id from Umbraco Media
@@ -27,6 +34,13 @@ namespace Tinifier.Core.Services.Media
         /// <param name="path">Image path</param>
         /// <returns>TImage</returns>
         TImage GetImage(string path);
+
+        /// <summary>
+        /// Moves an Media object to a new location
+        /// </summary>
+        /// <param name="media">media to move</param>
+        /// <param name="parentId">id of a new location</param>
+        void Move(uMedia image, int parentId);
 
         /// <summary>
         /// Get all optimized images

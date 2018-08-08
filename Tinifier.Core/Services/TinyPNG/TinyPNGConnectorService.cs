@@ -30,20 +30,25 @@ namespace Tinifier.Core.Services.TinyPNG
 
         public async Task<TinyResponse> TinifyAsync(TImage tImage, IFileSystem fs)
         {
+            byte[] imageBytes;
             TinyResponse tinyResponse;
+
             try
             {
-                byte[] data = tImage.ToBytes(fs);
-                tinyResponse = await TinifyByteArrayAsync(data).ConfigureAwait(false);
+                string path = fs.GetRelativePath(tImage.AbsoluteUrl);
+                using (Stream file = fs.OpenFile(path))
+                {
+                    imageBytes = ReadFully(file);
+                }
+                tinyResponse = await TinifyByteArrayAsync(imageBytes).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 tinyResponse = new TinyResponse
                 {
                     Output = new TinyOutput
                     {
-                        //Error = PackageConstants.ImageDeleted, ???
-                        Error = ex.Message,
+                        Error = PackageConstants.ImageDeleted,
                         IsOptimized = false
                     }
                 };
@@ -53,31 +58,58 @@ namespace Tinifier.Core.Services.TinyPNG
         }
 
 
+      
 
+        private byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
 
         private async Task<TinyResponse> TinifyByteArrayAsync(byte[] imageByteArray)
         {
+            //removed image limitation Feature #3215 UPD: just remove any limitation on an image size
             TinyResponse tinyResponse;
-
-            var byteContent = new ByteArrayContent(imageByteArray);
-            try
-            {
-                var responseResult = await CreateRequestAsync(byteContent).ConfigureAwait(false);
-                tinyResponse = _serializer.Deserialize<TinyResponse>(responseResult);
-                tinyResponse.Output.IsOptimized = true;
-            }
-            catch (HttpRequestException ex)
-            {
-                tinyResponse = new TinyResponse
+            //if(imageByteArray.Length > PackageConstants.MaxImageSize)
+            //{
+            //    tinyResponse = new TinyResponse
+            //    {
+            //        Output = new TinyOutput
+            //        {
+            //            Error = PackageConstants.TooBigImage,
+            //            IsOptimized = false
+            //        }
+            //    };
+            //}
+            //else
+            //{
+                var byteContent = new ByteArrayContent(imageByteArray);
+                try
                 {
-                    Output = new TinyOutput
+                    var responseResult = await CreateRequestAsync(byteContent).ConfigureAwait(false);
+                    tinyResponse = _serializer.Deserialize<TinyResponse>(responseResult);
+                    tinyResponse.Output.IsOptimized = true;
+                }
+                catch (HttpRequestException ex)
+                {
+                    tinyResponse = new TinyResponse
                     {
-                        Error = ex.Message,
-                        IsOptimized = false
-                    }
-                };
-            }
-
+                        Output = new TinyOutput
+                        {
+                            Error = ex.Message,
+                            IsOptimized = false
+                        }
+                    };
+                }
+            //}           
 
             return tinyResponse;
         }
@@ -98,11 +130,11 @@ namespace Tinifier.Core.Services.TinyPNG
                 {
                     response = await client.PostAsync(PackageConstants.TinyPngUri, inputData as HttpContent).ConfigureAwait(false);
                 }
-                catch (TaskCanceledException ex)
+                catch (TaskCanceledException)
                 {
-                    throw new HttpRequestException(ex.Message);
+                    throw new HttpRequestException(PackageConstants.TooBigImage);
                 }
-
+               
                 if (!response.IsSuccessStatusCode)
                 {
                     var message = (int)response.StatusCode + response.ReasonPhrase;
@@ -117,19 +149,19 @@ namespace Tinifier.Core.Services.TinyPNG
             return responseResult;
         }
 
-
+      
         private int GetHeaderValue(HttpResponseMessage response)
         {
             var headerValues = response.Headers.GetValues(PackageConstants.TinyPngHeader);
             var compressionHeader = headerValues.FirstOrDefault();
 
-            if (compressionHeader == null)
+            if(compressionHeader == null)
             {
                 throw new HttpRequestException(HttpStatusCode.BadRequest + PackageConstants.BadRequest);
             }
 
             var currentMonthRequests = int.Parse(compressionHeader);
-            return currentMonthRequests;
+            return currentMonthRequests;           
         }
     }
 }

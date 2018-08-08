@@ -1,12 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web.Configuration;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Section;
+using Tinifier.Core.Services;
 using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.ImageCropperInfo;
 using Tinifier.Core.Services.Media;
@@ -21,6 +24,7 @@ using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
 using Umbraco.Web.Models.Trees;
 using Umbraco.Web.Trees;
+using Umbraco.Web.UI.JavaScript;
 
 namespace Tinifier.Core.Application
 {
@@ -64,6 +68,7 @@ namespace Tinifier.Core.Application
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
             InstalledPackage.BeforeSave += InstalledPackage_BeforeSave;
+            ServerVariablesParser.Parsing += Parsing;
         }
 
         #region Media
@@ -195,6 +200,7 @@ namespace Tinifier.Core.Application
 
         private void MediaService_Saving(IMediaService sender, SaveEventArgs<IMedia> e)
         {
+            MediaSavingHelper.IsSavingInProgress = true;
             // reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
                     (m) => _historyService.Delete(m.Id.ToString()),
@@ -203,6 +209,7 @@ namespace Tinifier.Core.Application
 
         private void MediaService_Saved(IMediaService sender, SaveEventArgs<IMedia> e)
         {
+            MediaSavingHelper.IsSavingInProgress = false;
             // optimize on upload
             var settingService = _settingsService.GetSettings();
             if (settingService == null || settingService.EnableOptimizationOnUpload == false)
@@ -328,27 +335,31 @@ namespace Tinifier.Core.Application
             {
                 if (dbHelper.TableExist(tables.ElementAt(i).Key))
                 {
-                    var checkColumn = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE 
-                                                TABLE_NAME = 'TinifierImagesStatistic' AND COLUMN_NAME = 'TotalSavedBytes'");
-                    var checkHidePanel = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE
-                                                TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
+                    var checkColumn = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierImagesStatistic' AND COLUMN_NAME = 'TotalSavedBytes'");
+                    var checkHidePanel = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
                     var checkMetaData = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE 
                                                 TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'PreserveMetadata'");
                     int? exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
                     int? hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
                     int? metaData = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkMetaData);
 
+
                     if (exists == null || exists == -1)
-                        ApplicationContext.Current.DatabaseContext.Database.Execute
-                            (new Sql("ALTER TABLE TinifierImagesStatistic ADD COLUMN TotalSavedBytes bigint"));
+                    {
+                        var sql = new Sql("ALTER TABLE TinifierImagesStatistic ADD COLUMN TotalSavedBytes INTEGER NULL");
+                        ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
+                    }
 
                     if (hidePanel == null || hidePanel == -1)
-                        ApplicationContext.Current.DatabaseContext.Database.Execute
-                            (new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN HideLeftPanel bit not null default(0)"));
+                    {
+                        var sql = new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN HideLeftPanel BIT NOT NULL");
+                        ApplicationContext.Current.DatabaseContext.Database.Execute(sql);
+                    }
 
-                    if(metaData == null || metaData == -1)
+                    if (metaData == null || metaData == -1)
                         ApplicationContext.Current.DatabaseContext.Database.Execute
                             (new Sql("ALTER TABLE TinifierUserSettings ADD COLUMN PreserveMetadata bit not null default(0)"));
+
                 }
             }
         }
@@ -393,9 +404,21 @@ namespace Tinifier.Core.Application
                 menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, PackageConstants.StatsDialogCaption);
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
                 e.Menu.Items.Add(menuItemSettingsButton);
+
+                var menuItemOrganizeImagesButton = new MenuItem(PackageConstants.OrganizeImagesButton, PackageConstants.OrganizeImagesCaption);
+                menuItemOrganizeImagesButton.LaunchDialogView(PackageConstants.OrganizeImagesRoute, PackageConstants.OrganizeImagesCaption);
+                e.Menu.Items.Add(menuItemOrganizeImagesButton);
             }
         }
 
+        private void Parsing(object sender, Dictionary<string, object> dictionary)
+        {
+            var umbracoPath = WebConfigurationManager.AppSettings["umbracoPath"];
+
+            var apiRoot =$"{umbracoPath.Substring(1)}/backoffice/api/";
+
+            var urls = dictionary["umbracoUrls"] as Dictionary<string, object>;
+            urls["tinifierApiRoot"] = apiRoot;
+        }
     }
 }
-

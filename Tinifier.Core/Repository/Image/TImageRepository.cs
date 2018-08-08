@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Web;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Services;
@@ -11,7 +9,6 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
-using Umbraco.Web;
 
 namespace Tinifier.Core.Repository.Image
 {
@@ -41,6 +38,18 @@ namespace Tinifier.Core.Repository.Image
         }
 
         /// <summary>
+        /// Gets a collection of IMedia objects by ParentId
+        /// </summary>
+        /// <returns>IEnumerable of Media</returns>
+        public IEnumerable<Media> GetAllAt(int id)
+        {
+            var mediaItems = _mediaService.GetChildren(id)
+                .Where(m => m.ContentType.Equals(_contentTypeService.GetMediaType(PackageConstants.ImageAlias)));
+
+            return mediaItems.Cast<Media>().ToList();
+        }
+
+        /// <summary>
         /// Get Media by Id
         /// </summary>
         /// <param name="id">Media Id</param>
@@ -58,6 +67,16 @@ namespace Tinifier.Core.Repository.Image
         public Media Get(string path)
         {
             return _mediaService.GetMediaByPath(path) as Media;
+        }
+
+        /// <summary>
+        /// Moves an IMedia object to a new location
+        /// </summary>
+        /// <param name="media">media to move</param>
+        /// <param name="parentId">id of a new location</param>
+        public void Move(IMedia media, int parentId)
+        {
+            _mediaService.Move(media, parentId);
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
-﻿angular.module("umbraco").controller("Tinifier.TinyTImage.Controller", function ($scope, $routeParams, $http, notificationsService, dialogService) {
-
+﻿angular.module("umbraco").controller("Tinifier.TinyTImage.Controller", function ($scope, $routeParams, $http, notificationsService,
+    dialogService, navigationService, tinifierApiUrlsResource) {
     // Get the ID from the route parameters (URL)
     var timageId = $routeParams.id;
 
@@ -22,7 +22,7 @@
 
     // Tinify Image and show notification
     $scope.tinify = function () {
-
+        navigationService.hideDialog();
         // Check if user choose Image or recycle bin folder
         if (timageId === recycleBinFolderId) {
             notificationsService.error("Error", "You can`t tinify RecycleBin Folder!");
@@ -43,17 +43,16 @@
             });
 
         var url = arrOfNames.length !== 0
-            ? "/umbraco/backoffice/api/Tinifier/TinyTImage?" + $.param({ imageRelativeUrls: arrOfNames, mediaId: 0 })
-            : "/umbraco/backoffice/api/Tinifier/TinyTImage?mediaId=" + timageId;
+            ? `${tinifierApiUrlsResource.tinifier}/TinyTImage?${$.param({ imageRelativeUrls: arrOfNames, mediaId: 0 })}`
+            : `${tinifierApiUrlsResource.tinifier}/TinyTImage?mediaId=${timageId}`;
 
         $http.get(url)
             .success(successHandler)
             .error(errorHandler);
-
     };
 
     $scope.tinifyAll = function () {
-        $http.put("/umbraco/backoffice/api/Tinifier/TinifyEverything")
+        $http.put(`${tinifierApiUrlsResource.tinifier}/TinifyEverything`)
             .success(successHandler)
             .error(errorHandler);
     };

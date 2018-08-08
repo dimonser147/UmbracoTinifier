@@ -289,11 +289,13 @@
     <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSuccessfullRequestException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSupportedExtensionException.cs" />
-    <Compile Include="Infrastructure\HttpContextHelper.cs" />
     <Compile Include="Infrastructure\MediaExtensions.cs" />
+    <Compile Include="Models\API\OrganisedMediaModel.cs" />
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TImageCropperInfo.cs" />
+    <Compile Include="Models\Db\TinifierMediaHistory.cs" />
     <Compile Include="Models\Db\TState.cs" />
+    <Compile Include="Models\OrganizationConstraintsException.cs" />
     <Compile Include="Models\Services\HistoriesStatisticModel.cs" />
     <Compile Include="Models\Services\TopImagesModel.cs" />
     <Compile Include="Models\TNotification.cs" />
@@ -301,6 +303,7 @@
     <Compile Include="Repository\History\IHistoryRepository.cs" />
     <Compile Include="Repository\ImageCropperInfo\IImageCropperInfoRepository.cs" />
     <Compile Include="Repository\ImageCropperInfo\TImageCropperInfoRepository.cs" />
+    <Compile Include="Repository\History\TMediaHistoryRepository.cs" />
     <Compile Include="Repository\Section\ITSectionRepo.cs" />
     <Compile Include="Repository\Section\TSectionRepo.cs" />
     <Compile Include="Repository\State\TStateRepository.cs" />
@@ -308,8 +311,12 @@
     <Compile Include="Services\History\IHistoryService.cs" />
     <Compile Include="Services\ImageCropperInfo\IImageCropperInfoService.cs" />
     <Compile Include="Services\ImageCropperInfo\ImageCropperInfoService.cs" />
+    <Compile Include="Services\MediaSavingHelper.cs" />
     <Compile Include="Services\Media\BaseImageService.cs" />
     <Compile Include="Services\Media\IImageService.cs" />
+    <Compile Include="Services\Media\Organizers\ByUploadedDateOrganizer.cs" />
+    <Compile Include="Services\Media\Organizers\ImageOrganizer.cs" />
+    <Compile Include="Services\Media\Organizers\IMediaHistoryService.cs" />
     <Compile Include="Services\Settings\ISettingsService.cs" />
     <Compile Include="Services\State\IStateService.cs" />
     <Compile Include="Services\Statistic\IStatisticService.cs" />
