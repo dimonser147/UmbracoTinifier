@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Web;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Services;
@@ -9,6 +11,7 @@ using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
+using Umbraco.Web;
 
 namespace Tinifier.Core.Repository.Image
 {
