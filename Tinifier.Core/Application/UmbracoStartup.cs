@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Section;
 using Tinifier.Core.Services.History;
+using Tinifier.Core.Services.ImageCropperInfo;
 using Tinifier.Core.Services.Media;
 using Tinifier.Core.Services.Settings;
 using Tinifier.Core.Services.Statistic;
@@ -28,6 +31,7 @@ namespace Tinifier.Core.Application
         private readonly IImageService _imageService;
         private readonly IHistoryService _historyService;
         private readonly IMediaService _mediaService;
+        private readonly IImageCropperInfoService _imageCropperInfoService;
 
         private readonly ITSectionRepo _sectionRepo;
 
@@ -40,6 +44,7 @@ namespace Tinifier.Core.Application
             _imageService = new ImageService();
             _historyService = new HistoryService();
             _sectionRepo = new TSectionRepo();
+            _imageCropperInfoService = new ImageCropperInfoService();
             _mediaService = ApplicationContext.Current.Services.MediaService;            
         }
 
@@ -54,6 +59,8 @@ namespace Tinifier.Core.Application
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
             MediaService.Saved += MediaService_Saved;
             MediaService.Saving += MediaService_Saving;
+            ContentService.Saving += ContentService_Saving;
+
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
             InstalledPackage.BeforeSave += InstalledPackage_BeforeSave;
@@ -61,11 +68,136 @@ namespace Tinifier.Core.Application
 
         #region Media
 
+        private void ContentService_Saving(IContentService sender, SaveEventArgs<IContent> e)
+        {
+            var entities = e.SavedEntities;
+
+            var settingService = _settingsService.GetSettings();
+            if (settingService == null || !settingService.EnableCropsOptimization)
+            {
+                _statisticService.UpdateStatistic();
+                return;
+            }
+                
+            foreach (var entity in entities)
+            {
+                var imageCroppers = entity.Properties.Where(x => x.PropertyType.PropertyEditorAlias == Constants.PropertyEditors.ImageCropperAlias);
+
+                foreach (var crop in imageCroppers)
+                {
+                    var key = string.Concat(entity.Name, "-", crop.Alias);
+                    var imageCropperInfo = _imageCropperInfoService.Get(key);
+                    var imagePath = crop.Value;
+
+                    //Delete
+                    if(imageCropperInfo != null && imagePath == null)
+                    {
+                        _imageCropperInfoService.Delete(key);
+
+                        var pathForFolder = imageCropperInfo.ImageId.Remove(imageCropperInfo.ImageId.LastIndexOf('/') + 1);
+                        var histories = _historyService.GetHistoryByPath(pathForFolder);
+
+                        foreach(var history in histories)
+                        {
+                            _historyService.Delete(history.ImageId);
+                        }
+                        
+                        _statisticService.UpdateStatistic();
+                    }
+
+                    //Update
+                    if(imageCropperInfo != null && imagePath != null)
+                    {
+                        var json = JObject.Parse(imagePath.ToString());
+                        var path = json.GetValue("src").ToString();
+
+                        if (string.IsNullOrEmpty(path))
+                            throw new Infrastructure.Exceptions.EntityNotFoundException();
+
+                        var fileExt = Path.GetExtension(path).ToUpper().Replace(".", string.Empty).Trim();
+                        if (!PackageConstants.SupportedExtensions.Contains(fileExt))
+                            throw new NotSupportedExtensionException(fileExt);
+
+                        var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
+                        var serverPathForFolder = System.Web.HttpContext.Current.Server.MapPath(pathForFolder);
+
+                        var di = new DirectoryInfo(serverPathForFolder);
+                        var files = di.GetFiles();
+
+                        foreach (var file in files)
+                        {
+                            TImage image = new TImage
+                            {
+                                Id = Path.Combine(pathForFolder, file.Name),
+                                Name = file.Name,
+                                AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
+                            };
+
+                            var imageHistory = _historyService.GetImageHistory(image.Id);
+                            if (imageHistory != null && imageHistory.IsOptimized)
+                                continue;
+
+                            _imageService.OptimizeImageAsync(image).GetAwaiter().GetResult();
+                        }
+
+                        var histories = _historyService.GetHistoryByPath(pathForFolder);
+
+                        foreach (var history in histories)
+                        {
+                            _historyService.Delete(history.ImageId);
+                        }
+
+                        _imageCropperInfoService.Update(key, path);
+                        _statisticService.UpdateStatistic();
+                    }
+
+                    //Create
+                    if(imageCropperInfo == null && imagePath != null)
+                    {
+                        var json = JObject.Parse(imagePath.ToString());
+                        var path = json.GetValue("src").ToString();
+
+                        if (string.IsNullOrEmpty(path))
+                            throw new Infrastructure.Exceptions.EntityNotFoundException();
+
+                        var fileExt = Path.GetExtension(path).ToUpper().Replace(".", string.Empty).Trim();
+                        if (!PackageConstants.SupportedExtensions.Contains(fileExt))
+                            throw new NotSupportedExtensionException(fileExt);
+
+                        var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
+                        var serverPathForFolder = System.Web.HttpContext.Current.Server.MapPath(pathForFolder);
+
+                        var di = new DirectoryInfo(serverPathForFolder);
+                        var files = di.GetFiles();
+
+                        foreach (var file in files)
+                        {
+                            TImage image = new TImage
+                            {
+                                Id = Path.Combine(pathForFolder, file.Name),
+                                Name = file.Name,
+                                AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
+                            };
+
+                            var imageHistory = _historyService.GetImageHistory(image.Id);
+                            if (imageHistory != null && imageHistory.IsOptimized)
+                                continue;
+
+                            _imageService.OptimizeImageAsync(image).GetAwaiter().GetResult();
+                        }
+
+                        _imageCropperInfoService.Create(key, path);
+                        _statisticService.UpdateStatistic();
+                    }
+                }
+            }
+        }
+
         private void MediaService_Saving(IMediaService sender, SaveEventArgs<IMedia> e)
         {
             // reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
-                    (m) => _historyService.Delete(m.Id),
+                    (m) => _historyService.Delete(m.Id.ToString()),
                     (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
         }
 
@@ -98,7 +230,7 @@ namespace Tinifier.Core.Application
         {
             foreach (var id in e.Ids)
             {
-                _historyService.Delete(id);
+                _historyService.Delete(id.ToString());
             }
             if (e.Ids.Count() > 0)
                 _statisticService.UpdateStatistic();
@@ -143,7 +275,7 @@ namespace Tinifier.Core.Application
                 throw;
             }
 
-            var imageHistory = _historyService.GetImageHistory(image.Id);
+            var imageHistory = _historyService.GetImageHistory(image.Id.ToString());
 
             if (imageHistory == null)
                 await _imageService.OptimizeImageAsync(image).ConfigureAwait(false);

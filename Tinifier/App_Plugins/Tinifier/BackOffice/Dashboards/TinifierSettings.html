@@ -11,7 +11,7 @@
                                         <h3>API Key<small class="ng-binding"> (required)</small></h3>
                                         <p style="width: 85%;">You can get it on a <a href="http://goo.gl/gaaz8i" style="color:blue">TinyPNG website</a>. Available free requests could be checked on the "Statistic" tab.</p>
                                         <input class="umb-property-editor ng-dirty ng-valid ng-valid-required" type="text" style="width: 85%;" ng-model="timage.ApiKey" required="">
-                                    </div>                                       
+                                    </div>
                                 </div>
                             </div>
                             <div class="umb-property" style="display:inline-block;">
@@ -53,9 +53,18 @@
                             <div class="umb-property" style="display:inline-block">
                                 <div class="control-group umb-control-group">
                                     <div class="umb-el-wrap">
-                                        <h3>Preserve image metadata<small class="ng-binding"> (optional)</small></h3>                                        
+                                        <h3>Preserve image metadata<small class="ng-binding"> (optional)</small></h3>
                                         <p style="width: 49%;">You can request that specific metadata is copied from the uploaded image to the compressed version. Keep in mind that preserving metadata adds to the compressed file size.</p>
                                         <select ng-options="option.value as option.label for option in options" ng-model="timage.PreserveMetadata" style="width: 50%;"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="umb-property">
+                                <div class="control-group umb-control-group">
+                                    <div class="umb-el-wrap">
+                                        <h3>Optimize on upload (ImageCropper)<small class="ng-binding"> (optional)</small></h3>
+                                        <p style="width: 39%;">Optimize all crops during content publishing.</p>
+                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableCropsOptimization" style="width: 41%;"></select>
                                     </div>
                                 </div>
                             </div>

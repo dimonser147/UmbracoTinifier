@@ -16,7 +16,7 @@ namespace Tinifier.Core.Models.Db
         public int Id { get; set; }
 
         [Index(IndexTypes.NonClustered)]
-        public int ImageId { get; set; }
+        public string ImageId { get; set; }
 
         public DateTime OccuredAt { get; set; }
 

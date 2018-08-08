@@ -27,7 +27,8 @@ namespace Tinifier.Core.Application
                 { PackageConstants.DbSettingsTable, typeof(TSetting) },
                 { PackageConstants.DbHistoryTable, typeof(TinyPNGResponseHistory) },
                 { PackageConstants.DbStatisticTable, typeof(TImageStatistic) },
-                { PackageConstants.DbStateTable, typeof(TState) }
+                { PackageConstants.DbStateTable, typeof(TState) },
+                { PackageConstants.DbTImageCropperInfoTable, typeof(TImageCropperInfo) }
             };
 
             for (var i = 0; i < tables.Count; i++)

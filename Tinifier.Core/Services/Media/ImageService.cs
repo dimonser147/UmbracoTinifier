@@ -18,6 +18,7 @@ using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
 using Tinifier.Core.Infrastructure;
 using Umbraco.Core.IO;
+using Tinifier.Core.Infrastructure.Exceptions;
 
 namespace Tinifier.Core.Services.Media
 {
@@ -59,6 +60,25 @@ namespace Tinifier.Core.Services.Media
             return GetImage(_imageRepository.Get(path));
         }
 
+        public TImage GetCropImage(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new EntityNotFoundException();
+
+            var fileExt = Path.GetExtension(path).ToUpper().Replace(".", string.Empty).Trim();
+            if (!PackageConstants.SupportedExtensions.Contains(fileExt))
+                throw new NotSupportedExtensionException(fileExt);
+
+            var tImage = new TImage
+            {
+                Id = path,
+                Name = Path.GetFileName(path),
+                AbsoluteUrl = path
+            };
+
+            return tImage;
+        }
+
         private TImage GetImage(Umbraco.Core.Models.Media uMedia)
         {
             _validationService.ValidateExtension(uMedia);
@@ -66,14 +86,14 @@ namespace Tinifier.Core.Services.Media
         }
 
         public async Task OptimizeImageAsync(TImage image)
-        {            
+        {
             _stateService.CreateState(1);
             var tinyResponse = await _tinyPngConnectorService
                 .TinifyAsync(image, base.FileSystem)
                 .ConfigureAwait(false);
             if (tinyResponse.Output.Url == null)
             {
-                _historyService.CreateResponseHistory(image.Id, tinyResponse);
+                _historyService.CreateResponseHistory(image.Id.ToString(), tinyResponse);
                 return;
             }
             UpdateImageAfterSuccessfullRequest(tinyResponse, image, base.FileSystem);
@@ -106,7 +126,12 @@ namespace Tinifier.Core.Services.Media
 
         public IEnumerable<TImage> GetTopOptimizedImages()
         {
-            return Convert(_imageRepository.GetTopOptimizedImages().OrderByDescending(x => x.UpdateDate));
+            // return Convert(_imageRepository.GetTopOptimizedImages().OrderByDescending(x => x.UpdateDate));
+
+            
+            var topOptimizedImages = _imageRepository.GetTopOptimizedImages();
+
+            return topOptimizedImages;
         }
 
         public IEnumerable<TImage> GetFolderImages(int folderId)
@@ -116,6 +141,8 @@ namespace Tinifier.Core.Services.Media
 
         public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, IFileSystem fs)
         {
+            int.TryParse(image.Id, out var Id);
+
             // download optimized image
             var tImageBytes = TinyImageService.Instance.DownloadImage(tinyResponse.Output.Url);
             // preserve image metadata
@@ -127,9 +154,9 @@ namespace Tinifier.Core.Services.Media
             // update physical file
             base.UpdateMedia(image, tImageBytes);
             // update history
-            _historyService.CreateResponseHistory(image.Id, tinyResponse);
+            _historyService.CreateResponseHistory(image.Id.ToString(), tinyResponse);
             // update umbraco media attributes
-            _imageRepository.Update(image.Id, tinyResponse.Output.Size);
+            _imageRepository.Update(Id, tinyResponse.Output.Size);
             // update statistic
             var savedBytes = tinyResponse.Input.Size - tinyResponse.Output.Size;
             _statisticService.UpdateStatistic();
@@ -153,6 +180,5 @@ namespace Tinifier.Core.Services.Media
                 optimizedImage = ms.ToArray();
             }
         }
-
     }
 }

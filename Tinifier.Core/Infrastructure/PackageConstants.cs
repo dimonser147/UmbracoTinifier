@@ -51,6 +51,7 @@ namespace Tinifier.Core.Infrastructure
         public const string DbHistoryTable = "TinifierResponseHistory";
         public const string DbStatisticTable = "TinifierImagesStatistic";
         public const string DbStateTable = "TinifierState";
+        public const string DbTImageCropperInfoTable = "TinifierImageCropperInfo";
 
         public const string TinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/TinifierTinifyDialog.html";
         public const string TinySettingsRoute = "/App_Plugins/Tinifier/BackOffice/timages/TinifierEdit.html";

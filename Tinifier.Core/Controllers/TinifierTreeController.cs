@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Formatting;
+﻿using System.IO;
+using System.Net.Http.Formatting;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Services.Media;
 using Tinifier.Core.Services.Settings;
@@ -43,11 +44,20 @@ namespace Tinifier.Core.Controllers
                 foreach (var timage in _imageService.GetTopOptimizedImages())
                 {
                     nodes.Add(CreateTreeNode(timage.Id + string.Empty, id, queryStrings, timage.Name, PackageConstants.TreeIcon, false,
-                        FormDataCollectionExtensions.GetValue<string>(queryStrings, PackageConstants.AppAlias) + PackageConstants.CustomTreeUrl + timage.Id));
+                        FormDataCollectionExtensions.GetValue<string>(queryStrings, PackageConstants.AppAlias) + PackageConstants.CustomTreeUrl + Base64Encode(timage.Id)));
                 }
             }
 
             return nodes;
-        }      
+        }
+
+        public static string Base64Encode(string plainText)
+        {
+            if (int.TryParse(plainText, out var number))
+                return plainText;
+
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
     }
 }

@@ -24,8 +24,9 @@ using Umbraco.Web.WebApi;
 using System.Linq;
 using System;
 using Umbraco.Core.Models;
-using Umbraco.Web.Models;
-using Newtonsoft.Json;
+using Umbraco.Web;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace Tinifier.Core.Controllers
 {
@@ -57,13 +58,16 @@ namespace Tinifier.Core.Controllers
         /// <param name="timageId">Image Id</param>
         /// <returns>Response(StatusCode, {image, history}}</returns>
         [HttpGet]
-        public HttpResponseMessage GetTImage(int timageId)
+        public HttpResponseMessage GetTImage(string timageId)
         {
             TImage timage;
 
             try
             {
-                timage = _imageService.GetImage(timageId);
+                if (int.TryParse(timageId, out var imageId))
+                    timage = _imageService.GetImage(imageId);
+                else
+                    timage = _imageService.GetCropImage(Base64Decode(timageId));
             }
             catch (Exception ex)
             {
@@ -74,8 +78,14 @@ namespace Tinifier.Core.Controllers
                     });
             }
 
-            var history = _historyService.GetImageHistory(timageId);
+            var history = _historyService.GetImageHistory(timage.Id);
             return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
+        }
+
+        public static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         /// <summary>
@@ -117,7 +127,6 @@ namespace Tinifier.Core.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> TinifyEverything()
         {
-
             //var content = ApplicationContext.Services.ContentService.get(1224);
             //var json = content.GetValue<string>("customCropper");
             //var imageCrops = JsonConvert.DeserializeObject<ImageCropDataSet>(json);
@@ -131,6 +140,57 @@ namespace Tinifier.Core.Controllers
                 if (imageHistory != null && imageHistory.IsOptimized)
                     continue;
                 nonOptimizedImages.Add(image);
+            }
+
+            // Get all published content and tinify all crops 
+            var allPublishedContent = new List<IPublishedContent>();
+
+            foreach (var publishedContentRoot in Umbraco.TypedContentAtRoot())
+                allPublishedContent.AddRange(publishedContentRoot.DescendantsOrSelf());
+
+            foreach(var content in allPublishedContent)
+            {
+                var imageCroppers = content.Properties.Where(x => !string.IsNullOrEmpty(x.Value.ToString()) && x.Value.ToString().Contains("crops"));
+
+                foreach (var crop in imageCroppers)
+                {
+                    var imagePath = crop.Value;
+
+                    if(imagePath != null)
+                    {
+                        var json = JObject.Parse(imagePath.ToString());
+                        var path = json.GetValue("src").ToString();
+
+                        if (string.IsNullOrEmpty(path))
+                            throw new EntityNotFoundException();
+
+                        var fileExt = Path.GetExtension(path).ToUpper().Replace(".", string.Empty).Trim();
+                        if (!PackageConstants.SupportedExtensions.Contains(fileExt))
+                            throw new NotSupportedExtensionException(fileExt);
+
+                        var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
+                        var serverPathForFolder = HttpContext.Current.Server.MapPath(pathForFolder);
+
+                        var di = new DirectoryInfo(serverPathForFolder);
+                        var files = di.GetFiles();
+
+                        foreach (var file in files)
+                        {
+                            TImage image = new TImage
+                            {
+                                Id = Path.Combine(pathForFolder, file.Name),
+                                Name = file.Name,
+                                AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
+                            };
+
+                            var imageHistory = _historyService.GetImageHistory(image.Id);
+                            if (imageHistory != null && imageHistory.IsOptimized)
+                                continue;
+
+                            nonOptimizedImages.Add(image);
+                        }
+                    }                    
+                }
             }
 
             if (nonOptimizedImages.Count == 0)
@@ -219,7 +279,7 @@ namespace Tinifier.Core.Controllers
 
                 if (tinyResponse.Output.Url == null)
                 {
-                    _historyService.CreateResponseHistory(tImage.Id, tinyResponse);
+                    _historyService.CreateResponseHistory(tImage.Id.ToString(), tinyResponse);
                     _stateService.UpdateState();
                     nonOptimizedImagesCount++;
                     continue;
