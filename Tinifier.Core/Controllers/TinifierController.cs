@@ -25,12 +25,11 @@ using Tinifier.Core.Services.Validation;
 using Umbraco.Core.Events;
 using Umbraco.Core.IO;
 using Umbraco.Web.WebApi;
-using System.Linq;
-using System;
 using Umbraco.Core.Models;
 using Umbraco.Web;
-using System.IO;
+using Tinifier.Core.Services.ImageCropperInfo;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace Tinifier.Core.Controllers
 {
@@ -45,6 +44,7 @@ namespace Tinifier.Core.Controllers
         private readonly IValidationService _validationService;
         private readonly IBackendDevsConnector _backendDevsConnectorService;
         private readonly IMediaHistoryService _mediaHistoryService;
+        private readonly IImageCropperInfoService _imageCropperInfoService;
 
         public TinifierController()
         {
@@ -56,6 +56,7 @@ namespace Tinifier.Core.Controllers
             _validationService = new ValidationService();
             _backendDevsConnectorService = new BackendDevsConnectorService();
             _mediaHistoryService = new ImageService();
+            _imageCropperInfoService = new ImageCropperInfoService();
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace Tinifier.Core.Controllers
 
         public static string Base64Decode(string base64EncodedData)
         {
-            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
@@ -143,54 +144,42 @@ namespace Tinifier.Core.Controllers
                 nonOptimizedImages.Add(image);
             }
 
-            // Get all published content and tinify all crops 
-            var allPublishedContent = new List<IPublishedContent>();
-
-            foreach (var publishedContentRoot in Umbraco.TypedContentAtRoot())
-                allPublishedContent.AddRange(publishedContentRoot.DescendantsOrSelf());
-
-            foreach(var content in allPublishedContent)
+            foreach (var content in GetAllPublishedContent())
             {
-                var imageCroppers = content.Properties.Where(x => !string.IsNullOrEmpty(x.Value.ToString()) && x.Value.ToString().Contains("crops"));
+                var imageCroppers = content.Properties
+                    .Where(x => !string.IsNullOrEmpty(x.Value.ToString()) && x.Value.ToString().Contains("crops"));
 
                 foreach (var crop in imageCroppers)
                 {
+                    var key = string.Concat(content.Name, "-", crop.PropertyTypeAlias);
+                    var imageCropperInfo = _imageCropperInfoService.Get(key);
                     var imagePath = crop.Value;
 
-                    if(imagePath != null)
+                    //Wrong object
+                    if (imageCropperInfo == null && imagePath == null)
+                        continue;
+
+                    //Cropped file was Deleted
+                    if (imageCropperInfo != null && imagePath == null)
                     {
-                        var json = JObject.Parse(imagePath.ToString());
-                        var path = json.GetValue("src").ToString();
+                        _imageCropperInfoService.DeleteImageFromImageCropper(key, imageCropperInfo);
+                        continue;
+                    }
 
-                        if (string.IsNullOrEmpty(path))
-                            throw new EntityNotFoundException();
+                    ///Cropped file was created or updated
+                    var json = JObject.Parse(imagePath.ToString());
+                    var path = json.GetValue("src").ToString();
+                    _imageCropperInfoService.ValidateFileExtension(path);
+                    var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
+                    GetFilesAndTinify(pathForFolder, nonOptimizedImages);
 
-                        var fileExt = Path.GetExtension(path).ToUpper().Replace(".", string.Empty).Trim();
-                        if (!PackageConstants.SupportedExtensions.Contains(fileExt))
-                            throw new NotSupportedExtensionException(fileExt);
+                    //Cropped file was Updated
+                    if (imageCropperInfo != null && imagePath != null)
+                        _imageCropperInfoService.UpdateCropperFileInfo(key, path, pathForFolder);
 
-                        var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
-                        var serverPathForFolder = HttpContext.Current.Server.MapPath(pathForFolder);
-
-                        var di = new DirectoryInfo(serverPathForFolder);
-                        var files = di.GetFiles();
-
-                        foreach (var file in files)
-                        {
-                            TImage image = new TImage
-                            {
-                                Id = Path.Combine(pathForFolder, file.Name),
-                                Name = file.Name,
-                                AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
-                            };
-
-                            var imageHistory = _historyService.GetImageHistory(image.Id);
-                            if (imageHistory != null && imageHistory.IsOptimized)
-                                continue;
-
-                            nonOptimizedImages.Add(image);
-                        }
-                    }                    
+                    //Cropped file was Created
+                    if (imageCropperInfo == null && imagePath != null)
+                        _imageCropperInfoService.SaveCropperFileInfo(key, path);
                 }
             }
 
@@ -280,7 +269,7 @@ namespace Tinifier.Core.Controllers
 
                 if (tinyResponse.Output.Url == null)
                 {
-                    _historyService.CreateResponseHistory(tImage.Id.ToString(), tinyResponse);
+                    _historyService.CreateResponseHistory(tImage.Id, tinyResponse);
                     _stateService.UpdateState();
                     nonOptimizedImagesCount++;
                     continue;
@@ -371,6 +360,38 @@ namespace Tinifier.Core.Controllers
         {
             return Request.CreateResponse(httpStatusCode,
                     new TNotification("Tinifier Oops", message, eventMessageType) { sticky = true });
+        }
+
+        private IEnumerable<IPublishedContent> GetAllPublishedContent()
+        {
+            // Get all published content and tinify all crops 
+            var allPublishedContent = new List<IPublishedContent>();
+            foreach (var publishedContentRoot in Umbraco.TypedContentAtRoot())
+                allPublishedContent.AddRange(publishedContentRoot.DescendantsOrSelf());
+            return allPublishedContent;
+        }
+
+        private void GetFilesAndTinify(string pathForFolder, List<TImage> nonOptimizedImages)
+        {
+            var serverPathForFolder = HttpContext.Current.Server.MapPath(pathForFolder);
+            var di = new DirectoryInfo(serverPathForFolder);
+            var files = di.GetFiles();
+
+            foreach (var file in files)
+            {
+                var image = new TImage
+                {
+                    Id = Path.Combine(pathForFolder, file.Name),
+                    Name = file.Name,
+                    AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
+                };
+
+                var imageHistory = _historyService.GetImageHistory(image.Id);
+                if (imageHistory != null && imageHistory.IsOptimized)
+                    continue;
+
+                nonOptimizedImages.Add(image);
+            }
         }
     }
 }

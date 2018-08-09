@@ -90,7 +90,7 @@ namespace Tinifier.Core.Services.Media
             return tImage;
         }
 
-        private TImage GetImage(Umbraco.Core.Models.Media uMedia)
+        private TImage GetImage(uMedia uMedia)
         {
             _validationService.ValidateExtension(uMedia);
             return Convert(uMedia);
@@ -203,6 +203,41 @@ namespace Tinifier.Core.Services.Media
             Discard(folderId);
         }
 
+        protected void PreserveImageMetadata(byte[] originImage, ref byte[] optimizedImage)
+        {
+            var originImg = (Image)new ImageConverter().ConvertFrom(originImage);
+            var optimisedImg = (Image)new ImageConverter().ConvertFrom(optimizedImage);
+            var srcPropertyItems = originImg.PropertyItems;
+            foreach (var item in srcPropertyItems)
+            {
+                optimisedImg.SetPropertyItem(item);
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                optimisedImg.Save(ms, optimisedImg.RawFormat);
+                optimizedImage = ms.ToArray();
+            }
+        }
+
+        public bool IsFolderChildOfOrganizedFolder(int sourceFolderId)
+        {
+            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
+            var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
+
+            while(sourceFolderId != -1 && organizedFoldersList.Any())
+            {
+                var isOrganized = organizedFoldersList.Contains(sourceFolderId);
+
+                if (isOrganized)
+                    return true;
+
+                sourceFolderId = _mediaService.GetById(sourceFolderId).ParentId;
+            }
+
+            return organizedFoldersList.Contains(-1);
+        }
+
         private void Discard(int baseFolderId)
         {
             var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
@@ -239,41 +274,6 @@ namespace Tinifier.Core.Services.Media
             }
 
             mediaHistoryRepo.DeleteAll(baseFolderId);
-        }
-
-        protected void PreserveImageMetadata(byte[] originImage, ref byte[] optimizedImage)
-        {
-            var originImg = (Image)new ImageConverter().ConvertFrom(originImage);
-            var optimisedImg = (Image)new ImageConverter().ConvertFrom(optimizedImage);
-            var srcPropertyItems = originImg.PropertyItems;
-            foreach (var item in srcPropertyItems)
-            {
-                optimisedImg.SetPropertyItem(item);
-            }
-
-            using (var ms = new MemoryStream())
-            {
-                optimisedImg.Save(ms, optimisedImg.RawFormat);
-                optimizedImage = ms.ToArray();
-            }
-        }
-
-        public bool IsFolderChildOfOrganizedFolder(int sourceFolderId)
-        {
-            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
-            var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
-
-            while(sourceFolderId != -1 && organizedFoldersList.Any())
-            {
-                var isOrganized = organizedFoldersList.Contains(sourceFolderId);
-
-                if (isOrganized)
-                    return true;
-
-                sourceFolderId = _mediaService.GetById(sourceFolderId).ParentId;
-            }
-
-            return organizedFoldersList.Contains(-1);
         }
 
         private bool IsFolderOrganized(int folderId)

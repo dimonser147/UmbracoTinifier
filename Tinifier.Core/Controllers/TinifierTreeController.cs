@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Net.Http.Formatting;
+﻿using System.Net.Http.Formatting;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Services.Media;
 using Tinifier.Core.Services.Settings;

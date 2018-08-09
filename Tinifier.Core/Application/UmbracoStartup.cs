@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Configuration;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
@@ -36,7 +37,6 @@ namespace Tinifier.Core.Application
         private readonly IHistoryService _historyService;
         private readonly IMediaService _mediaService;
         private readonly IImageCropperInfoService _imageCropperInfoService;
-
         private readonly ITSectionRepo _sectionRepo;
 
         private static readonly object padlock = new object();
@@ -68,23 +68,20 @@ namespace Tinifier.Core.Application
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
             InstalledPackage.BeforeSave += InstalledPackage_BeforeSave;
-            ServerVariablesParser.Parsing += Parsing;
+            ServerVariablesParser.Parsing += Parsing;  
         }
 
-        #region Media
+        #region ImageCropper
 
         private void ContentService_Saving(IContentService sender, SaveEventArgs<IContent> e)
         {
-            var entities = e.SavedEntities;
-
             var settingService = _settingsService.GetSettings();
-            if (settingService == null || !settingService.EnableCropsOptimization)
+            if (settingService == null)
             {
-                _statisticService.UpdateStatistic();
                 return;
             }
-                
-            foreach (var entity in entities)
+
+            foreach (var entity in e.SavedEntities)
             {
                 var imageCroppers = entity.Properties.Where(x => x.PropertyType.PropertyEditorAlias == Constants.PropertyEditors.ImageCropperAlias);
 
@@ -94,110 +91,26 @@ namespace Tinifier.Core.Application
                     var imageCropperInfo = _imageCropperInfoService.Get(key);
                     var imagePath = crop.Value;
 
-                    //Delete
-                    if(imageCropperInfo != null && imagePath == null)
+                    //Wrong object
+                    if (imageCropperInfo == null && imagePath == null)
+                        continue;
+
+                    //Cropped file was Deleted
+                    if (imageCropperInfo != null && imagePath == null)
                     {
-                        _imageCropperInfoService.Delete(key);
-
-                        var pathForFolder = imageCropperInfo.ImageId.Remove(imageCropperInfo.ImageId.LastIndexOf('/') + 1);
-                        var histories = _historyService.GetHistoryByPath(pathForFolder);
-
-                        foreach(var history in histories)
-                        {
-                            _historyService.Delete(history.ImageId);
-                        }
-                        
-                        _statisticService.UpdateStatistic();
+                        _imageCropperInfoService.DeleteImageFromImageCropper(key, imageCropperInfo);
+                        continue;
                     }
 
-                    //Update
-                    if(imageCropperInfo != null && imagePath != null)
-                    {
-                        var json = JObject.Parse(imagePath.ToString());
-                        var path = json.GetValue("src").ToString();
-
-                        if (string.IsNullOrEmpty(path))
-                            throw new Infrastructure.Exceptions.EntityNotFoundException();
-
-                        var fileExt = Path.GetExtension(path).ToUpper().Replace(".", string.Empty).Trim();
-                        if (!PackageConstants.SupportedExtensions.Contains(fileExt))
-                            throw new NotSupportedExtensionException(fileExt);
-
-                        var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
-                        var serverPathForFolder = System.Web.HttpContext.Current.Server.MapPath(pathForFolder);
-
-                        var di = new DirectoryInfo(serverPathForFolder);
-                        var files = di.GetFiles();
-
-                        foreach (var file in files)
-                        {
-                            TImage image = new TImage
-                            {
-                                Id = Path.Combine(pathForFolder, file.Name),
-                                Name = file.Name,
-                                AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
-                            };
-
-                            var imageHistory = _historyService.GetImageHistory(image.Id);
-                            if (imageHistory != null && imageHistory.IsOptimized)
-                                continue;
-
-                            _imageService.OptimizeImageAsync(image).GetAwaiter().GetResult();
-                        }
-
-                        var histories = _historyService.GetHistoryByPath(pathForFolder);
-
-                        foreach (var history in histories)
-                        {
-                            _historyService.Delete(history.ImageId);
-                        }
-
-                        _imageCropperInfoService.Update(key, path);
-                        _statisticService.UpdateStatistic();
-                    }
-
-                    //Create
-                    if(imageCropperInfo == null && imagePath != null)
-                    {
-                        var json = JObject.Parse(imagePath.ToString());
-                        var path = json.GetValue("src").ToString();
-
-                        if (string.IsNullOrEmpty(path))
-                            throw new Infrastructure.Exceptions.EntityNotFoundException();
-
-                        var fileExt = Path.GetExtension(path).ToUpper().Replace(".", string.Empty).Trim();
-                        if (!PackageConstants.SupportedExtensions.Contains(fileExt))
-                            throw new NotSupportedExtensionException(fileExt);
-
-                        var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
-                        var serverPathForFolder = System.Web.HttpContext.Current.Server.MapPath(pathForFolder);
-
-                        var di = new DirectoryInfo(serverPathForFolder);
-                        var files = di.GetFiles();
-
-                        foreach (var file in files)
-                        {
-                            TImage image = new TImage
-                            {
-                                Id = Path.Combine(pathForFolder, file.Name),
-                                Name = file.Name,
-                                AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
-                            };
-
-                            var imageHistory = _historyService.GetImageHistory(image.Id);
-                            if (imageHistory != null && imageHistory.IsOptimized)
-                                continue;
-
-                            _imageService.OptimizeImageAsync(image).GetAwaiter().GetResult();
-                        }
-
-                        _imageCropperInfoService.Create(key, path);
-                        _statisticService.UpdateStatistic();
-                    }
+                    ///Cropped file was created or updated
+                    _imageCropperInfoService.GetCropImagesAndTinify(key, imageCropperInfo, imagePath, settingService.EnableCropsOptimization);
                 }
             }
         }
 
+        #endregion ImageCropper
+
+        #region Media
         private void MediaService_Saving(IMediaService sender, SaveEventArgs<IMedia> e)
         {
             MediaSavingHelper.IsSavingInProgress = true;
@@ -225,7 +138,6 @@ namespace Tinifier.Core.Application
                     catch (NotSupportedExtensionException)
                     { }
                 });
-
         }
 
         /// <summary>
@@ -240,9 +152,8 @@ namespace Tinifier.Core.Application
                 _historyService.Delete(id.ToString());
             }
             if (e.Ids.Count() > 0)
-                _statisticService.UpdateStatistic();
+                _statisticService.UpdateStatistic(e.Ids.Count());
         }
-
 
         private void HandleMedia(IEnumerable<IMedia> items, Action<IMedia> action, Func<IMedia, bool> predicate = null)
         {
@@ -282,7 +193,7 @@ namespace Tinifier.Core.Application
                 throw;
             }
 
-            var imageHistory = _historyService.GetImageHistory(image.Id.ToString());
+            var imageHistory = _historyService.GetImageHistory(image.Id);
 
             if (imageHistory == null)
                 await _imageService.OptimizeImageAsync(image).ConfigureAwait(false);
@@ -420,5 +331,5 @@ namespace Tinifier.Core.Application
             var urls = dictionary["umbracoUrls"] as Dictionary<string, object>;
             urls["tinifierApiRoot"] = apiRoot;
         }
-    }
+    } 
 }

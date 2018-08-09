@@ -54,5 +54,15 @@ namespace Tinifier.Core.Services.Statistic
             _statisticRepository.Update(statistic);
         }
 
+        public void UpdateStatistic(int amount)
+        {
+            var statistic = _statisticRepository.GetStatistic() ?? CreateInitialStatistic();
+
+            statistic.TotalNumberOfImages = _imageRepository.AmounthOfItems() - amount;
+            statistic.NumberOfOptimizedImages = _imageRepository.AmounthOfOptimizedItems();
+            statistic.TotalSavedBytes = _statisticRepository.GetTotalSavedBytes();
+
+            _statisticRepository.Update(statistic);
+        }
     }
 }
