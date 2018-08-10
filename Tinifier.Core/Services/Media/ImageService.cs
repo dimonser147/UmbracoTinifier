@@ -107,7 +107,7 @@ namespace Tinifier.Core.Services.Media
             var tinyResponse = await _tinyPngConnectorService.TinifyAsync(image, base.FileSystem).ConfigureAwait(false);
             if (tinyResponse.Output.Url == null)
             {
-                _historyService.CreateResponseHistory(image.Id.ToString(), tinyResponse);
+                _historyService.CreateResponseHistory(image.Id, tinyResponse);
                 return;
             }
             UpdateImageAfterSuccessfullRequest(tinyResponse, image, base.FileSystem);

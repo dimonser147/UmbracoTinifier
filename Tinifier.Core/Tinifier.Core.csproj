@@ -291,6 +291,7 @@
     <Compile Include="Infrastructure\Exceptions\NotSupportedExtensionException.cs" />
     <Compile Include="Infrastructure\HttpContextHelper.cs" />
     <Compile Include="Infrastructure\MediaExtensions.cs" />
+    <Compile Include="Infrastructure\SolutionExtensions.cs" />
     <Compile Include="Models\API\OrganisedMediaModel.cs" />
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TImageCropperInfo.cs" />

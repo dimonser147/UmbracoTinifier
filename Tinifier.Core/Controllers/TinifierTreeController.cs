@@ -43,20 +43,12 @@ namespace Tinifier.Core.Controllers
                 foreach (var timage in _imageService.GetTopOptimizedImages())
                 {
                     nodes.Add(CreateTreeNode(timage.Id + string.Empty, id, queryStrings, timage.Name, PackageConstants.TreeIcon, false,
-                        FormDataCollectionExtensions.GetValue<string>(queryStrings, PackageConstants.AppAlias) + PackageConstants.CustomTreeUrl + Base64Encode(timage.Id)));
+                        FormDataCollectionExtensions.GetValue<string>(queryStrings, PackageConstants.AppAlias) + 
+                        PackageConstants.CustomTreeUrl + SolutionExtensions.Base64Encode(timage.Id)));
                 }
             }
 
             return nodes;
-        }
-
-        public static string Base64Encode(string plainText)
-        {
-            if (int.TryParse(plainText, out var number))
-                return plainText;
-
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
         }
     }
 }

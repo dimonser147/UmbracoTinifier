@@ -74,7 +74,7 @@ namespace Tinifier.Core.Controllers
                 if (int.TryParse(timageId, out var imageId))
                     timage = _imageService.GetImage(imageId);
                 else
-                    timage = _imageService.GetCropImage(Base64Decode(timageId));
+                    timage = _imageService.GetCropImage(SolutionExtensions.Base64Decode(timageId));
             }
             catch (Exception ex)
             {
@@ -87,12 +87,6 @@ namespace Tinifier.Core.Controllers
 
             var history = _historyService.GetImageHistory(timage.Id);
             return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
-        }
-
-        public static string Base64Decode(string base64EncodedData)
-        {
-            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         /// <summary>

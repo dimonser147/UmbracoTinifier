@@ -72,11 +72,6 @@ namespace Tinifier.Core.Services.ImageCropperInfo
 
         public void UpdateCropperFileInfo(string key, string path, string pathForFolder)
         {
-            var histories = _historyService.GetHistoryByPath(pathForFolder);
-
-            foreach (var history in histories)
-                _historyService.Delete(history.ImageId);
-
             Update(key, path);
             _statisticService.UpdateStatistic();
         }
@@ -110,14 +105,19 @@ namespace Tinifier.Core.Services.ImageCropperInfo
             _statisticService.UpdateStatistic();
         }
 
-        public void GetCropImagesAndTinify(string key, TImageCropperInfo imageCropperInfo, object imagePath, bool enableCropsOptimization)
+        public void GetCropImagesAndTinify(string key, TImageCropperInfo imageCropperInfo, object imagePath, 
+            bool enableCropsOptimization)
         {
             var json = JObject.Parse(imagePath.ToString());
             var path = json.GetValue("src").ToString();
             ValidateFileExtension(path);
             var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
 
-            if(enableCropsOptimization)
+            var histories = _historyService.GetHistoryByPath(pathForFolder);
+            foreach (var history in histories)
+                _historyService.Delete(history.ImageId);
+
+            if (enableCropsOptimization)
                 GetFilesAndTinify(pathForFolder);
 
             //Cropped file was Updated
