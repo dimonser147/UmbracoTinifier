@@ -1,10 +1,6 @@
-﻿using Microsoft.CSharp.RuntimeBinder;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Configuration;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;

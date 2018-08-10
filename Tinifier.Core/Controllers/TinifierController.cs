@@ -138,16 +138,18 @@ namespace Tinifier.Core.Controllers
                 nonOptimizedImages.Add(image);
             }
 
-            foreach (var content in GetAllPublishedContent())
+            var allPublishedContent = GetAllPublishedContent();
+
+            foreach (var content in allPublishedContent)
             {
                 var imageCroppers = content.Properties
-                    .Where(x => !string.IsNullOrEmpty(x.Value.ToString()) && x.Value.ToString().Contains("crops"));
+                    .Where(x => !string.IsNullOrEmpty(x.DataValue.ToString()) && x.DataValue.ToString().Contains("crops"));
 
                 foreach (var crop in imageCroppers)
                 {
                     var key = string.Concat(content.Name, "-", crop.PropertyTypeAlias);
                     var imageCropperInfo = _imageCropperInfoService.Get(key);
-                    var imagePath = crop.Value;
+                    var imagePath = crop.DataValue;
 
                     //Wrong object
                     if (imageCropperInfo == null && imagePath == null)
