@@ -22,6 +22,7 @@ namespace Tinifier.Core.Services.ImageCropperInfo
 
         void DeleteImageFromImageCropper(string key, TImageCropperInfo imageCropperInfo);
 
-        void GetCropImagesAndTinify(string key, TImageCropperInfo imageCropperInfo, object imagePath, bool enableCropsOptimization);
+        void GetCropImagesAndTinify(string key, TImageCropperInfo imageCropperInfo, object imagePath, 
+            bool enableCropsOptimization, string path);
     }
 }

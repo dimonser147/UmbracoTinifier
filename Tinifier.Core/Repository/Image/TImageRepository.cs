@@ -117,9 +117,7 @@ namespace Tinifier.Core.Repository.Image
             foreach (var historyId in historyIds)
             {
                 if (int.TryParse(historyId, out var parsedId))
-                {
                     pardesIds.Add(parsedId);
-                }
             }
 
             var mediaItems = _mediaService.
@@ -193,9 +191,11 @@ namespace Tinifier.Core.Repository.Image
 
         public IEnumerable<TImage> GetTopOptimizedImages()
         {
+            var images = new List<TImage>();
             var query = new Sql("SELECT ImageId, OriginSize, OptimizedSize, OccuredAt FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
             var optimizedImages = _database.Fetch<TopImagesModel>(query);
-            var historyIds = optimizedImages.OrderByDescending(x => (x.OriginSize - x.OptimizedSize)).Take(50).OrderByDescending(x => x.OccuredAt).Select(y => y.ImageId);
+            var historyIds = optimizedImages.OrderByDescending(x => (x.OriginSize - x.OptimizedSize)).Take(50)
+                .OrderByDescending(x => x.OccuredAt).Select(y => y.ImageId);
 
             var pardesIds = new List<int>();
             var croppedIds = new List<string>();
@@ -203,20 +203,13 @@ namespace Tinifier.Core.Repository.Image
             foreach (var historyId in historyIds)
             {
                 if (int.TryParse(historyId, out var parsedId))
-                {
                     pardesIds.Add(parsedId);
-                }
-                else
-                {
-                    croppedIds.Add(historyId);
-                }
+                croppedIds.Add(historyId);
             }
 
             var mediaItems = _mediaService.
                              GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
                              Where(item => pardesIds.Contains(item.Id));
-
-            var images = new List<TImage>();
 
             foreach(var media in mediaItems)
             {
@@ -251,13 +244,6 @@ namespace Tinifier.Core.Repository.Image
             var content = umbHelper.Media(uMedia.Id);
             var imagerUrl = content.Url;
             return imagerUrl;
-        }
-
-        public class CustomMedia{
-
-            public string Id { get; set; }
-
-            public string Name { get; set; }
         }
     }
 }

@@ -106,10 +106,8 @@ namespace Tinifier.Core.Services.ImageCropperInfo
         }
 
         public void GetCropImagesAndTinify(string key, TImageCropperInfo imageCropperInfo, object imagePath, 
-            bool enableCropsOptimization)
+            bool enableCropsOptimization, string path)
         {
-            var json = JObject.Parse(imagePath.ToString());
-            var path = json.GetValue("src").ToString();
             ValidateFileExtension(path);
             var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
 
@@ -119,7 +117,7 @@ namespace Tinifier.Core.Services.ImageCropperInfo
 
             if (enableCropsOptimization)
                 GetFilesAndTinify(pathForFolder);
-
+                
             //Cropped file was Updated
             if (imageCropperInfo != null && imagePath != null)
                 UpdateCropperFileInfo(key, path, pathForFolder);

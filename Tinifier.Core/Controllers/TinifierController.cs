@@ -138,9 +138,7 @@ namespace Tinifier.Core.Controllers
                 nonOptimizedImages.Add(image);
             }
 
-            var allPublishedContent = GetAllPublishedContent();
-
-            foreach (var content in allPublishedContent)
+            foreach (var content in GetAllPublishedContent())
             {
                 var imageCroppers = content.Properties
                     .Where(x => !string.IsNullOrEmpty(x.DataValue.ToString()) && x.DataValue.ToString().Contains("crops"));
@@ -360,7 +358,7 @@ namespace Tinifier.Core.Controllers
 
         private IEnumerable<IPublishedContent> GetAllPublishedContent()
         {
-            // Get all published content and tinify all crops 
+            // Get all published content
             var allPublishedContent = new List<IPublishedContent>();
             foreach (var publishedContentRoot in Umbraco.TypedContentAtRoot())
                 allPublishedContent.AddRange(publishedContentRoot.DescendantsOrSelf());

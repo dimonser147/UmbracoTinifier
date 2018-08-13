@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Configuration;
@@ -73,13 +74,12 @@ namespace Tinifier.Core.Application
         {
             var settingService = _settingsService.GetSettings();
             if (settingService == null)
-            {
                 return;
-            }
-
+                
             foreach (var entity in e.SavedEntities)
             {
-                var imageCroppers = entity.Properties.Where(x => x.PropertyType.PropertyEditorAlias == Constants.PropertyEditors.ImageCropperAlias);
+                var imageCroppers = entity.Properties.Where(x => x.PropertyType.PropertyEditorAlias == 
+                        Constants.PropertyEditors.ImageCropperAlias);
 
                 foreach (var crop in imageCroppers)
                 {
@@ -98,8 +98,16 @@ namespace Tinifier.Core.Application
                         continue;
                     }
 
+                    var json = JObject.Parse(imagePath.ToString());
+                    var path = json.GetValue("src").ToString();
+
+                    //republish existed content
+                    if (imageCropperInfo.ImageId == path)
+                        continue;
+
                     ///Cropped file was created or updated
-                    _imageCropperInfoService.GetCropImagesAndTinify(key, imageCropperInfo, imagePath, settingService.EnableCropsOptimization);
+                    _imageCropperInfoService.GetCropImagesAndTinify(key, imageCropperInfo, imagePath, 
+                        settingService.EnableCropsOptimization, path);
                 }
             }
         }
