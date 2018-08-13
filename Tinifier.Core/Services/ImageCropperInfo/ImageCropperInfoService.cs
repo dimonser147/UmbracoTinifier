@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Web;
 using Tinifier.Core.Infrastructure;
@@ -70,18 +69,6 @@ namespace Tinifier.Core.Services.ImageCropperInfo
             }
         }
 
-        public void UpdateCropperFileInfo(string key, string path, string pathForFolder)
-        {
-            Update(key, path);
-            _statisticService.UpdateStatistic();
-        }
-
-        public void SaveCropperFileInfo(string key, string path)
-        {
-            Create(key, path);
-            _statisticService.UpdateStatistic();
-        }
-
         public void ValidateFileExtension(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -116,15 +103,19 @@ namespace Tinifier.Core.Services.ImageCropperInfo
                 _historyService.Delete(history.ImageId);
 
             if (enableCropsOptimization)
+            {
                 GetFilesAndTinify(pathForFolder);
-                
-            //Cropped file was Updated
-            if (imageCropperInfo != null && imagePath != null)
-                UpdateCropperFileInfo(key, path, pathForFolder);
 
-            //Cropped file was Created
-            if (imageCropperInfo == null && imagePath != null)
-                SaveCropperFileInfo(key, path);
+                //Cropped file was Updated
+                if (imageCropperInfo != null && imagePath != null)
+                    Update(key, path);
+
+                //Cropped file was Created
+                if (imageCropperInfo == null && imagePath != null)
+                    Create(key, path);
+            }
+
+            _statisticService.UpdateStatistic();
         }
     }
 }

@@ -14,10 +14,6 @@ namespace Tinifier.Core.Services.ImageCropperInfo
 
         void GetFilesAndTinify(string pathForFolder);
 
-        void UpdateCropperFileInfo(string key, string path, string pathForFolder);
-
-        void SaveCropperFileInfo(string key, string path);
-
         void ValidateFileExtension(string path);
 
         void DeleteImageFromImageCropper(string key, TImageCropperInfo imageCropperInfo);

@@ -169,11 +169,11 @@ namespace Tinifier.Core.Controllers
 
                     //Cropped file was Updated
                     if (imageCropperInfo != null && imagePath != null)
-                        _imageCropperInfoService.UpdateCropperFileInfo(key, path, pathForFolder);
+                        _imageCropperInfoService.Update(key, path);
 
                     //Cropped file was Created
                     if (imageCropperInfo == null && imagePath != null)
-                        _imageCropperInfoService.SaveCropperFileInfo(key, path);
+                        _imageCropperInfoService.Create(key, path);
                 }
             }
 

@@ -102,7 +102,7 @@ namespace Tinifier.Core.Application
                     var path = json.GetValue("src").ToString();
 
                     //republish existed content
-                    if (imageCropperInfo.ImageId == path)
+                    if (imageCropperInfo != null && imageCropperInfo.ImageId == path)
                         continue;
 
                     ///Cropped file was created or updated
