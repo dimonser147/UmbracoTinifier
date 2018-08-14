@@ -1,12 +1,16 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Xml;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Services;
 using Tinifier.Core.Repository.Common;
+using Tinifier.Core.Repository.FileSystemProvider;
+using Tinifier.Core.Services.BlobStorage;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
@@ -21,12 +25,16 @@ namespace Tinifier.Core.Repository.Image
         private readonly IMediaService _mediaService;
         private readonly UmbracoDatabase _database;
         private readonly List<Media> mediaList = new List<Media>();
+        private readonly IFileSystemProviderRepository _fileSystemProviderRepository;
+        private readonly IBlobStorage _blobStorage;
 
         public TImageRepository()
         {
             _mediaService = ApplicationContext.Current.Services.MediaService;
             _database = ApplicationContext.Current.DatabaseContext.Database;
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+            _fileSystemProviderRepository = new TFileSystemProviderRepository();
+            _blobStorage = new AzureBlobStorageService();
         }
 
         /// <summary>
@@ -164,12 +172,19 @@ namespace Tinifier.Core.Repository.Image
         /// <returns>Number of Images</returns>
         public int AmounthOfItems()
         {
-            /*  var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id);
-              var numberOfItems = mediaItems.Count();
+            var numberOfImages = 0;
+            var fileSystem = _fileSystemProviderRepository.GetFileSystem();
 
-              return numberOfItems;*/
-            var numberOfImages = Directory.EnumerateFiles(HttpContext.Current.Server.MapPath("/media/"), "*.*", SearchOption.AllDirectories)
-                .Where(file => !file.ToLower().EndsWith("config")).Count();
+            if(fileSystem != null)
+            {
+                if (fileSystem.Type.Contains("PhysicalFileSystem"))
+                    numberOfImages = Directory.EnumerateFiles(HttpContext.Current.Server.MapPath("/media/"), "*.*", SearchOption.AllDirectories)
+                               .Where(file => !file.ToLower().EndsWith("config")).Count();
+                else
+                    if (_blobStorage.DoesContainerExist())
+                        numberOfImages = _blobStorage.CountBlobsInContainer();
+            }
+
             return numberOfImages;
         }
 
@@ -182,11 +197,7 @@ namespace Tinifier.Core.Repository.Image
             var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
             var historyIds = _database.Fetch<string>(query);
 
-            /*    var mediaItems = _mediaService.
-                                 GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
-                                 Where(item => historyIds.Contains(item.Id));*/
-
-            return historyIds.Count; //mediaItems.Count();
+            return historyIds.Count;
         }
 
         public IEnumerable<TImage> GetTopOptimizedImages()

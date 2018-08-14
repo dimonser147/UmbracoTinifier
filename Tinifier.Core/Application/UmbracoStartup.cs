@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Configuration;
+using System.Xml;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Repository.FileSystemProvider;
 using Tinifier.Core.Repository.Section;
 using Tinifier.Core.Services;
 using Tinifier.Core.Services.History;
@@ -35,6 +38,7 @@ namespace Tinifier.Core.Application
         private readonly IMediaService _mediaService;
         private readonly IImageCropperInfoService _imageCropperInfoService;
         private readonly ITSectionRepo _sectionRepo;
+        private readonly IFileSystemProviderRepository _fileSystemProviderRepository;
 
         private static readonly object padlock = new object();
 
@@ -46,7 +50,8 @@ namespace Tinifier.Core.Application
             _historyService = new HistoryService();
             _sectionRepo = new TSectionRepo();
             _imageCropperInfoService = new ImageCropperInfoService();
-            _mediaService = ApplicationContext.Current.Services.MediaService;            
+            _fileSystemProviderRepository = new TFileSystemProviderRepository();
+            _mediaService = ApplicationContext.Current.Services.MediaService;
         }
 
         /// <summary>
@@ -57,6 +62,7 @@ namespace Tinifier.Core.Application
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
             CreateTinifySection(context);
+            SetFileSystemProvider();
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
             MediaService.Saved += MediaService_Saved;
             MediaService.Saving += MediaService_Saving;
@@ -334,6 +340,24 @@ namespace Tinifier.Core.Application
 
             var urls = dictionary["umbracoUrls"] as Dictionary<string, object>;
             urls["tinifierApiRoot"] = apiRoot;
+        }
+
+        private void SetFileSystemProvider()
+        {
+            var path = HttpContext.Current.Server.MapPath("~/config/FileSystemProviders.config");
+            var doc = new XmlDocument();
+            doc.Load(path);
+            var node = doc.SelectSingleNode("//Provider");
+
+            if (node != null)
+            {
+                var nodeType = node.Attributes.GetNamedItem("type");
+                if (nodeType != null)
+                {
+                    _fileSystemProviderRepository.Delete();
+                    _fileSystemProviderRepository.Create(nodeType.Value);
+                }
+            }
         }
     } 
 }

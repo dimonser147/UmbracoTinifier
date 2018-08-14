@@ -4,7 +4,9 @@ using System.Web;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Repository.FileSystemProvider;
 using Tinifier.Core.Repository.ImageCropperInfo;
+using Tinifier.Core.Services.BlobStorage;
 using Tinifier.Core.Services.History;
 using Tinifier.Core.Services.Media;
 using Tinifier.Core.Services.Statistic;
@@ -17,6 +19,8 @@ namespace Tinifier.Core.Services.ImageCropperInfo
         private readonly IHistoryService _historyService;
         private readonly IStatisticService _statisticService;
         private readonly IImageService _imageService;
+        private readonly IFileSystemProviderRepository _fileSystemProviderRepository;
+        private readonly IBlobStorage _blobStorage;
 
         public ImageCropperInfoService()
         {
@@ -24,6 +28,8 @@ namespace Tinifier.Core.Services.ImageCropperInfo
             _historyService = new HistoryService();
             _statisticService = new StatisticService();
             _imageService = new ImageService();
+            _fileSystemProviderRepository = new TFileSystemProviderRepository();
+            _blobStorage = new AzureBlobStorageService();
         }
 
         public void Create(string key, string imageId)
@@ -48,25 +54,37 @@ namespace Tinifier.Core.Services.ImageCropperInfo
 
         public void GetFilesAndTinify(string pathForFolder)
         {
-            var serverPathForFolder = HttpContext.Current.Server.MapPath(pathForFolder);
-            var di = new DirectoryInfo(serverPathForFolder);
-            var files = di.GetFiles();
+            var fileSystem = _fileSystemProviderRepository.GetFileSystem();
 
-            foreach (var file in files)
+            if(fileSystem != null)
             {
-                var image = new TImage
+                if (fileSystem.Type.Contains("PhysicalFileSystem"))
                 {
-                    Id = Path.Combine(pathForFolder, file.Name),
-                    Name = file.Name,
-                    AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
-                };
+                    var serverPathForFolder = HttpContext.Current.Server.MapPath(pathForFolder);
+                    var di = new DirectoryInfo(serverPathForFolder);
+                    var files = di.GetFiles();
 
-                var imageHistory = _historyService.GetImageHistory(image.Id);
-                if (imageHistory != null && imageHistory.IsOptimized)
-                    continue;
+                    foreach (var file in files)
+                    {
+                        var image = new TImage
+                        {
+                            Id = Path.Combine(pathForFolder, file.Name),
+                            Name = file.Name,
+                            AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
+                        };
 
-                _imageService.OptimizeImageAsync(image).GetAwaiter().GetResult();
-            }
+                        var imageHistory = _historyService.GetImageHistory(image.Id);
+                        if (imageHistory != null && imageHistory.IsOptimized)
+                            continue;
+
+                        _imageService.OptimizeImageAsync(image).GetAwaiter().GetResult();
+                    }
+                }
+                else
+                {
+                    var blobs = _blobStorage.GetAllBlobsInContainer();
+                }
+            }            
         }
 
         public void ValidateFileExtension(string path)
