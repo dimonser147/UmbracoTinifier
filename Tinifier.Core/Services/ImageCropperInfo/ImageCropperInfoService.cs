@@ -97,6 +97,21 @@ namespace Tinifier.Core.Services.ImageCropperInfo
             foreach (var history in histories)
                 _historyService.Delete(history.ImageId);
 
+            var fileSystem = _fileSystemProviderRepository.GetFileSystem();
+            if (fileSystem != null)
+            {
+                if (!fileSystem.Type.Contains("PhysicalFileSystem"))
+                {
+                    _blobStorage.SetDataForBlobStorage();
+                    var blobs = _blobStorage.GetAllBlobsInContainer().Where(x => x.Uri.AbsoluteUri.Contains(pathForFolder));
+                    foreach (var listBlobItem in blobs)
+                    {
+                        var blob = (CloudBlockBlob)listBlobItem;
+                        _blobStorage.DeleteBlob(blob.Name);
+                    }
+                }
+            }
+
             _statisticService.UpdateStatistic();
         }
 

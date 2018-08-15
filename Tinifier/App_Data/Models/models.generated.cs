@@ -19,7 +19,7 @@ using Umbraco.ModelsBuilder;
 using Umbraco.ModelsBuilder.Umbraco;
 
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "b9046615b047dc6")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "86169f53f0224cb2")]
 [assembly:System.Reflection.AssemblyVersion("0.0.0.2")]
 
 namespace Umbraco.Web.PublishedContentModels
@@ -182,6 +182,15 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
+		/// Hero Background: Spice up the homepage by adding a beautiful photo that relates to your business
+		///</summary>
+		[ImplementPropertyType("HeroBackgroundImage")]
+		public IPublishedContent HeroBackgroundImage
+		{
+			get { return this.GetPropertyValue<IPublishedContent>("HeroBackgroundImage"); }
+		}
+
+		///<summary>
 		/// Description
 		///</summary>
 		[ImplementPropertyType("heroDescription")]
@@ -197,24 +206,6 @@ namespace Umbraco.Web.PublishedContentModels
 		public string HeroHeader
 		{
 			get { return this.GetPropertyValue<string>("heroHeader"); }
-		}
-
-		///<summary>
-		/// ImageFooter
-		///</summary>
-		[ImplementPropertyType("imageFooter")]
-		public Umbraco.Web.Models.ImageCropDataSet ImageFooter
-		{
-			get { return this.GetPropertyValue<Umbraco.Web.Models.ImageCropDataSet>("imageFooter"); }
-		}
-
-		///<summary>
-		/// img
-		///</summary>
-		[ImplementPropertyType("img")]
-		public string Img
-		{
-			get { return this.GetPropertyValue<string>("img"); }
 		}
 
 		///<summary>
@@ -338,12 +329,12 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
-		/// qwert
+		/// imageCropper
 		///</summary>
-		[ImplementPropertyType("qwert")]
-		public Umbraco.Web.Models.ImageCropDataSet Qwert
+		[ImplementPropertyType("imageCropper")]
+		public Umbraco.Web.Models.ImageCropDataSet ImageCropper
 		{
-			get { return this.GetPropertyValue<Umbraco.Web.Models.ImageCropDataSet>("qwert"); }
+			get { return this.GetPropertyValue<Umbraco.Web.Models.ImageCropDataSet>("imageCropper"); }
 		}
 
 		///<summary>
