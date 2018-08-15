@@ -29,7 +29,6 @@ using Umbraco.Core.Models;
 using Umbraco.Web;
 using Tinifier.Core.Services.ImageCropperInfo;
 using Newtonsoft.Json.Linq;
-using System.IO;
 
 namespace Tinifier.Core.Controllers
 {
@@ -71,10 +70,9 @@ namespace Tinifier.Core.Controllers
 
             try
             {
-                if (int.TryParse(timageId, out var imageId))
-                    timage = _imageService.GetImage(imageId);
-                else
-                    timage = _imageService.GetCropImage(SolutionExtensions.Base64Decode(timageId));
+                timage = int.TryParse(timageId, out var imageId) 
+                    ? _imageService.GetImage(imageId) 
+                    : _imageService.GetCropImage(SolutionExtensions.Base64Decode(timageId));
             }
             catch (Exception ex)
             {
@@ -138,44 +136,7 @@ namespace Tinifier.Core.Controllers
                 nonOptimizedImages.Add(image);
             }
 
-            foreach (var content in GetAllPublishedContent())
-            {
-                var imageCroppers = content.Properties
-                    .Where(x => !string.IsNullOrEmpty(x.DataValue.ToString()) && x.DataValue.ToString().Contains("crops"));
-
-                foreach (var crop in imageCroppers)
-                {
-                    var key = string.Concat(content.Name, "-", crop.PropertyTypeAlias);
-                    var imageCropperInfo = _imageCropperInfoService.Get(key);
-                    var imagePath = crop.DataValue;
-
-                    //Wrong object
-                    if (imageCropperInfo == null && imagePath == null)
-                        continue;
-
-                    //Cropped file was Deleted
-                    if (imageCropperInfo != null && imagePath == null)
-                    {
-                        _imageCropperInfoService.DeleteImageFromImageCropper(key, imageCropperInfo);
-                        continue;
-                    }
-
-                    ///Cropped file was created or updated
-                    var json = JObject.Parse(imagePath.ToString());
-                    var path = json.GetValue("src").ToString();
-                    _imageCropperInfoService.ValidateFileExtension(path);
-                    var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
-                    GetFilesAndTinify(pathForFolder, nonOptimizedImages);
-
-                    //Cropped file was Updated
-                    if (imageCropperInfo != null && imagePath != null)
-                        _imageCropperInfoService.Update(key, path);
-
-                    //Cropped file was Created
-                    if (imageCropperInfo == null && imagePath != null)
-                        _imageCropperInfoService.Create(key, path);
-                }
-            }
+            GetAllPublishedContentAndGetImageCroppers(nonOptimizedImages);
 
             if (nonOptimizedImages.Count == 0)
                 return GetImageOptimizedReponse(true);
@@ -257,7 +218,7 @@ namespace Tinifier.Core.Controllers
             var nonOptimizedImagesCount = 0;
             var userDomain = HttpContext.Current.Request.Url.Host;
             var fs = FileSystemProviderManager.Current.GetFileSystemProvider<MediaFileSystem>();
-            foreach (TImage tImage in imagesList)
+            foreach (var tImage in imagesList)
             {
                 var tinyResponse = await _tinyPngConnectorService.TinifyAsync(tImage, fs);
 
@@ -277,12 +238,11 @@ namespace Tinifier.Core.Controllers
                 }
                 catch (NotSuccessfullRequestException)
                 {
-                    continue;
                 }
             }
 
-            int n = imagesList.Count();
-            int k = n - nonOptimizedImagesCount;
+            var n = imagesList.Count();
+            var k = n - nonOptimizedImagesCount;
 
             return GetSuccessResponse(k, n,
                 nonOptimizedImagesCount == 0 ? EventMessageType.Success : EventMessageType.Warning);
@@ -365,26 +325,55 @@ namespace Tinifier.Core.Controllers
             return allPublishedContent;
         }
 
-        private void GetFilesAndTinify(string pathForFolder, List<TImage> nonOptimizedImages)
+        private void TinifyImageCroppers(string path, List<TImage> nonOptimizedImages,
+            TImageCropperInfo imageCropperInfo, string key)
         {
-            var serverPathForFolder = HttpContext.Current.Server.MapPath(pathForFolder);
-            var di = new DirectoryInfo(serverPathForFolder);
-            var files = di.GetFiles();
+            var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
+            _imageCropperInfoService.GetFilesAndTinify(pathForFolder, nonOptimizedImages, true);
 
-            foreach (var file in files)
+            if (imageCropperInfo != null)
+                _imageCropperInfoService.Update(key, path);
+            else
+                _imageCropperInfoService.Create(key, path);
+        }
+
+        private void GetAllPublishedContentAndGetImageCroppers(List<TImage> nonOptimizedImages)
+        {
+            foreach (var content in GetAllPublishedContent())
             {
-                var image = new TImage
+                var imageCroppers = content.Properties
+                    .Where(x => !string.IsNullOrEmpty(x.DataValue.ToString()) && x.DataValue.ToString().Contains("crops"));
+
+                foreach (var crop in imageCroppers)
                 {
-                    Id = Path.Combine(pathForFolder, file.Name),
-                    Name = file.Name,
-                    AbsoluteUrl = Path.Combine(pathForFolder, file.Name)
-                };
+                    var key = string.Concat(content.Name, "-", crop.PropertyTypeAlias);
+                    var imageCropperInfo = _imageCropperInfoService.Get(key);
+                    var imagePath = crop.DataValue;
 
-                var imageHistory = _historyService.GetImageHistory(image.Id);
-                if (imageHistory != null && imageHistory.IsOptimized)
-                    continue;
+                    //Wrong object
+                    if (imageCropperInfo == null && imagePath == null)
+                        continue;
 
-                nonOptimizedImages.Add(image);
+                    //Cropped file was Deleted
+                    if (imageCropperInfo != null && imagePath == null)
+                    {
+                        _imageCropperInfoService.DeleteImageFromImageCropper(key, imageCropperInfo);
+                        continue;
+                    }
+
+                    //Cropped file was created or updated
+                    var json = JObject.Parse(imagePath.ToString());
+                    var path = json.GetValue("src").ToString();
+                    try
+                    {
+                        _imageCropperInfoService.ValidateFileExtension(path);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                    TinifyImageCroppers(path, nonOptimizedImages, imageCropperInfo, key);
+                }
             }
         }
     }

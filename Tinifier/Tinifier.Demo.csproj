@@ -380,12 +380,12 @@
     <Content Include="config\FileSystemProviders-Sample.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="App_Plugins\ModelsBuilder\package.manifest" />
     <Content Include="config\umbracoSettings.config" />
     <Content Include="config\trees.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="config\ClientDependency.config" />
+    <Content Include="App_Plugins\ModelsBuilder\package.manifest" />
     <Content Include="Views\Partials\Grid\Editors\Textstring.cshtml" />
     <Content Include="Views\Partials\Grid\Editors\Rte.cshtml" />
     <Content Include="Views\Partials\Grid\Editors\Media.cshtml" />

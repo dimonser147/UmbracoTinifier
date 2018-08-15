@@ -170,7 +170,7 @@ namespace Tinifier.Core.Services.Media
             // update physical file
             base.UpdateMedia(image, tImageBytes);
             // update history
-            _historyService.CreateResponseHistory(image.Id.ToString(), tinyResponse);
+            _historyService.CreateResponseHistory(image.Id, tinyResponse);
             // update umbraco media attributes
             _imageRepository.Update(Id, tinyResponse.Output.Size);
             // update statistic

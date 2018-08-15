@@ -14,11 +14,6 @@ namespace Tinifier.Core.Services.BlobStorage
         private CloudBlobContainer _blobContainer;
         private string _containerName;
 
-        public AzureBlobStorageService()
-        {
-            SetDataForBlobStorage();
-        }
-
         public void SetDataForBlobStorage()
         {
             var path = HttpContext.Current.Server.MapPath("~/config/FileSystemProviders.config");
@@ -26,20 +21,23 @@ namespace Tinifier.Core.Services.BlobStorage
             doc.Load(path);
             var node = doc.SelectSingleNode("//Provider");
 
-            var keysNodes = node.LastChild.SelectNodes("//add");
-            var dictionary = new Dictionary<string, string>();
+            if (node != null)
+            {
+                var keysNodes = node.LastChild.SelectNodes("//add");
+                var dictionary = new Dictionary<string, string>();
 
-            foreach (XmlNode xmlNode in keysNodes)
-                dictionary.Add(xmlNode.Attributes.GetNamedItem("key").Value,
-                    xmlNode.Attributes.GetNamedItem("value").Value);
+                foreach (XmlNode xmlNode in keysNodes)
+                    dictionary.Add(xmlNode.Attributes.GetNamedItem("key").Value,
+                        xmlNode.Attributes.GetNamedItem("value").Value);
 
-            var connectionString = dictionary.First(x => x.Key == "connectionString").Value;
-            var containerName = dictionary.First(x => x.Key == "containerName").Value;
+                var connectionString = dictionary.First(x => x.Key == "connectionString").Value;
+                var containerName = dictionary.First(x => x.Key == "containerName").Value;
 
-            var storageAccount = CloudStorageAccount.Parse(connectionString);
-            _blobClient = storageAccount.CreateCloudBlobClient();
-            _containerName = containerName;
-            _blobContainer = _blobClient.GetContainerReference(containerName);
+                var storageAccount = CloudStorageAccount.Parse(connectionString);
+                _blobClient = storageAccount.CreateCloudBlobClient();
+                _containerName = containerName;
+                _blobContainer = _blobClient.GetContainerReference(containerName);
+            }
         }
 
         public byte[] GetBlob(string blobName)
@@ -72,12 +70,12 @@ namespace Tinifier.Core.Services.BlobStorage
 
         public IEnumerable<IListBlobItem> GetAllBlobsInContainer()
         {
-            return _blobContainer.ListBlobs();
+            return _blobContainer.ListBlobs(useFlatBlobListing: true);
         }
 
         public int CountBlobsInContainer()
         {
-            return _blobContainer.ListBlobs().Count();
+            return _blobContainer.ListBlobs(useFlatBlobListing: true).Count();
         }
 
         public bool DoesContainerExist()

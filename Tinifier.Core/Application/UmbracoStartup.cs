@@ -35,12 +35,9 @@ namespace Tinifier.Core.Application
         private readonly ISettingsService _settingsService;
         private readonly IImageService _imageService;
         private readonly IHistoryService _historyService;
-        private readonly IMediaService _mediaService;
         private readonly IImageCropperInfoService _imageCropperInfoService;
         private readonly ITSectionRepo _sectionRepo;
         private readonly IFileSystemProviderRepository _fileSystemProviderRepository;
-
-        private static readonly object padlock = new object();
 
         public UmbracoStartup()
         {
@@ -51,7 +48,6 @@ namespace Tinifier.Core.Application
             _sectionRepo = new TSectionRepo();
             _imageCropperInfoService = new ImageCropperInfoService();
             _fileSystemProviderRepository = new TFileSystemProviderRepository();
-            _mediaService = ApplicationContext.Current.Services.MediaService;
         }
 
         /// <summary>
@@ -81,11 +77,11 @@ namespace Tinifier.Core.Application
             var settingService = _settingsService.GetSettings();
             if (settingService == null)
                 return;
-                
+
             foreach (var entity in e.SavedEntities)
             {
-                var imageCroppers = entity.Properties.Where(x => x.PropertyType.PropertyEditorAlias == 
-                        Constants.PropertyEditors.ImageCropperAlias);
+                var imageCroppers = entity.Properties.Where(x => x.PropertyType.PropertyEditorAlias ==
+                                                                 Constants.PropertyEditors.ImageCropperAlias);
 
                 foreach (var crop in imageCroppers)
                 {
@@ -111,8 +107,8 @@ namespace Tinifier.Core.Application
                     if (imageCropperInfo != null && imageCropperInfo.ImageId == path)
                         continue;
 
-                    ///Cropped file was created or updated
-                    _imageCropperInfoService.GetCropImagesAndTinify(key, imageCropperInfo, imagePath, 
+                    //Cropped file was created or updated
+                    _imageCropperInfoService.GetCropImagesAndTinify(key, imageCropperInfo, imagePath,
                         settingService.EnableCropsOptimization, path);
                 }
             }
@@ -161,13 +157,13 @@ namespace Tinifier.Core.Application
             {
                 _historyService.Delete(id.ToString());
             }
-            if (e.Ids.Count() > 0)
+            if (e.Ids.Any())
                 _statisticService.UpdateStatistic(e.Ids.Count());
         }
 
         private void HandleMedia(IEnumerable<IMedia> items, Action<IMedia> action, Func<IMedia, bool> predicate = null)
         {
-            bool isChanged = false;
+            var isChanged = false;
             foreach (var item in items)
             {
                 if (string.Equals(item.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
@@ -260,9 +256,9 @@ namespace Tinifier.Core.Application
                     var checkHidePanel = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
                     var checkMetaData = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE 
                                                 TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'PreserveMetadata'");
-                    int? exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
-                    int? hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
-                    int? metaData = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkMetaData);
+                    var exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
+                    var hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
+                    var metaData = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkMetaData);
 
 
                     if (exists == null || exists == -1)
@@ -349,14 +345,11 @@ namespace Tinifier.Core.Application
             doc.Load(path);
             var node = doc.SelectSingleNode("//Provider");
 
-            if (node != null)
+            var nodeType = node?.Attributes?.GetNamedItem("type");
+            if (nodeType != null)
             {
-                var nodeType = node.Attributes.GetNamedItem("type");
-                if (nodeType != null)
-                {
-                    _fileSystemProviderRepository.Delete();
-                    _fileSystemProviderRepository.Create(nodeType.Value);
-                }
+                _fileSystemProviderRepository.Delete();
+                _fileSystemProviderRepository.Create(nodeType.Value);
             }
         }
     } 

@@ -43,8 +43,8 @@ namespace Tinifier.Core.Controllers
                 foreach (var timage in _imageService.GetTopOptimizedImages())
                 {
                     nodes.Add(CreateTreeNode(timage.Id + string.Empty, id, queryStrings, timage.Name, PackageConstants.TreeIcon, false,
-                        FormDataCollectionExtensions.GetValue<string>(queryStrings, PackageConstants.AppAlias) + 
-                        PackageConstants.CustomTreeUrl + SolutionExtensions.Base64Encode(timage.Id)));
+                        queryStrings.GetValue<string>(PackageConstants.AppAlias) + PackageConstants.CustomTreeUrl + 
+                        SolutionExtensions.Base64Encode(timage.Id)));
                 }
             }
 

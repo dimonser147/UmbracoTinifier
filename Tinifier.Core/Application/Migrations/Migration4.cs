@@ -6,7 +6,7 @@ namespace Tinifier.Core.Application.Migrations
     {
         public void Resolve(DatabaseContext dbContext)
         {
-            string n = dbContext.Database.ExecuteScalar<string>(@"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS
+            var n = dbContext.Database.ExecuteScalar<string>(@"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS
                 WHERE [COLUMN_NAME]='ImageId' AND [TABLE_NAME] = 'TinifierResponseHistory'");
 
             if(n != "nvarchar")
