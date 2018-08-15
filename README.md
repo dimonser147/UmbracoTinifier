@@ -25,6 +25,10 @@ The official and free Umbraco [TinyPNG][tp] package for image compressing. Tinif
 - Umbraco 7.7 support
 - Azure blob storage support
 - Top 50 tinified images
+- Save metadata
+- Optimize ImageCropper images on upload
+- Tinify everything (all media and crops)
+- Organize images by dates in Media
 
 ## Nuget package
 https://www.nuget.org/packages/Tinifier/
