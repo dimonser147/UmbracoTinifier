@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Web;
 using Tinifier.Core.Infrastructure;
+using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Services;
 using Tinifier.Core.Repository.Common;
+using Tinifier.Core.Repository.FileSystemProvider;
+using Tinifier.Core.Services.BlobStorage;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Services;
+using Umbraco.Web;
 
 namespace Tinifier.Core.Repository.Image
 {
@@ -16,13 +22,17 @@ namespace Tinifier.Core.Repository.Image
         private readonly IContentTypeService _contentTypeService;
         private readonly IMediaService _mediaService;
         private readonly UmbracoDatabase _database;
-        private readonly List<Media> mediaList = new List<Media>();
+        private readonly List<Media> _mediaList = new List<Media>();
+        private readonly IFileSystemProviderRepository _fileSystemProviderRepository;
+        private readonly IBlobStorage _blobStorage;
 
         public TImageRepository()
         {
             _mediaService = ApplicationContext.Current.Services.MediaService;
             _database = ApplicationContext.Current.DatabaseContext.Database;
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
+            _fileSystemProviderRepository = new TFileSystemProviderRepository();
+            _blobStorage = new AzureBlobStorageService();
         }
 
         /// <summary>
@@ -84,9 +94,13 @@ namespace Tinifier.Core.Repository.Image
         /// <param name="id">Media Id</param>
         public void Update(int id, int actualSize)
         {
-            var mediaItem = _mediaService.GetById(id) as Media;
+            // httpContext is null when optimization on upload
+            // https://our.umbraco.org/projects/backoffice-extensions/tinifier/bugs/90472-error-systemargumentnullexception-value-cannot-be-null
+            if (HttpContext.Current == null)
+                HttpContext.Current = HttpContextHelper.CreateHttpContext
+                    (new HttpRequest("", "http://localhost/", ""), new HttpResponse(new StringWriter()));
 
-            if (mediaItem != null)
+            if (_mediaService.GetById(id) is Media mediaItem)
             {
                 mediaItem.SetValue("umbracoBytes", actualSize);
                 mediaItem.UpdateDate = DateTime.UtcNow;
@@ -102,11 +116,19 @@ namespace Tinifier.Core.Repository.Image
         public IEnumerable<Media> GetOptimizedItems()
         {
             var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
-            var historyIds = _database.Fetch<int>(query);
+            var historyIds = _database.Fetch<string>(query);
+
+            var pardesIds = new List<int>();
+
+            foreach (var historyId in historyIds)
+            {
+                if (int.TryParse(historyId, out var parsedId))
+                    pardesIds.Add(parsedId);
+            }
 
             var mediaItems = _mediaService.
                              GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
-                             Where(item => historyIds.Contains(item.Id));
+                             Where(item => pardesIds.Contains(item.Id));
 
             return mediaItems.Select(item => item as Media).ToList();
         }
@@ -127,7 +149,7 @@ namespace Tinifier.Core.Repository.Image
                 {
                     if (media.ContentType.Alias.ToLower() == PackageConstants.ImageAlias)
                     {
-                        mediaList.Add(media as Media);
+                        _mediaList.Add(media as Media);
                     }
                 }
                 foreach (var media in items)
@@ -139,7 +161,7 @@ namespace Tinifier.Core.Repository.Image
                 }
             }
 
-            return mediaList;
+            return _mediaList;
         }
 
         /// <summary>
@@ -148,10 +170,25 @@ namespace Tinifier.Core.Repository.Image
         /// <returns>Number of Images</returns>
         public int AmounthOfItems()
         {
-            var mediaItems = _mediaService.GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id);
-            var numberOfItems = mediaItems.Count();
+            var numberOfImages = 0;
+            var fileSystem = _fileSystemProviderRepository.GetFileSystem();
 
-            return numberOfItems;
+            if(fileSystem != null)
+            {
+                if (fileSystem.Type.Contains("PhysicalFileSystem"))
+                {
+                    numberOfImages = Directory.EnumerateFiles(HttpContext.Current.Server.MapPath("/media/"), "*.*", SearchOption.AllDirectories)
+                        .Count(file => !file.ToLower().EndsWith("config"));
+                }
+                else
+                {
+                    _blobStorage.SetDataForBlobStorage();
+                    if (_blobStorage.DoesContainerExist())
+                        numberOfImages = _blobStorage.CountBlobsInContainer();
+                }        
+            }
+
+            return numberOfImages;
         }
 
         /// <summary>
@@ -160,34 +197,68 @@ namespace Tinifier.Core.Repository.Image
         /// <returns>Number of optimized Images</returns>
         public int AmounthOfOptimizedItems()
         {
-            try
-            {
-                var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
-                var historyIds = _database.Fetch<int>(query);
+            var query = new Sql("SELECT ImageId FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
+            var historyIds = _database.Fetch<string>(query);
 
-                var mediaItems = _mediaService.
-                                 GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
-                                 Where(item => historyIds.Contains(item.Id));
-
-                return mediaItems.Count();
-            }
-            catch (Exception e)
-            {
-                return 0;
-            }
+            return historyIds.Count;
         }
 
-        public IEnumerable<Media> GetTopOptimizedImages()
+        public IEnumerable<TImage> GetTopOptimizedImages()
         {
-            var query = new Sql("SELECT ImageId, OriginSize, OptimizedSize FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
+            var images = new List<TImage>();
+            var query = new Sql("SELECT ImageId, OriginSize, OptimizedSize, OccuredAt FROM TinifierResponseHistory WHERE IsOptimized = 'true'");
             var optimizedImages = _database.Fetch<TopImagesModel>(query);
-            var historyIds = optimizedImages.OrderByDescending(x => (x.OriginSize - x.OptimizedSize)).Select(y => y.ImageId).Take(50);
+            var historyIds = optimizedImages.OrderByDescending(x => (x.OriginSize - x.OptimizedSize)).Take(50)
+                .OrderByDescending(x => x.OccuredAt).Select(y => y.ImageId);
+
+            var pardesIds = new List<int>();
+            var croppedIds = new List<string>();
+
+            foreach (var historyId in historyIds)
+            {
+                if (int.TryParse(historyId, out var parsedId))
+                    pardesIds.Add(parsedId);
+                else
+                    croppedIds.Add(historyId);
+            }
 
             var mediaItems = _mediaService.
                              GetMediaOfMediaType(_contentTypeService.GetMediaType(PackageConstants.ImageAlias).Id).
-                             Where(item => historyIds.Contains(item.Id));
+                             Where(item => pardesIds.Contains(item.Id));
 
-            return mediaItems.Select(item => item as Media).ToList();
+            foreach(var media in mediaItems)
+            {
+                var custMedia = new TImage
+                {
+                    Id = media.Id.ToString(),
+                    Name = media.Name,
+                    AbsoluteUrl = GetAbsoluteUrl(media as Media)
+                };
+
+                images.Add(custMedia);
+            }
+
+            foreach (var crop in croppedIds)
+            {
+                var custMedia = new TImage
+                {
+                    Id = crop,
+                    Name = Path.GetFileName(crop),
+                    AbsoluteUrl = crop
+                };
+
+                images.Add(custMedia);
+            }
+
+            return images;
+        }
+
+        protected string GetAbsoluteUrl(Media uMedia)
+        {
+            var umbHelper = new UmbracoHelper(UmbracoContext.Current);
+            var content = umbHelper.Media(uMedia.Id);
+            var imagerUrl = content.Url;
+            return imagerUrl;
         }
     }
 }

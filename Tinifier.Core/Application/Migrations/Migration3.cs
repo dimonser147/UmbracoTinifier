@@ -6,7 +6,7 @@ namespace Tinifier.Core.Application.Migrations
     {
         public void Resolve(DatabaseContext dbContext)
         {
-            int n = dbContext.Database.ExecuteScalar<int>(@"SELECT TOP 1 1 FROM INFORMATION_SCHEMA.COLUMNS 
+            var n = dbContext.Database.ExecuteScalar<int>(@"SELECT TOP 1 1 FROM INFORMATION_SCHEMA.COLUMNS 
                 WHERE [TABLE_NAME] = 'TinifierUserSettings' AND [COLUMN_NAME] = 'PreserveMetadata'");
             if (n == 0)
             {

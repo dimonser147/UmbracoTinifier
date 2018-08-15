@@ -6,7 +6,7 @@ using Umbraco.Core.Persistence;
 
 namespace Tinifier.Core.Repository.History
 {
-    public class THistoryRepository : IEntityReader<TinyPNGResponseHistory>, IEntityCreator<TinyPNGResponseHistory>, IEntityRemover<TinyPNGResponseHistory>
+    public class THistoryRepository : IEntityCreator<TinyPNGResponseHistory>, IHistoryRepository
     {
         private readonly UmbracoDatabase _database;
 
@@ -30,10 +30,16 @@ namespace Tinifier.Core.Repository.History
         /// </summary>
         /// <param name="id">history Id</param>
         /// <returns>TinyPNGResponseHistory</returns>
-        public TinyPNGResponseHistory Get(int id)
+        public TinyPNGResponseHistory Get(string id)
         {
             var query = new Sql("SELECT * FROM TinifierResponseHistory WHERE ImageId = @0", id);
             return _database.FirstOrDefault<TinyPNGResponseHistory>(query);
+        }
+
+        public IEnumerable<TinyPNGResponseHistory> GetHistoryByPath(string path)
+        {
+            var query = new Sql("SELECT * FROM TinifierResponseHistory WHERE ImageId LIKE @0", $"%{path}%");
+            return _database.Fetch<TinyPNGResponseHistory>(query);
         }
 
         /// <summary>
@@ -49,7 +55,7 @@ namespace Tinifier.Core.Repository.History
         /// Delete history for image
         /// </summary>
         /// <param name="imageId">Image Id</param>
-        public void Delete(int imageId)
+        public void Delete(string imageId)
         {
             var query = new Sql("DELETE FROM TinifierResponseHistory WHERE ImageId = @0", imageId);
             _database.Execute(query);

@@ -17,7 +17,7 @@ namespace Tinifier.Core.Services.History
             _historyRepository = new THistoryRepository();  
         }
 
-        public void CreateResponseHistory(int timageId, TinyResponse responseItem)
+        public void CreateResponseHistory(string timageId, TinyResponse responseItem)
         {
             var newItem = new TinyPNGResponseHistory
             {
@@ -51,7 +51,7 @@ namespace Tinifier.Core.Services.History
             return historiesByDays;
         }
 
-        public TinyPNGResponseHistory GetImageHistory(int timageId)
+        public TinyPNGResponseHistory GetImageHistory(string timageId)
         {
             var history = _historyRepository.Get(timageId);
 
@@ -64,7 +64,7 @@ namespace Tinifier.Core.Services.History
             return history;
         }
 
-        public void Delete(int imageId)
+        public void Delete(string imageId)
         {
             _historyRepository.Delete(imageId);
         }
@@ -75,7 +75,7 @@ namespace Tinifier.Core.Services.History
 
             foreach (var image in images)
             {
-                var imageHistory = _historyRepository.Get(image.Id);
+                var imageHistory = _historyRepository.Get(image.Id.ToString());
 
                 if (imageHistory == null || ( imageHistory != null && !imageHistory.IsOptimized))
                 {
@@ -84,6 +84,11 @@ namespace Tinifier.Core.Services.History
             }
 
             return imagesList;
+        }
+
+        public IEnumerable<TinyPNGResponseHistory> GetHistoryByPath(string path)
+        {
+            return _historyRepository.GetHistoryByPath(path);
         }
     }
 }

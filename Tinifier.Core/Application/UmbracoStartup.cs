@@ -1,14 +1,18 @@
-﻿using Microsoft.CSharp.RuntimeBinder;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Configuration;
+using System.Xml;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
+using Tinifier.Core.Repository.FileSystemProvider;
 using Tinifier.Core.Repository.Section;
 using Tinifier.Core.Services;
 using Tinifier.Core.Services.History;
+using Tinifier.Core.Services.ImageCropperInfo;
 using Tinifier.Core.Services.Media;
 using Tinifier.Core.Services.Settings;
 using Tinifier.Core.Services.Statistic;
@@ -31,11 +35,9 @@ namespace Tinifier.Core.Application
         private readonly ISettingsService _settingsService;
         private readonly IImageService _imageService;
         private readonly IHistoryService _historyService;
-        private readonly IMediaService _mediaService;
-
+        private readonly IImageCropperInfoService _imageCropperInfoService;
         private readonly ITSectionRepo _sectionRepo;
-
-        private static readonly object padlock = new object();
+        private readonly IFileSystemProviderRepository _fileSystemProviderRepository;
 
         public UmbracoStartup()
         {
@@ -44,7 +46,8 @@ namespace Tinifier.Core.Application
             _imageService = new ImageService();
             _historyService = new HistoryService();
             _sectionRepo = new TSectionRepo();
-            _mediaService = ApplicationContext.Current.Services.MediaService;
+            _imageCropperInfoService = new ImageCropperInfoService();
+            _fileSystemProviderRepository = new TFileSystemProviderRepository();
         }
 
         /// <summary>
@@ -55,23 +58,71 @@ namespace Tinifier.Core.Application
         protected override void ApplicationStarted(UmbracoApplicationBase umbraco, ApplicationContext context)
         {
             CreateTinifySection(context);
+            SetFileSystemProvider();
             TreeControllerBase.MenuRendering += MenuRenderingHandler;
             MediaService.Saved += MediaService_Saved;
             MediaService.Saving += MediaService_Saving;
+            ContentService.Saving += ContentService_Saving;
+
             MediaService.EmptiedRecycleBin += MediaService_EmptiedRecycleBin;
             InstalledPackage.BeforeDelete += InstalledPackage_BeforeDelete;
             InstalledPackage.BeforeSave += InstalledPackage_BeforeSave;
-            ServerVariablesParser.Parsing += Parsing;
+            ServerVariablesParser.Parsing += Parsing;  
         }
 
-        #region Media
+        #region ImageCropper
 
+        private void ContentService_Saving(IContentService sender, SaveEventArgs<IContent> e)
+        {
+            var settingService = _settingsService.GetSettings();
+            if (settingService == null)
+                return;
+
+            foreach (var entity in e.SavedEntities)
+            {
+                var imageCroppers = entity.Properties.Where(x => x.PropertyType.PropertyEditorAlias ==
+                                                                 Constants.PropertyEditors.ImageCropperAlias);
+
+                foreach (var crop in imageCroppers)
+                {
+                    var key = string.Concat(entity.Name, "-", crop.Alias);
+                    var imageCropperInfo = _imageCropperInfoService.Get(key);
+                    var imagePath = crop.Value;
+
+                    //Wrong object
+                    if (imageCropperInfo == null && imagePath == null)
+                        continue;
+
+                    //Cropped file was Deleted
+                    if (imageCropperInfo != null && imagePath == null)
+                    {
+                        _imageCropperInfoService.DeleteImageFromImageCropper(key, imageCropperInfo);
+                        continue;
+                    }
+
+                    var json = JObject.Parse(imagePath.ToString());
+                    var path = json.GetValue("src").ToString();
+
+                    //republish existed content
+                    if (imageCropperInfo != null && imageCropperInfo.ImageId == path)
+                        continue;
+
+                    //Cropped file was created or updated
+                    _imageCropperInfoService.GetCropImagesAndTinify(key, imageCropperInfo, imagePath,
+                        settingService.EnableCropsOptimization, path);
+                }
+            }
+        }
+
+        #endregion ImageCropper
+
+        #region Media
         private void MediaService_Saving(IMediaService sender, SaveEventArgs<IMedia> e)
         {
             MediaSavingHelper.IsSavingInProgress = true;
             // reupload image issue https://goo.gl/ad8pTs
             HandleMedia(e.SavedEntities,
-                    (m) => _historyService.Delete(m.Id),
+                    (m) => _historyService.Delete(m.Id.ToString()),
                     (m) => m.IsPropertyDirty(PackageConstants.UmbracoFileAlias));
         }
 
@@ -93,7 +144,6 @@ namespace Tinifier.Core.Application
                     catch (NotSupportedExtensionException)
                     { }
                 });
-
         }
 
         /// <summary>
@@ -105,16 +155,15 @@ namespace Tinifier.Core.Application
         {
             foreach (var id in e.Ids)
             {
-                _historyService.Delete(id);
+                _historyService.Delete(id.ToString());
             }
-            if (e.Ids.Count() > 0)
-                _statisticService.UpdateStatistic();
+            if (e.Ids.Any())
+                _statisticService.UpdateStatistic(e.Ids.Count());
         }
-
 
         private void HandleMedia(IEnumerable<IMedia> items, Action<IMedia> action, Func<IMedia, bool> predicate = null)
         {
-            bool isChanged = false;
+            var isChanged = false;
             foreach (var item in items)
             {
                 if (string.Equals(item.ContentType.Alias, PackageConstants.ImageAlias, StringComparison.OrdinalIgnoreCase))
@@ -207,9 +256,9 @@ namespace Tinifier.Core.Application
                     var checkHidePanel = new Sql("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'HideLeftPanel'");
                     var checkMetaData = new Sql(@"SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE 
                                                 TABLE_NAME = 'TinifierUserSettings' AND COLUMN_NAME = 'PreserveMetadata'");
-                    int? exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
-                    int? hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
-                    int? metaData = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkMetaData);
+                    var exists = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkColumn);
+                    var hidePanel = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkHidePanel);
+                    var metaData = ApplicationContext.Current.DatabaseContext.Database.ExecuteScalar<int?>(checkMetaData);
 
 
                     if (exists == null || exists == -1)
@@ -288,5 +337,20 @@ namespace Tinifier.Core.Application
             var urls = dictionary["umbracoUrls"] as Dictionary<string, object>;
             urls["tinifierApiRoot"] = apiRoot;
         }
-    }
+
+        private void SetFileSystemProvider()
+        {
+            var path = HttpContext.Current.Server.MapPath("~/config/FileSystemProviders.config");
+            var doc = new XmlDocument();
+            doc.Load(path);
+            var node = doc.SelectSingleNode("//Provider");
+
+            var nodeType = node?.Attributes?.GetNamedItem("type");
+            if (nodeType != null)
+            {
+                _fileSystemProviderRepository.Delete();
+                _fileSystemProviderRepository.Create(nodeType.Value);
+            }
+        }
+    } 
 }

@@ -15,5 +15,7 @@ namespace Tinifier.Core.Services.Statistic
         /// </summary>
         /// <param name="savedBytes">SavedBytes for each request</param>
         void UpdateStatistic();
+
+        void UpdateStatistic(int amount);
     }
 }

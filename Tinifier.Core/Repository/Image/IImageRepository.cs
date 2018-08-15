@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Tinifier.Core.Models.Db;
+using static Tinifier.Core.Repository.Image.TImageRepository;
 
 namespace Tinifier.Core.Repository.Image
 {
@@ -12,7 +14,7 @@ namespace Tinifier.Core.Repository.Image
 
         IEnumerable<Media> GetOptimizedItems();
 
-        IEnumerable<Media> GetTopOptimizedImages();
+        IEnumerable<TImage> GetTopOptimizedImages();
 
         IEnumerable<Media> GetItemsFromFolder(int folderId);
 

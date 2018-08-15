@@ -73,5 +73,7 @@ namespace Tinifier.Core.Services.Media
         /// <param name="tinyResponse">Response from TinyPNG</param>
         /// <param name="image">TImage</param>
         void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, IFileSystem fs);
+
+        TImage GetCropImage(string path);
     }
 }

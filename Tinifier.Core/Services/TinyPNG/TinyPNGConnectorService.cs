@@ -12,6 +12,7 @@ using Tinifier.Core.Services.Settings;
 using System.IO;
 using Tinifier.Core.Models.Db;
 using Umbraco.Core.IO;
+using Tinifier.Core.Repository.FileSystemProvider;
 
 namespace Tinifier.Core.Services.TinyPNG
 {
@@ -20,22 +21,31 @@ namespace Tinifier.Core.Services.TinyPNG
         private readonly string _tinifyAddress;
         private readonly JavaScriptSerializer _serializer;
         private readonly ISettingsService _settingsService;
+        private readonly IFileSystemProviderRepository _fileSystemProviderRepository;
 
         public TinyPNGConnectorService()
         {
             _settingsService = new SettingsService();
             _tinifyAddress = PackageConstants.TinyPngUrl;
             _serializer = new JavaScriptSerializer();
+            _fileSystemProviderRepository = new TFileSystemProviderRepository();
         }
 
         public async Task<TinyResponse> TinifyAsync(TImage tImage, IFileSystem fs)
         {
             byte[] imageBytes;
             TinyResponse tinyResponse;
+            string path = tImage.AbsoluteUrl;
 
             try
             {
-                string path = fs.GetRelativePath(tImage.AbsoluteUrl);
+                var fileSystem = _fileSystemProviderRepository.GetFileSystem();
+                if (fileSystem != null)
+                {
+                    if (fileSystem.Type.Contains("PhysicalFileSystem"))
+                        path = fs.GetRelativePath(tImage.AbsoluteUrl);
+                }
+                
                 using (Stream file = fs.OpenFile(path))
                 {
                     imageBytes = ReadFully(file);
@@ -56,9 +66,6 @@ namespace Tinifier.Core.Services.TinyPNG
 
             return tinyResponse;
         }
-
-
-      
 
         private byte[] ReadFully(Stream input)
         {

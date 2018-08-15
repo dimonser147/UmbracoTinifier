@@ -25,6 +25,10 @@ using Tinifier.Core.Services.Validation;
 using Umbraco.Core.Events;
 using Umbraco.Core.IO;
 using Umbraco.Web.WebApi;
+using Umbraco.Core.Models;
+using Umbraco.Web;
+using Tinifier.Core.Services.ImageCropperInfo;
+using Newtonsoft.Json.Linq;
 
 namespace Tinifier.Core.Controllers
 {
@@ -39,6 +43,7 @@ namespace Tinifier.Core.Controllers
         private readonly IValidationService _validationService;
         private readonly IBackendDevsConnector _backendDevsConnectorService;
         private readonly IMediaHistoryService _mediaHistoryService;
+        private readonly IImageCropperInfoService _imageCropperInfoService;
 
         public TinifierController()
         {
@@ -50,6 +55,7 @@ namespace Tinifier.Core.Controllers
             _validationService = new ValidationService();
             _backendDevsConnectorService = new BackendDevsConnectorService();
             _mediaHistoryService = new ImageService();
+            _imageCropperInfoService = new ImageCropperInfoService();
         }
 
         /// <summary>
@@ -58,13 +64,15 @@ namespace Tinifier.Core.Controllers
         /// <param name="timageId">Image Id</param>
         /// <returns>Response(StatusCode, {image, history}}</returns>
         [HttpGet]
-        public HttpResponseMessage GetTImage(int timageId)
+        public HttpResponseMessage GetTImage(string timageId)
         {
             TImage timage;
 
             try
             {
-                timage = _imageService.GetImage(timageId);
+                timage = int.TryParse(timageId, out var imageId) 
+                    ? _imageService.GetImage(imageId) 
+                    : _imageService.GetCropImage(SolutionExtensions.Base64Decode(timageId));
             }
             catch (Exception ex)
             {
@@ -75,7 +83,7 @@ namespace Tinifier.Core.Controllers
                     });
             }
 
-            var history = _historyService.GetImageHistory(timageId);
+            var history = _historyService.GetImageHistory(timage.Id);
             return Request.CreateResponse(HttpStatusCode.OK, new { timage, history });
         }
 
@@ -127,6 +135,8 @@ namespace Tinifier.Core.Controllers
                     continue;
                 nonOptimizedImages.Add(image);
             }
+
+            GetAllPublishedContentAndGetImageCroppers(nonOptimizedImages);
 
             if (nonOptimizedImages.Count == 0)
                 return GetImageOptimizedReponse(true);
@@ -208,7 +218,7 @@ namespace Tinifier.Core.Controllers
             var nonOptimizedImagesCount = 0;
             var userDomain = HttpContext.Current.Request.Url.Host;
             var fs = FileSystemProviderManager.Current.GetFileSystemProvider<MediaFileSystem>();
-            foreach (TImage tImage in imagesList)
+            foreach (var tImage in imagesList)
             {
                 var tinyResponse = await _tinyPngConnectorService.TinifyAsync(tImage, fs);
 
@@ -228,12 +238,11 @@ namespace Tinifier.Core.Controllers
                 }
                 catch (NotSuccessfullRequestException)
                 {
-                    continue;
                 }
             }
 
-            int n = imagesList.Count();
-            int k = n - nonOptimizedImagesCount;
+            var n = imagesList.Count();
+            var k = n - nonOptimizedImagesCount;
 
             return GetSuccessResponse(k, n,
                 nonOptimizedImagesCount == 0 ? EventMessageType.Success : EventMessageType.Warning);
@@ -305,6 +314,67 @@ namespace Tinifier.Core.Controllers
         {
             return Request.CreateResponse(httpStatusCode,
                     new TNotification("Tinifier Oops", message, eventMessageType) { sticky = true });
+        }
+
+        private IEnumerable<IPublishedContent> GetAllPublishedContent()
+        {
+            // Get all published content
+            var allPublishedContent = new List<IPublishedContent>();
+            foreach (var publishedContentRoot in Umbraco.TypedContentAtRoot())
+                allPublishedContent.AddRange(publishedContentRoot.DescendantsOrSelf());
+            return allPublishedContent;
+        }
+
+        private void TinifyImageCroppers(string path, List<TImage> nonOptimizedImages,
+            TImageCropperInfo imageCropperInfo, string key)
+        {
+            var pathForFolder = path.Remove(path.LastIndexOf('/') + 1);
+            _imageCropperInfoService.GetFilesAndTinify(pathForFolder, nonOptimizedImages, true);
+
+            if (imageCropperInfo != null)
+                _imageCropperInfoService.Update(key, path);
+            else
+                _imageCropperInfoService.Create(key, path);
+        }
+
+        private void GetAllPublishedContentAndGetImageCroppers(List<TImage> nonOptimizedImages)
+        {
+            foreach (var content in GetAllPublishedContent())
+            {
+                var imageCroppers = content.Properties
+                    .Where(x => !string.IsNullOrEmpty(x.DataValue.ToString()) && x.DataValue.ToString().Contains("crops"));
+
+                foreach (var crop in imageCroppers)
+                {
+                    var key = string.Concat(content.Name, "-", crop.PropertyTypeAlias);
+                    var imageCropperInfo = _imageCropperInfoService.Get(key);
+                    var imagePath = crop.DataValue;
+
+                    //Wrong object
+                    if (imageCropperInfo == null && imagePath == null)
+                        continue;
+
+                    //Cropped file was Deleted
+                    if (imageCropperInfo != null && imagePath == null)
+                    {
+                        _imageCropperInfoService.DeleteImageFromImageCropper(key, imageCropperInfo);
+                        continue;
+                    }
+
+                    //Cropped file was created or updated
+                    var json = JObject.Parse(imagePath.ToString());
+                    var path = json.GetValue("src").ToString();
+                    try
+                    {
+                        _imageCropperInfoService.ValidateFileExtension(path);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                    TinifyImageCroppers(path, nonOptimizedImages, imageCropperInfo, key);
+                }
+            }
         }
     }
 }

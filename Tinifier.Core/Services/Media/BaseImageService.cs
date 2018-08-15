@@ -21,7 +21,7 @@ namespace Tinifier.Core.Services.Media
         {
             return new TImage
             {
-                Id = uMedia.Id,
+                Id = uMedia.Id.ToString(),
                 Name = uMedia.Name,
                 AbsoluteUrl = GetAbsoluteUrl(uMedia)
             };

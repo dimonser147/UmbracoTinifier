@@ -12,14 +12,14 @@ namespace Tinifier.Core.Services.History
         /// </summary>
         /// <param name="timageId">Image Id</param>
         /// <param name="responseItem">Response from TinyPNG</param>
-        void CreateResponseHistory(int timageId, TinyResponse responseItem);
+        void CreateResponseHistory(string timageId, TinyResponse responseItem);
 
         /// <summary>
         ///  Get History for Image
         /// </summary>
         /// <param name="timageId">Image Id</param>
         /// <returns>TinyPNGResponseHistory</returns>
-        TinyPNGResponseHistory GetImageHistory(int timageId);
+        TinyPNGResponseHistory GetImageHistory(string timageId);
 
         /// <summary>
         /// Get not optimized Images that don`t have history
@@ -38,6 +38,8 @@ namespace Tinifier.Core.Services.History
         /// Delete history for image
         /// </summary>
         /// <param name="imageId">Image Id</param>
-        void Delete(int imageId);
+        void Delete(string imageId);
+
+        IEnumerable<TinyPNGResponseHistory> GetHistoryByPath(string path);
     }
 }
