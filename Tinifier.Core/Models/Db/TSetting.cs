@@ -26,8 +26,6 @@ namespace Tinifier.Core.Models.Db
 
         public bool PreserveMetadata { get; set; }
 
-        public bool EnableCropsOptimization { get; set; }
-
         public int CurrentMonthRequests { get; set; }
     }
 }

@@ -109,7 +109,7 @@ namespace Tinifier.Core.Application
 
                     //Cropped file was created or updated
                     _imageCropperInfoService.GetCropImagesAndTinify(key, imageCropperInfo, imagePath,
-                        settingService.EnableCropsOptimization, path);
+                        settingService.EnableOptimizationOnUpload, path);
                 }
             }
         }
