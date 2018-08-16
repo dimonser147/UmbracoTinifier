@@ -1,24 +1,26 @@
-.stat-image{
-     text-align:center;
-     display: flex; 
-     min-height: 60px; 
-     padding-top: 10px; 
-     padding-right: 10px; 
-     padding-bottom: 10px; 
-     padding-left: 10px; 
-     background-color: #fff; 
-     border-top-right-radius: 3px;
-     border-top-left-radius: 3px;
-     align-items: center;
-     justify-content: center;
+.stat-image {
+    text-align: center;
+    display: flex;
+    min-height: 60px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    background-color: #fff;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    align-items: center;
+    justify-content: center;
 }
-.stat-block{
-    width: 280px; 
+
+.stat-block {
+    width: 280px;
     min-width: 100px;
-    display:inline-block; 
-    border:1px solid #e9e9eb;
+    display: inline-block;
+    border: 1px solid #e9e9eb;
 }
-.stat-content{
+
+.stat-content {
     padding-top: 15px;
     padding-right: 15px;
     padding-bottom: 15px;
@@ -29,7 +31,8 @@
     border-bottom-right-radius: 3px;
     border-bottom-left-radius: 3px;
 }
-.stat-text{
+
+.stat-text {
     max-width: 250px;
     margin-right: auto;
     margin-bottom: 5px;
@@ -41,40 +44,47 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.stat-info{
+
+.stat-info {
     display: flex;
     margin-top: 10px;
     opacity: .6;
     flex-wrap: wrap;
-    flex-direction: row;     
+    flex-direction: row;
     justify-content: center;
 }
-.stat-numbers{
+
+.stat-numbers {
     font-size: 85%;
 }
-.chart-block{
-    width: 565px; 
-    min-width:100px;
-    display:inline-block; 
-    border:1px solid #e9e9eb;
-    margin-top:5px;
+
+.chart-block {
+    width: 565px;
+    min-width: 100px;
+    display: inline-block;
+    border: 1px solid #e9e9eb;
+    margin-top: 5px;
 }
-.loading-image{
+
+.loading-image {
     height: 50px;
-    width:50px; 
+    width: 50px;
     background: url('../media/spinner.gif') center center no-repeat;
 }
+
 .dialog-message {
     font-size: 16px;
     text-indent: 2em;
     padding: 25px 14px 10px 14px;
     text-align: justify;
 }
-.update-seconds{
-    display:none;
+
+.update-seconds {
+    display: none;
     text-align: left;
 }
-.resetButton{
+
+.resetButton {
     background-color: red;
     border: none;
     color: white;
@@ -82,21 +92,65 @@
     display: none;
     font-size: 13px;
 }
-.pushButton{
+
+.pushButton {
     background-color: red;
     border: none;
     color: white;
     text-decoration: none;
     display: inline-block;
     font-size: 17px;
-    padding:15px 30px;
+    padding: 15px 30px;
 }
-.pushButtonStop{
+
+.pushButtonStop {
     background-color: orange;
     border: none;
     color: white;
     text-decoration: none;
     display: inline-block;
     font-size: 17px;
-    padding:15px 30px;
+    padding: 15px 30px;
+}
+
+.tinifier-settings-form .umb-pane {
+    margin: 5px 20px !important;
+}
+
+.tinifier-settings-form-container {
+    display: flex;
+}
+
+    .tinifier-settings-form-container .umb-control-group {
+        padding-bottom: 0;
+        margin-bottom: 0 !important;
+    }
+
+    .tinifier-settings-form-container .umb-property {
+        width: 100%;
+    }
+
+.tinifier-section {
+    width: 45%;
+}
+
+.section-left {
+    margin-left: 50px;
+}
+
+.tinifier-section input, .tinifier-section select {
+    width: 100%;
+}
+
+@media (max-width: 1100px) {
+    .tinifier-settings-form-container {
+        display: block;
+    }
+
+    .tinifier-section {
+        width: 100% !important;
+    }
+    .section-left{
+        margin-left: 0;
+    }
 }

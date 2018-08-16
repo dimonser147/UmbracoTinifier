@@ -1,62 +1,76 @@
-﻿<div ng-controller="Tinifier.TinifierEditTSetting.Controller" >
-    <form name="settingsForm" ng-submit="submitForm()" val-form-manager>
+﻿<div ng-controller="Tinifier.TinifierEditTSetting.Controller">
+    <form class="tinifier-settings-form" name="settingsForm" ng-submit="submitForm()" val-form-manager>
         <umb-editor-view>
             <umb-editor-container>
                 <div class="umb-editor-container umb-panel-body umb-scrollable row-fluid">
                     <div class="umb-pane">
-                        <div class="form-horizontal">
-                            <div class="umb-property" style="display:inline-block">
-                                <div class="control-group umb-control-group">
-                                    <div class="umb-el-wrap">
-                                        <h3>API Key<small class="ng-binding"> (required)</small></h3>
-                                        <p style="width: 85%;">You can get it on a <a href="http://goo.gl/gaaz8i" style="color:blue">TinyPNG website</a>. Available free requests could be checked on the "Statistic" tab.</p>
-                                        <input class="umb-property-editor ng-dirty ng-valid ng-valid-required" type="text" style="width: 85%;" ng-model="timage.ApiKey" required="" no-dirty-check>
+                        <div class="form-horizontal tinifier-settings-form-container">
+                            <div class="tinifier-section">
+                                <div class="umb-property" style="display:inline-block">
+                                    <div class="control-group umb-control-group">
+                                        <div class="umb-el-wrap">
+                                            <h3>API Key<small class="ng-binding"> (required)</small></h3>
+                                            <p>
+                                                You can get it on a <a href="http://goo.gl/gaaz8i" style="color:blue">TinyPNG website</a>.
+                                                Available free requests could be checked on the "Statistic" tab.
+                                            </p>                                                <!--  <small>Note: </small><small>This wiil affect both media and immage cropper uploads.</small>-->
+                                            <input class="umb-property-editor ng-dirty ng-valid ng-valid-required" type="text" ng-model="timage.ApiKey" required="" no-dirty-check>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="umb-property" style="display:inline-block">
+                                    <div class="control-group umb-control-group">
+                                        <div class="umb-el-wrap">
+                                            <h3>Optimize on upload<small class="ng-binding"> (optional)</small></h3>
+                                            <p>You will never get non-optimized images but should wait more on each image upload.</p>
+                                            <small>Note: </small><small>Optimize all crops during content publishing. The publish will last a little longer.</small>
+                                            <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" no-dirty-check></select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="umb-property">
+                                    <div class="control-group umb-control-group">
+                                        <div class="umb-el-wrap">
+                                            <h3>Hide left panel<small class="ng-binding"> (optional)</small></h3>
+                                            <p>
+                                                If you have a huge website with tons of images left panel could be messy.
+                                                You can read more here (<a href="http://goo.gl/A5fHws" style="color:blue">http://goo.gl/A5fHws</a>)
+                                            </p>
+                                            <select ng-options="option.value as option.label for option in options" ng-model="timage.HideLeftPanel" no-dirty-check></select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="umb-property" style="display:inline-block">
+                                    <div class="control-group umb-control-group">
+                                        <div class="umb-el-wrap">
+                                            <h3>Preserve image metadata<small class="ng-binding"> (optional)</small></h3>
+                                            <p>
+                                                You can request that specific metadata is copied from the uploaded image to the compressed version.
+                                                Keep in mind that preserving metadata adds to the compressed file size.
+                                            </p>
+                                            <select ng-options="option.value as option.label for option in options" ng-model="timage.PreserveMetadata" no-dirty-check></select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="umb-property" style="display:inline-block;">
-                                <div class="control-group umb-control-group">
+
+                            <div class="tinifier-section section-left">
+                                <div class="umb-property" style="display:inline-block;">
                                     <div class="umb-el-wrap">
                                         <h3>Tinify everything</h3>
-                                        <p style="width: 100%;">For those who want to oprimize all images in one click. Please be sure that you have enough requests.</p>
+                                        <p>For those who want to oprimize all images in one click. Please be sure that you have enough requests.</p>
                                         <button type="button" class="pushButton btn-success" data-toggle="modal" data-target="#myModal">Tinify everything!</button>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="umb-property" style="display:inline-block">
-                                <div class="control-group umb-control-group">
-                                    <div class="umb-el-wrap">
-                                        <h3>Optimize on upload<small class="ng-binding"> (optional)</small></h3>
-                                        <p style="width: 85%;">You will never get non-optimized images but should wait more on each image upload.</p>
-                                        <small>Note: </small><small>This wiil affect both media and immage cropper uploads.</small>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.EnableOptimizationOnUpload" style="width: 100%;" no-dirty-check></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="umb-property" style="display:inline-block; margin-left: 7%;">
-                                <div class="control-group umb-control-group">
+
+                                <div class="umb-property" style="display:inline-block;">
                                     <div class="umb-el-wrap">
                                         <h3>Hard reset</h3>
-                                        <p style="width: 100%;">Drop and create Tinifier tables in the DB. Useful in case of issues after migrations.</p>
-                                        <button type="button" class="pushButton btn-danger"  data-toggle="modal" data-target="#hardResetModal" >Stop tinifing!</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="umb-property">
-                                <div class="control-group umb-control-group">
-                                    <div class="umb-el-wrap">
-                                        <h3>Hide left panel<small class="ng-binding"> (optional)</small></h3>
-                                        <p style="width: 39%;">If you have a huge website with tons of images left panel could be messy. You can read more here (<a href="http://goo.gl/A5fHws" style="color:blue">http://goo.gl/A5fHws</a>)</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.HideLeftPanel" style="width: 41%;" no-dirty-check></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="umb-property" style="display:inline-block">
-                                <div class="control-group umb-control-group">
-                                    <div class="umb-el-wrap">
-                                        <h3>Preserve image metadata<small class="ng-binding"> (optional)</small></h3>
-                                        <p style="width: 49%;">You can request that specific metadata is copied from the uploaded image to the compressed version. Keep in mind that preserving metadata adds to the compressed file size.</p>
-                                        <select ng-options="option.value as option.label for option in options" ng-model="timage.PreserveMetadata" style="width: 50%;" no-dirty-check></select>
+                                        <p>Drop and create Tinifier tables in the DB. Useful in case of issues after migrations.</p>
+                                        <button style="margin:0 auto;" type="button" class="pushButton btn-danger" data-toggle="modal" data-target="#hardResetModal">Stop tinifing!</button>
                                     </div>
                                 </div>
                             </div>
