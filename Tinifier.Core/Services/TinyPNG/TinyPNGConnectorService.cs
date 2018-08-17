@@ -35,7 +35,7 @@ namespace Tinifier.Core.Services.TinyPNG
         {
             byte[] imageBytes;
             TinyResponse tinyResponse;
-            string path = tImage.AbsoluteUrl;
+            var path = tImage.AbsoluteUrl;
 
             try
             {
@@ -45,8 +45,7 @@ namespace Tinifier.Core.Services.TinyPNG
                     if (fileSystem.Type.Contains("PhysicalFileSystem"))
                         path = fs.GetRelativePath(tImage.AbsoluteUrl);
                 }
-                
-                using (Stream file = fs.OpenFile(path))
+                using (var file = fs.OpenFile(path))
                 {
                     imageBytes = ReadFully(file);
                 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
+using System.Web.Hosting;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Models.Services;
@@ -94,12 +94,6 @@ namespace Tinifier.Core.Repository.Image
         /// <param name="id">Media Id</param>
         public void Update(int id, int actualSize)
         {
-            // httpContext is null when optimization on upload
-            // https://our.umbraco.org/projects/backoffice-extensions/tinifier/bugs/90472-error-systemargumentnullexception-value-cannot-be-null
-            if (HttpContext.Current == null)
-                HttpContext.Current = HttpContextHelper.CreateHttpContext
-                    (new HttpRequest("", "http://localhost/", ""), new HttpResponse(new StringWriter()));
-
             if (_mediaService.GetById(id) is Media mediaItem)
             {
                 mediaItem.SetValue("umbracoBytes", actualSize);
@@ -177,7 +171,7 @@ namespace Tinifier.Core.Repository.Image
             {
                 if (fileSystem.Type.Contains("PhysicalFileSystem"))
                 {
-                    numberOfImages = Directory.EnumerateFiles(HttpContext.Current.Server.MapPath("/media/"), "*.*", SearchOption.AllDirectories)
+                    numberOfImages = Directory.EnumerateFiles(HostingEnvironment.MapPath("/media/"), "*.*", SearchOption.AllDirectories)
                         .Count(file => !file.ToLower().EndsWith("config"));
                 }
                 else

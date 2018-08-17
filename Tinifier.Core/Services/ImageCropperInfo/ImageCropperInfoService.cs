@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Hosting;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models.Db;
@@ -63,7 +64,7 @@ namespace Tinifier.Core.Services.ImageCropperInfo
             {
                 if (fileSystem.Type.Contains("PhysicalFileSystem"))
                 {
-                    var serverPathForFolder = HttpContext.Current.Server.MapPath(pathForFolder);
+                    var serverPathForFolder = HostingEnvironment.MapPath(pathForFolder);
                     var di = new DirectoryInfo(serverPathForFolder);
                     var files = di.GetFiles();
                     IterateFilesAndTinifyFromMediaFolder(pathForFolder, files, nonOptimizedImages, tinifyEverything);

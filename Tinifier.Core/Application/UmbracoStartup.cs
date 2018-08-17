@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Configuration;
+using System.Web.Hosting;
 using System.Xml;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
@@ -340,7 +340,7 @@ namespace Tinifier.Core.Application
 
         private void SetFileSystemProvider()
         {
-            var path = HttpContext.Current.Server.MapPath("~/config/FileSystemProviders.config");
+            var path = HostingEnvironment.MapPath("~/config/FileSystemProviders.config");
             var doc = new XmlDocument();
             doc.Load(path);
             var node = doc.SelectSingleNode("//Provider");

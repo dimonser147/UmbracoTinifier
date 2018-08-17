@@ -155,7 +155,7 @@ namespace Tinifier.Core.Services.Media
 
         public void UpdateImageAfterSuccessfullRequest(TinyResponse tinyResponse, TImage image, IFileSystem fs)
         {
-            int.TryParse(image.Id, out var Id);
+            int.TryParse(image.Id, out var id);
 
             // download optimized image
             var tImageBytes = TinyImageService.Instance.DownloadImage(tinyResponse.Output.Url);
@@ -163,18 +163,22 @@ namespace Tinifier.Core.Services.Media
             // preserve image metadata
             if (_settingsService.GetSettings().PreserveMetadata)
             {
-                byte[] originImageBytes = image.ToBytes(fs);
+                var originImageBytes = image.ToBytes(fs);
                 PreserveImageMetadata(originImageBytes, ref tImageBytes);
             }
+
+            // httpContext is null when optimization on upload
+            // https://our.umbraco.org/projects/backoffice-extensions/tinifier/bugs/90472-error-systemargumentnullexception-value-cannot-be-null
+            if (HttpContext.Current == null)
+                HttpContextHelper.CreateEnsureUmbracoContext();
 
             // update physical file
             base.UpdateMedia(image, tImageBytes);
             // update history
             _historyService.CreateResponseHistory(image.Id, tinyResponse);
             // update umbraco media attributes
-            _imageRepository.Update(Id, tinyResponse.Output.Size);
+            _imageRepository.Update(id, tinyResponse.Output.Size);
             // update statistic
-            var savedBytes = tinyResponse.Input.Size - tinyResponse.Output.Size;
             _statisticService.UpdateStatistic();
             // update tinifying state
             _stateService.UpdateState();
@@ -243,7 +247,6 @@ namespace Tinifier.Core.Services.Media
             var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
             var media = mediaHistoryRepo.GetAll().Where(m => m.OrganizationRootFolderId == baseFolderId);
 
-            var folderId = 0;
             foreach (var m in media)
             {
                 var monthFolder = _mediaService.GetParent(m.MediaId);
@@ -253,12 +256,12 @@ namespace Tinifier.Core.Services.Media
                 if (yearFolder == null)
                     continue;
 
-                folderId = yearFolder.Id;
+                var folderId = yearFolder.Id;
                 // the path is stored as a string with comma separated IDs of media
                 // where the last value is ID of current media, penultimate value is ID of its root, etc.
                 // the first value is ID of the very root media
                 var path = m.FormerPath.Split(',');
-                var formerParentId = Int32.Parse(path[path.Length - 2]);
+                var formerParentId = int.Parse(path[path.Length - 2]);
                 var image = _imageRepository.Get(m.MediaId);
                 Move(image, formerParentId);
 

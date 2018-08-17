@@ -8,8 +8,8 @@ using  Umbraco.Web;
 using  Umbraco.ModelsBuilder;
 using  Umbraco.ModelsBuilder.Umbraco;
 [assembly: PureLiveAssembly]
-[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "86169f53f0224cb2")]
-[assembly:System.Reflection.AssemblyVersion("0.0.0.1")]
+[assembly:ModelsBuilderAssembly(PureLive = true, SourceHash = "61615b1a103daf5b")]
+[assembly:System.Reflection.AssemblyVersion("0.0.0.2")]
 
 
 // FILE: models.generated.cs
@@ -198,6 +198,15 @@ namespace Umbraco.Web.PublishedContentModels
 		}
 
 		///<summary>
+		/// gffgfgf
+		///</summary>
+		[ImplementPropertyType("gffgfgf")]
+		public Umbraco.Web.Models.ImageCropDataSet Gffgfgf
+		{
+			get { return this.GetPropertyValue<Umbraco.Web.Models.ImageCropDataSet>("gffgfgf"); }
+		}
+
+		///<summary>
 		/// Hero Background: Spice up the homepage by adding a beautiful photo that relates to your business
 		///</summary>
 		[ImplementPropertyType("HeroBackgroundImage")]
@@ -342,15 +351,6 @@ namespace Umbraco.Web.PublishedContentModels
 		public static PublishedPropertyType GetModelPropertyType<TValue>(Expression<Func<ContentPage, TValue>> selector)
 		{
 			return PublishedContentModelUtility.GetModelPropertyType(GetModelContentType(), selector);
-		}
-
-		///<summary>
-		/// imageCropper
-		///</summary>
-		[ImplementPropertyType("imageCropper")]
-		public Umbraco.Web.Models.ImageCropDataSet ImageCropper
-		{
-			get { return this.GetPropertyValue<Umbraco.Web.Models.ImageCropDataSet>("imageCropper"); }
 		}
 
 		///<summary>
