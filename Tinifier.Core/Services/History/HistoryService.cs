@@ -75,7 +75,7 @@ namespace Tinifier.Core.Services.History
 
             foreach (var image in images)
             {
-                var imageHistory = _historyRepository.Get(image.Id.ToString());
+                var imageHistory = _historyRepository.Get(image.Id);
 
                 if (imageHistory == null || ( imageHistory != null && !imageHistory.IsOptimized))
                 {

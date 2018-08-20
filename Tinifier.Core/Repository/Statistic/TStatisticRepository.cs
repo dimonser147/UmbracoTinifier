@@ -1,4 +1,5 @@
-﻿using Tinifier.Core.Models.Db;
+﻿using System;
+using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Common;
 using Umbraco.Core;
 using Umbraco.Core.Persistence;
@@ -35,7 +36,7 @@ namespace Tinifier.Core.Repository.Statistic
                 var query = new Sql("SELECT * FROM TinifierImagesStatistic");
                 return _database.FirstOrDefault<TImageStatistic>(query);
             }
-            catch (System.Exception e)
+            catch (Exception)
             {
                 return null;
             }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tinifier.Core.Infrastructure;
-using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Common;
 using Umbraco.Core;

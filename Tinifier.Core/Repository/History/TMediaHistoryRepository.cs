@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Tinifier.Core.Models.Db;
 using Tinifier.Core.Repository.Common;
 using Umbraco.Core;
