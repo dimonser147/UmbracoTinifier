@@ -317,6 +317,11 @@ namespace Tinifier.Core.Application
                 menuItemTinifyButton.Icon = PackageConstants.MenuIcon;
                 e.Menu.Items.Add(menuItemTinifyButton);
 
+            /*    var menuItemUndoTinifyButton = new MenuItem(PackageConstants., PackageConstants.);
+                menuItemUndoTinifyButton.LaunchDialogView(PackageConstants., PackageConstants.);
+                menuItemUndoTinifyButton.Icon = PackageConstants.;
+                e.Menu.Items.Add(menuItemUndoTinifyButton);*/
+
                 var menuItemSettingsButton = new MenuItem(PackageConstants.StatsButton, PackageConstants.StatsButtonCaption);
                 menuItemSettingsButton.LaunchDialogView(PackageConstants.TinySettingsRoute, PackageConstants.StatsDialogCaption);
                 menuItemSettingsButton.Icon = PackageConstants.MenuSettingsIcon;
