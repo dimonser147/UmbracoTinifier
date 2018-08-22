@@ -310,6 +310,7 @@
     <Content Include="App_Plugins\Tinifier\BackOffice\timages\TinifierEdit.html" />
     <Content Include="App_Plugins\Tinifier\BackOffice\timages\TinifierOrganizeImages.html" />
     <Content Include="App_Plugins\Tinifier\BackOffice\timages\TinifierTinifyDialog.html" />
+    <Content Include="App_Plugins\Tinifier\BackOffice\timages\UndoTinifyDialog.html" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinifierDisplayStatistic.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinifierEditTimage.controller.js" />
     <Content Include="App_Plugins\Tinifier\Controllers\TinifierEditTSetting.controller.js" />

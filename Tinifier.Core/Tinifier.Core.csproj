@@ -303,10 +303,12 @@
     <Compile Include="Infrastructure\HttpContextHelper.cs" />
     <Compile Include="Infrastructure\MediaExtensions.cs" />
     <Compile Include="Infrastructure\SolutionExtensions.cs" />
+    <Compile Include="Models\API\DomainModel.cs" />
     <Compile Include="Models\API\OrganisedMediaModel.cs" />
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TFileSystemProviderSettings.cs" />
     <Compile Include="Models\Db\TImageCropperInfo.cs" />
+    <Compile Include="Models\Db\TinifierImagesHistory.cs" />
     <Compile Include="Models\Db\TinifierMediaHistory.cs" />
     <Compile Include="Models\Db\TState.cs" />
     <Compile Include="Models\OrganizationConstraintsException.cs" />

@@ -146,6 +146,18 @@ namespace Tinifier.Core.Controllers
         }
 
         /// <summary>
+        /// Undo tinify
+        /// </summary>
+        /// <param name="mediaId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<HttpResponseMessage> UndoTinify([FromUri]int mediaId)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK,
+                new TNotification(PackageConstants.UndoTinifyingFinished));
+        }
+
+        /// <summary>
         /// Tinify folder By Id
         /// </summary>
         /// <param name="folderId">Folder Id</param>
