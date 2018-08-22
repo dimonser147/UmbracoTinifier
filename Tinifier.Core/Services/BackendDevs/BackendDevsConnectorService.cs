@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Infrastructure.Exceptions;
+using Tinifier.Core.Models.API;
 
 namespace Tinifier.Core.Services.BackendDevs
 {
@@ -37,12 +37,11 @@ namespace Tinifier.Core.Services.BackendDevs
             {
                 client.BaseAddress = new Uri(PackageConstants.BackEndDevsUrl);
                 client.DefaultRequestHeaders.TryAddWithoutValidation(PackageConstants.ContentTypeHeader, PackageConstants.ContentType);
-
-                var content = new StringContent(_serializer.Serialize(domainName), Encoding.UTF8, PackageConstants.ContentType);
+                var domainModel = new DomainModel { DomainName = domainName };
 
                 try
                 {
-                    response = await client.PostAsync(PackageConstants.BackEndDevsPostStatistic, content);
+                    response = await client.PostAsJsonAsync(PackageConstants.BackEndDevsPostStatistic, domainModel);
                 }
                 catch (Exception ex)
                 {
