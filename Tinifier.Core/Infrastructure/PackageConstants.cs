@@ -50,6 +50,7 @@ namespace Tinifier.Core.Infrastructure
         public const string ContentType = "application/json";
         public const string TinyPngHeader = "Compression-Count";
         public const string AppAlias = "application";
+        public const string TinifierTempFolder = "~/TinifierTempFolder";
 
         public const string DbSettingsTable = "TinifierUserSettings";
         public const string DbHistoryTable = "TinifierResponseHistory";

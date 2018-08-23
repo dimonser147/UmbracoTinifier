@@ -9,10 +9,10 @@ using Tinifier.Core.Infrastructure;
 using System.Linq;
 using System.Net;
 using Tinifier.Core.Services.Settings;
-using System.IO;
 using Tinifier.Core.Models.Db;
 using Umbraco.Core.IO;
 using Tinifier.Core.Repository.FileSystemProvider;
+using Tinifier.Core.Services.History;
 
 namespace Tinifier.Core.Services.TinyPNG
 {
@@ -22,6 +22,7 @@ namespace Tinifier.Core.Services.TinyPNG
         private readonly JavaScriptSerializer _serializer;
         private readonly ISettingsService _settingsService;
         private readonly IFileSystemProviderRepository _fileSystemProviderRepository;
+        private readonly IImageHistoryService _imageHistoryService;
 
         public TinyPNGConnectorService()
         {
@@ -29,27 +30,23 @@ namespace Tinifier.Core.Services.TinyPNG
             _tinifyAddress = PackageConstants.TinyPngUrl;
             _serializer = new JavaScriptSerializer();
             _fileSystemProviderRepository = new TFileSystemProviderRepository();
+            _imageHistoryService = new TImageHistoryService();
         }
 
         public async Task<TinyResponse> TinifyAsync(TImage tImage, IFileSystem fs)
         {
-            byte[] imageBytes;
             TinyResponse tinyResponse;
             var path = tImage.AbsoluteUrl;
+            int.TryParse(tImage.Id, out var id);
+            var settings = _settingsService.GetSettings();
 
             try
             {
-                var fileSystem = _fileSystemProviderRepository.GetFileSystem();
-                if (fileSystem != null)
-                {
-                    if (fileSystem.Type.Contains("PhysicalFileSystem"))
-                        path = fs.GetRelativePath(tImage.AbsoluteUrl);
-                }
-                using (var file = fs.OpenFile(path))
-                {
-                    imageBytes = ReadFully(file);
-                }
+                var imageBytes = GetImageBytesFromPath(tImage, fs, path);
                 tinyResponse = await TinifyByteArrayAsync(imageBytes).ConfigureAwait(false);
+
+                if(id > 0 && settings.EnableUndoOptimization)
+                    _imageHistoryService.Create(tImage, imageBytes);
             }
             catch (Exception)
             {
@@ -66,18 +63,22 @@ namespace Tinifier.Core.Services.TinyPNG
             return tinyResponse;
         }
 
-        private byte[] ReadFully(Stream input)
+        private byte[] GetImageBytesFromPath(TImage tImage, IFileSystem fs, string path)
         {
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
+            byte[] imageBytes;
+            var fileSystem = _fileSystemProviderRepository.GetFileSystem();
+            if (fileSystem != null)
             {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
+                if (fileSystem.Type.Contains("PhysicalFileSystem"))
+                    path = fs.GetRelativePath(tImage.AbsoluteUrl);
             }
+
+            using (var file = fs.OpenFile(path))
+            {
+                imageBytes = SolutionExtensions.ReadFully(file);
+            }
+
+            return imageBytes;
         }
 
         private async Task<TinyResponse> TinifyByteArrayAsync(byte[] imageByteArray)

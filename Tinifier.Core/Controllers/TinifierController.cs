@@ -9,7 +9,6 @@ using System.Web.Hosting;
 using System.Web.Http;
 using Tinifier.Core.Filters;
 using Tinifier.Core.Infrastructure;
-using Tinifier.Core.Infrastructure.Enums;
 using Tinifier.Core.Infrastructure.Exceptions;
 using Tinifier.Core.Models;
 using Tinifier.Core.Models.Db;
@@ -153,8 +152,25 @@ namespace Tinifier.Core.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> UndoTinify([FromUri]int mediaId)
         {
+            try
+            {
+                _imageService.UndoTinify(mediaId);
+            }
+            catch (UndoTinifierException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK,
+                    new TNotification(
+                        "Undo finished",
+                        ex.Message,
+                        EventMessageType.Info)
+                );
+            }
+
             return Request.CreateResponse(HttpStatusCode.OK,
-                new TNotification(PackageConstants.UndoTinifyingFinished));
+                new TNotification("Success", PackageConstants.UndoTinifyingFinished, EventMessageType.Success)
+                {
+                    sticky = true,
+                });
         }
 
         /// <summary>
@@ -216,16 +232,15 @@ namespace Tinifier.Core.Controllers
 
             var nonOptimizedImages = new List<TImage> { imageById };
             _stateService.CreateState(nonOptimizedImages.Count);
-            return await CallTinyPngService(nonOptimizedImages, SourceTypes.Image);
+            return await CallTinyPngService(nonOptimizedImages);
         }
 
         /// <summary>
         /// Create request to TinyPNG service and get response
         /// </summary>
         /// <param name="imagesList">Images that needs to be tinifing</param>
-        /// <param name="sourceType">Folder or Image</param>
         /// <returns>Response(StatusCode, message)</returns>
-        private async Task<HttpResponseMessage> CallTinyPngService(IEnumerable<TImage> imagesList, SourceTypes sourceType = SourceTypes.Folder)
+        private async Task<HttpResponseMessage> CallTinyPngService(IEnumerable<TImage> imagesList)
         {
             var nonOptimizedImagesCount = 0;
             var userDomain = HttpContext.Current.Request.Url.Host;

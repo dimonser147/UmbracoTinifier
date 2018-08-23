@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
 using Umbraco.Core.IO;
-using Umbraco.Web;
 using uModels = Umbraco.Core.Models;
 
 namespace Tinifier.Core.Services.Media
@@ -23,22 +23,8 @@ namespace Tinifier.Core.Services.Media
             {
                 Id = uMedia.Id.ToString(),
                 Name = uMedia.Name,
-                AbsoluteUrl = GetAbsoluteUrl(uMedia)
+                AbsoluteUrl = SolutionExtensions.GetAbsoluteUrl(uMedia)
             };
-        }
-
-
-        /// <summary>
-        /// Get absolute url of Umbraco media file
-        /// </summary>
-        /// <param name="uMedia"></param>
-        /// <returns></returns>
-        protected string GetAbsoluteUrl(uModels.Media uMedia)
-        {
-            var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-            var content = umbHelper.Media(uMedia.Id);
-            var imagerUrl = content.Url;
-            return imagerUrl;
         }
 
         /// <summary>
@@ -48,7 +34,7 @@ namespace Tinifier.Core.Services.Media
         /// <param name="optimizedImageBytes"></param>
         protected void UpdateMedia(TImage image, byte[] optimizedImageBytes)
         {
-            string path = FileSystem.GetRelativePath(image.AbsoluteUrl);
+            var path = FileSystem.GetRelativePath(image.AbsoluteUrl);
             //if (!FileSystem.FileExists(path))
             //    throw new InvalidOperationException("Physical media file doesn't exist in " + path);
             using (Stream stream = new MemoryStream(optimizedImageBytes))

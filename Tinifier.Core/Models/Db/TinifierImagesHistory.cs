@@ -5,6 +5,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 namespace Tinifier.Core.Models.Db
 {
     [TableName(PackageConstants.DbTinifierImageHistoryTable)]
+    [PrimaryKey("Id", autoIncrement = true)]
     public class TinifierImagesHistory
     {
         [PrimaryKeyColumn(AutoIncrement = true)]
@@ -12,6 +13,6 @@ namespace Tinifier.Core.Models.Db
 
         public string ImageId { get; set; }
 
-        public string OriginFile { get; set; }
+        public string OriginFilePath { get; set; }
     }
 }
