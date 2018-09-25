@@ -5,10 +5,12 @@ using Tinifier.Core.Infrastructure;
 using Tinifier.Core.Models.Db;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
+using Umbraco.Core.ObjectResolution;
 using Umbraco.Core.Persistence;
 
 namespace Tinifier.Core.Application
 {
+    [Weight(50)]
     public class DbStartup : ApplicationEventHandler
     {
         /// <summary>
