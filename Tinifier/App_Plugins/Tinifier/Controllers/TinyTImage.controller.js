@@ -51,6 +51,32 @@
             .error(errorHandler);
     };
 
+    $scope.undoTinify = function() {
+        navigationService.hideDialog();
+        // Check if user choose Image or recycle bin folder
+        if (timageId === recycleBinFolderId) {
+            notificationsService.error("Error", "You can`t tinify RecycleBin Folder!");
+            return;
+        }
+
+        if (timageId == null) {
+            notificationsService.error("Error", "Undo tinifing all Media folder is not supported");
+            return;
+        }
+
+        notificationsService
+            .add({
+                headline: "Undo Tinifing started",
+                type: 'success'
+            });
+
+        var url = `${tinifierApiUrlsResource.tinifier}/UndoTinify?mediaId=${timageId}`;
+
+        $http.get(url)
+            .success(successHandler)
+            .error(errorHandler);
+    };
+
     $scope.tinifyAll = function () {
         $http.put(`${tinifierApiUrlsResource.tinifier}/TinifyEverything`)
             .success(successHandler)

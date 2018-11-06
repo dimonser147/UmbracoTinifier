@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Runtime.Serialization;
+﻿using System.Globalization;
 using Tinifier.Core.Models;
 using Tinifier.Core.Models.API;
 
@@ -23,7 +21,7 @@ namespace Tinifier.Core.Services.Media.Organizers
                 _previewModel.Add(new OrganisableMediaModel
                 {
                     Media = m,
-                    DestinationPath = new string[2] { year, month }
+                    DestinationPath = new string[] { year, month }
                 });
             };
         }

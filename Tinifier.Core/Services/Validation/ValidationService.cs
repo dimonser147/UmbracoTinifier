@@ -39,8 +39,8 @@ namespace Tinifier.Core.Services.Validation
                 throw new EntityNotFoundException(); 
             if (!media.HasProperty("umbracoExtension"))
                 throw new NotSupportedExtensionException();
-            string fileExt = media.GetValue<string>("umbracoExtension");
-            foreach (string supportedExt in PackageConstants.SupportedExtensions)
+            var fileExt = media.GetValue<string>("umbracoExtension");
+            foreach (var supportedExt in PackageConstants.SupportedExtensions)
                 if (string.Equals(supportedExt, fileExt, StringComparison.OrdinalIgnoreCase))
                     return;
             throw new NotSupportedExtensionException(fileExt);

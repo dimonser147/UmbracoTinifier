@@ -16,6 +16,7 @@ namespace Tinifier.Core.Infrastructure
         public const string SectionIcon = "icon-wand";
         public const string MenuIcon = "umb-settings";
         public const string MenuSettingsIcon = "article";
+        public const string UndoTinifyIcon = "undo";
         public const string MenuIconBulk = "lightbulb-active";
         public const string ImageAlias = "image";
         public const string MediaAlias = "media";
@@ -30,6 +31,8 @@ namespace Tinifier.Core.Infrastructure
         public const string Src = "src";
         public const string TinifierButton = "Tinifier_Button";
         public const string TinifierButtonCaption = "Tinify";
+        public const string UndoTinifierButton = "Undo_Tinifier_Button";
+        public const string UndoTinifierButtonCaption = "Undo Tinify";
         public const string StatsButton = "Tinifier_Settings";
         public const string StatsButtonCaption = "Stats";
         public const string StatsDialogCaption = "Optimization Stats";
@@ -47,6 +50,7 @@ namespace Tinifier.Core.Infrastructure
         public const string ContentType = "application/json";
         public const string TinyPngHeader = "Compression-Count";
         public const string AppAlias = "application";
+        public const string TinifierTempFolder = "~/TinifierTempFolder";
 
         public const string DbSettingsTable = "TinifierUserSettings";
         public const string DbHistoryTable = "TinifierResponseHistory";
@@ -54,8 +58,10 @@ namespace Tinifier.Core.Infrastructure
         public const string DbStateTable = "TinifierState";
         public const string DbTImageCropperInfoTable = "TinifierImageCropperInfo";
         public const string DbTFileSystemProviderSettings = "TinifierFileSystemProviderSettings";
+        public const string DbTinifierImageHistoryTable = "TinifierImageHistory";
 
         public const string TinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/TinifierTinifyDialog.html";
+        public const string UndoTinyTImageRoute = "/App_Plugins/Tinifier/BackOffice/timages/UndoTinifyDialog.html";
         public const string TinySettingsRoute = "/App_Plugins/Tinifier/BackOffice/timages/TinifierEdit.html";
         public const string SettingsTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/TinifierSettings.html";
         public const string StatisticTabRoute = "/App_Plugins/Tinifier/BackOffice/Dashboards/TinifierStatistic.html";
@@ -79,6 +85,7 @@ namespace Tinifier.Core.Infrastructure
         public const string ImageDeleted = "Image has been deleted!";
 
         public const string TinifyingFinished = "Tinifying finished";
+        public const string UndoTinifyingFinished = "Undo Tinifying finished";
 
         public static IEnumerable<string> SupportedExtensions { get; } = new string[]
         {

@@ -22,6 +22,9 @@ namespace Tinifier.Core.Models.Db
         public bool EnableOptimizationOnUpload { get; set; }
 
         [Required]
+        public bool EnableUndoOptimization { get; set; }
+
+        [Required]
         public bool HideLeftPanel { get; set; }
 
         public bool PreserveMetadata { get; set; }

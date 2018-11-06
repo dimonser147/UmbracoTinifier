@@ -32,7 +32,8 @@ namespace Tinifier.Core.Application
                 { PackageConstants.DbStateTable, typeof(TState) },
                 { PackageConstants.MediaHistoryTable, typeof(TinifierMediaHistory) },
                 { PackageConstants.DbTImageCropperInfoTable, typeof(TImageCropperInfo) },
-                { PackageConstants.DbTFileSystemProviderSettings, typeof(TFileSystemProviderSettings) }
+                { PackageConstants.DbTFileSystemProviderSettings, typeof(TFileSystemProviderSettings) },
+                { PackageConstants.DbTinifierImageHistoryTable, typeof(TinifierImagesHistory) }
             };
 
             for (var i = 0; i < tables.Count; i++)

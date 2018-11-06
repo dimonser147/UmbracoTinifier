@@ -288,6 +288,7 @@
     <Compile Include="Application\Migrations\Migration2.cs" />
     <Compile Include="Application\Migrations\Migration3.cs" />
     <Compile Include="Application\Migrations\Migration4.cs" />
+    <Compile Include="Application\Migrations\Migration5.cs" />
     <Compile Include="Application\Migrations\MigrationsHelper.cs" />
     <Compile Include="Application\UmbracoStartup.cs" />
     <Compile Include="Controllers\TinifierSettingsController.cs" />
@@ -300,6 +301,7 @@
     <Compile Include="Infrastructure\Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSuccessfullRequestException.cs" />
     <Compile Include="Infrastructure\Exceptions\NotSupportedExtensionException.cs" />
+    <Compile Include="Infrastructure\Exceptions\UndoTinifierException.cs" />
     <Compile Include="Infrastructure\HttpContextHelper.cs" />
     <Compile Include="Infrastructure\MediaExtensions.cs" />
     <Compile Include="Infrastructure\SolutionExtensions.cs" />
@@ -308,6 +310,7 @@
     <Compile Include="Models\API\TinifyImageStatistic.cs" />
     <Compile Include="Models\Db\TFileSystemProviderSettings.cs" />
     <Compile Include="Models\Db\TImageCropperInfo.cs" />
+    <Compile Include="Models\Db\TinifierImagesHistory.cs" />
     <Compile Include="Models\Db\TinifierMediaHistory.cs" />
     <Compile Include="Models\Db\TState.cs" />
     <Compile Include="Models\OrganizationConstraintsException.cs" />
@@ -318,6 +321,7 @@
     <Compile Include="Repository\FileSystemProvider\IFileSystemProviderRepository.cs" />
     <Compile Include="Repository\FileSystemProvider\TFileSystemProviderRepository.cs" />
     <Compile Include="Repository\History\IHistoryRepository.cs" />
+    <Compile Include="Repository\History\TImageHistoryRepository.cs" />
     <Compile Include="Repository\ImageCropperInfo\IImageCropperInfoRepository.cs" />
     <Compile Include="Repository\ImageCropperInfo\TImageCropperInfoRepository.cs" />
     <Compile Include="Repository\History\TMediaHistoryRepository.cs" />
@@ -328,6 +332,8 @@
     <Compile Include="Services\BlobStorage\IBlobStorage.cs" />
     <Compile Include="Services\BackendDevs\IBackendDevsConnector.cs" />
     <Compile Include="Services\History\IHistoryService.cs" />
+    <Compile Include="Services\History\IImageHistoryService.cs" />
+    <Compile Include="Services\History\TImageHistoryService.cs" />
     <Compile Include="Services\ImageCropperInfo\IImageCropperInfoService.cs" />
     <Compile Include="Services\ImageCropperInfo\ImageCropperInfoService.cs" />
     <Compile Include="Services\MediaSavingHelper.cs" />

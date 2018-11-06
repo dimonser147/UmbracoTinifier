@@ -21,6 +21,7 @@ using Tinifier.Core.Services.TinyPNG;
 using Tinifier.Core.Services.Validation;
 using Umbraco.Core.IO;
 using Tinifier.Core.Infrastructure.Exceptions;
+using Tinifier.Core.Repository.History;
 using Umbraco.Core.Services;
 using uMedia = Umbraco.Core.Models.Media;
 
@@ -30,6 +31,7 @@ namespace Tinifier.Core.Services.Media
     {
         private readonly IValidationService _validationService;
         private readonly TImageRepository _imageRepository;
+        private readonly TMediaHistoryRepository _mediaHistoryRepository;
         private readonly IHistoryService _historyService;
         private readonly IStatisticService _statisticService;
         private readonly IStateService _stateService;
@@ -37,10 +39,12 @@ namespace Tinifier.Core.Services.Media
         private readonly IBackendDevsConnector _backendDevsConnectorService;
         private readonly IMediaService _mediaService;
         private readonly ISettingsService _settingsService;
+        private readonly IImageHistoryService _imageHistoryService;
 
         public ImageService()
         {
             _imageRepository = new TImageRepository();
+            _mediaHistoryRepository = new TMediaHistoryRepository();
             _validationService = new ValidationService();
             _historyService = new HistoryService();
             _statisticService = new StatisticService();
@@ -49,6 +53,7 @@ namespace Tinifier.Core.Services.Media
             _backendDevsConnectorService = new BackendDevsConnectorService();
             _mediaService = Umbraco.Core.ApplicationContext.Current.Services.MediaService;
             _settingsService = new SettingsService();
+            _imageHistoryService = new TImageHistoryService();
         }
 
         public IEnumerable<TImage> GetAllImages()
@@ -140,12 +145,7 @@ namespace Tinifier.Core.Services.Media
 
         public IEnumerable<TImage> GetTopOptimizedImages()
         {
-            // return Convert(_imageRepository.GetTopOptimizedImages().OrderByDescending(x => x.UpdateDate));
-
-            
-            var topOptimizedImages = _imageRepository.GetTopOptimizedImages();
-
-            return topOptimizedImages;
+            return _imageRepository.GetTopOptimizedImages();
         }
 
         public IEnumerable<TImage> GetFolderImages(int folderId)
@@ -184,9 +184,49 @@ namespace Tinifier.Core.Services.Media
             _stateService.UpdateState();
         }
 
+        public void UndoTinify(int mediaId)
+        {
+            byte[] imageBytes;
+            var originImage = _imageHistoryService.Get(mediaId);
+
+            if (originImage != null)
+            {
+                var mediaFile = _mediaService.GetById(mediaId) as uMedia;
+
+                if (File.Exists(originImage.OriginFilePath))
+                {
+                    using (var file = new FileStream(originImage.OriginFilePath, FileMode.Open))
+                        imageBytes = SolutionExtensions.ReadFully(file);
+
+                    if (Directory.Exists(Path.GetDirectoryName(originImage.OriginFilePath)))
+                        File.Delete(originImage.OriginFilePath);
+
+                    var image = new TImage
+                    {
+                        Id = mediaId.ToString(),
+                        Name = mediaFile.Name,
+                        AbsoluteUrl = SolutionExtensions.GetAbsoluteUrl(mediaFile)
+                    };
+
+                    // update physical file
+                    base.UpdateMedia(image, imageBytes);
+                    // update umbraco media attributes
+                    _imageRepository.Update(mediaId, imageBytes.Length);
+                    _historyService.Delete(mediaId.ToString());
+                    // update statistic
+                    _statisticService.UpdateStatistic();
+                    //delete image history
+                    _imageHistoryService.Delete(mediaId);
+                }
+            }
+            else
+            {
+                throw new UndoTinifierException("Image not optimized or Undo tinify not enabled");
+            }
+        }
+
         public void BackupMediaPaths(IEnumerable<uMedia> media)
         {
-            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
             foreach (var m in media)
             {
                 var mediaHistory = new TinifierMediaHistory
@@ -195,7 +235,7 @@ namespace Tinifier.Core.Services.Media
                     FormerPath = m.Path,
                     OrganizationRootFolderId = m.ParentId
                 };
-                mediaHistoryRepo.Create(mediaHistory);
+                _mediaHistoryRepository.Create(mediaHistory);
             }
         }
 
@@ -226,8 +266,7 @@ namespace Tinifier.Core.Services.Media
 
         public bool IsFolderChildOfOrganizedFolder(int sourceFolderId)
         {
-            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
-            var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
+            var organizedFoldersList = _mediaHistoryRepository.GetOrganazedFolders();
 
             while(sourceFolderId != -1 && organizedFoldersList.Any())
             {
@@ -244,8 +283,7 @@ namespace Tinifier.Core.Services.Media
 
         private void Discard(int baseFolderId)
         {
-            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
-            var media = mediaHistoryRepo.GetAll().Where(m => m.OrganizationRootFolderId == baseFolderId);
+            var media = _mediaHistoryRepository.GetAll().Where(m => m.OrganizationRootFolderId == baseFolderId);
 
             foreach (var m in media)
             {
@@ -276,14 +314,12 @@ namespace Tinifier.Core.Services.Media
                 }
             }
 
-            mediaHistoryRepo.DeleteAll(baseFolderId);
+            _mediaHistoryRepository.DeleteAll(baseFolderId);
         }
 
         private bool IsFolderOrganized(int folderId)
         {
-            var mediaHistoryRepo = new Repository.History.TMediaHistoryRepository();
-            var organizedFoldersList = mediaHistoryRepo.GetOrganazedFolders();
-
+            var organizedFoldersList = _mediaHistoryRepository.GetOrganazedFolders();
             return organizedFoldersList.Contains(folderId);
         }
     }
