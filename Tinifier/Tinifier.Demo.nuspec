@@ -3,7 +3,7 @@
   <metadata>
     <!-- Required elements-->
     <id>Tinifier</id>
-    <version>1.5.1</version>
+    <version>1.6</version>
     <description>The official and free Umbraco TinyPNG package for image compressing and minifying.</description>
     <authors>Backend Devs</authors>
     <dependencies>
