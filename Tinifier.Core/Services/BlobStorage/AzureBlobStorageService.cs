@@ -19,11 +19,11 @@ namespace Tinifier.Core.Services.BlobStorage
             var path = HostingEnvironment.MapPath("~/config/FileSystemProviders.config");
             var doc = new XmlDocument();
             doc.Load(path);
-            var node = doc.SelectSingleNode("//Provider");
+            var node = doc.SelectSingleNode("//Provider[@alias='media']");
 
             if (node != null)
             {
-                var keysNodes = node.LastChild.SelectNodes("//add");
+                var keysNodes = node.LastChild.SelectNodes("descendant::add");
                 var dictionary = new Dictionary<string, string>();
 
                 foreach (XmlNode xmlNode in keysNodes)
